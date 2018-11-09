@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if category_list %}
+ <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Attributes</th>
+        <th>Items</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for category in category_list %}
+      <tr>
+        <td>{{ category.name }}</td>
+        <td>
+            <ul class="list-group">
+            {% for att in category.eav.get_all_attributes %}
+              <li class="list-group-item">{{ att }}</li>
+            {% endfor %}
+            </ul>
+        </td>
+        <td>{{ category.items.count }}</td>
+        <td>
+          <a href="{% url 'team:category:detail' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary">Details</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="lead">No categories found. Go create one!</p>
+{% endif %}
+{% endblock content %}
+

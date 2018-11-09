@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<p class="lead">Details for category {{ category.name }}</p>
+
+<p>{{ category.description }}</p>
+
+{% if category.eav.get_all_attributes %}
+ <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Attribute Name</th>
+        <th>Attribute Description</th>
+        <th>Attribute Type</th>
+        <th>Attribute Required?</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for att in category.eav.get_all_attributes %}
+      <tr>
+        <td>{{ att.name }}</td>
+        <td>{{ att.description }}</td>
+        <td>{{ att.datatype }}</td>
+        <td>{{ att.required }}</td>
+        <td>
+          <a href="{% url 'team:category:attribute_update' team_slug=team.slug category_slug=category.slug attribute_slug=att.slug %}" class="btn btn-primary">Update</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="lead">No attributes found for this category.</p>
+{% endif %}
+<a href="{% url 'team:category:attribute_create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create new Attribute</a>
+{% endblock content %}
+

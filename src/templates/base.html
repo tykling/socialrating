@@ -1,0 +1,31 @@
+{% load static %}
+{% load bootstrap4 %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+    <title>{% block title %}social/rating{% endblock title %}</title>
+    <link href="{% static 'css/bootstrap-4.1.3.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/socialrating.css' %}" rel="stylesheet">
+  </head>
+
+  <body>
+    {% include 'navbar.html' %}
+    {% if team %}{% include 'team_menu.html' %}{% endif %}
+    <main role="main" class="container">
+        {% bootstrap_messages %}
+        {% block content %}
+          <p>block 'content' was not replaced, so this default text from base.html is shown instead</p>
+        {% endblock content %}
+    </main>
+
+    <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"></script>
+    <script src="{% static 'js/popper-1.14.3.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-4.1.3.min.js' %}"></script>
+  </body>
+</html>
+ 

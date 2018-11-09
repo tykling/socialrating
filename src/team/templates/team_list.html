@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if team_list %}
+ <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Members</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for team in team_list %}
+      <tr>
+        <td>{{ team.name }}</td>
+        <td>{{ team.members.count }}</td>
+        <td>
+          <a href="{% url 'team:detail' team_slug=team.slug %}" class="btn btn-primary">Details</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="lead">You are not a member of any teams.</p>
+{% endif %}
+<a href="{% url 'team:create' %}" class="btn btn-success">Create new Team</a>
+{% endblock content %}
+

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load get_eav_value %}
+
+{% block content %}
+<p class="lead">Details for {{ item.name }}</p>
+<table class="table table-bordered">
+  <tr>
+    <th>Name</th>
+    <td>{{ item.name }}</td>
+  </tr>
+  {% for attribute in item.category.eav.get_all_attributes %}
+  <tr>
+    <th>{{ attribute.name }}</th>
+    <td>{{ item|get_eav_value:attribute.slug }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<a href="{% url 'team:category:item:update' team_slug=item.category.team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-success">Update Item</a>
+
+{% endblock content %}
+
