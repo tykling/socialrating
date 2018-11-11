@@ -13,6 +13,7 @@
         <th>Attribute Description</th>
         <th>Attribute Type</th>
         <th>Attribute Required?</th>
+        <th>Attribute Extra Data</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -23,6 +24,7 @@
         <td>{{ att.description }}</td>
         <td>{{ att.datatype }}</td>
         <td>{{ att.required }}</td>
+        <td>{{ att.extra_data }}</td>
         <td>
           <a href="{% url 'team:category:attribute_update' team_slug=team.slug category_slug=category.slug attribute_slug=att.slug %}" class="btn btn-primary">Update</a>
         </td>

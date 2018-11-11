@@ -5,6 +5,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
 from django.contrib.contenttypes.models import ContentType
+from django import forms
 
 from eav.models import Attribute
 
@@ -53,15 +54,36 @@ class AttributeCreateView(CategoryViewMixin, CreateView):
     template_name = 'attribute_form.html'
     fields = ['name', 'datatype', 'description', 'required']
 
+    def get_form(self, form_class=None):
+        """
+        Fixup a few things in the dynamically generated EAV form
+        - Make help_text for the fields more userfriendly
+        - add Category select (only relevant for datatype=Django Object fields)
+        """
+        form = super().get_form(form_class)
+        form.fields['datatype'].help_text='The datatype for this Attribute.'
+
+        # add Category field
+        form.fields['category'] = forms.ModelChoiceField(
+            queryset=self.team.categories.all(),
+            help_text='The Category for this Object field',
+        )
+
+        return form
+
     def form_valid(self, form):
         """
         Set the entity_ct and entity_id based on self.category.
         Also set the slug for this attribute.
+        Also set extra_data based on the Category picker in the form,
+        but only if this Attribute is of type "Django Object"
         """
         attribute = form.save(commit=False)
         attribute.slug = self.category.create_attribute_slug(attribute.name)
         attribute.entity_ct=ContentType.objects.get(app_label='category', model='category')
         attribute.entity_id=self.category.id
+        if attribute.datatype == 'object':
+            attribute.extra_data = 'category.id=%s' % self.category.pk
         attribute.save()
         messages.success(self.request, "New attribute created!")
 
@@ -75,7 +97,7 @@ class AttributeUpdateView(CategoryViewMixin, UpdateView):
     model = Attribute
     template_name = 'attribute_form.html'
     slug_url_kwarg = 'attribute_slug'
-    fields = ['name', 'datatype', 'description', 'required']
+    fields = ['name', 'description', 'required']
 
     def get_success_url(self):
         return reverse('team:category:detail', kwargs={
