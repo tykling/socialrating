@@ -14,6 +14,10 @@ from team.factories import TeamFactory, MembershipFactory
 
 from category.models import Category
 
+from rating.models import Property, Rating
+
+from review.models import Review
+
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
@@ -42,11 +46,52 @@ class Command(BaseCommand):
         admin.save()
 
         ####################
-        # add car team
+        # add teams
         carteam = Team.objects.create(
             name='Car Nerds',
             founder=Actor.objects.all().order_by('?').first()
         )
+        foodteam = Team.objects.create(
+            name='Foodies',
+            founder=Actor.objects.all().order_by('?').first()
+        )
+        musicteam = Team.objects.create(
+            name='Music Lovers',
+            founder=Actor.objects.all().order_by('?').first()
+        )
+
+        ###################
+        # add team members for all teams
+        for team in Team.objects.all():
+            # add team founders and site admin as team admin members
+            Membership.objects.create(
+                team=team,
+                actor=team.founder,
+                admin=True
+            )
+
+            Membership.objects.create(
+                team=team,
+                actor=admin.actor,
+                admin=True
+            )
+
+            # add non-admin team members
+            membercount = random.randint(1, int(Actor.objects.count() / Team.objects.count()))
+            logger.info("creating %s non-admin members of team %s" % (membercount, team))
+            self.mock(
+                model=Membership,
+                factory=MembershipFactory,
+                count=membercount,
+                team=team,
+            )
+
+        # add Actors with no team to a random team
+        for actor in Actor.objects.filter(membership__isnull=True):
+            Membership.objects.create(
+                team=Team.objects.all().order_by('?').first(),
+                actor=actor,
+            )
 
         # add categories for carteam
         makecat = Category.objects.create(
@@ -61,7 +106,7 @@ class Command(BaseCommand):
         )
 
 
-        # add attributes for "Car Maker" category
+        # add attributes for Maker category
         Attribute.objects.create(
             name='Country',
             datatype=Attribute.TYPE_TEXT,
@@ -72,7 +117,7 @@ class Command(BaseCommand):
             description='The country this car maker is from',
         )
 
-        # add attributes for "Car Model" category
+        # add attributes for Car category
         Attribute.objects.create(
             name='Make',
             datatype=Attribute.TYPE_OBJECT,
@@ -109,6 +154,21 @@ class Command(BaseCommand):
             slug=carcat.create_attribute_slug('Date Seen'),
             description='The date and time this car was seen',
         )
+
+        # add properties for Car category
+        Property.objects.create(
+            name='Looks',
+            category=carcat,
+            max_rating=10,
+            description='Rate the looks of this car, 10 is best.',
+        )
+        Property.objects.create(
+            name='Handling',
+            category=carcat,
+            max_rating=10,
+            description='How well the car handles. 10 is best.',
+        )
+
 
         # add car makers
         ford = makecat.items.create(
@@ -161,13 +221,19 @@ class Command(BaseCommand):
             eav__category2_date_seen=timezone.now(),
         )
 
-
-        ####################
-        # add foodies team
-        foodteam = Team.objects.create(
-            name='Foodies',
-            founder=Actor.objects.all().order_by('?').first()
-        )
+        # add ratings for cars
+        for car in carcat.items.all():
+            for property in carcat.properties.all():
+                # not everyone votes :(
+                votercount = random.randint(1,carcat.team.members.count())
+                for actor in carcat.team.members.all()[0:votercount]:
+                    rating = Rating.objects.create(
+                        item=car,
+                        actor=actor,
+                        property=property,
+                        rating=random.randint(1, property.max_rating),
+                    )
+                    logger.debug("created rating %s" % rating)
 
         # add categories for foodteam
         restaurant = Category.objects.create(
@@ -215,46 +281,6 @@ class Command(BaseCommand):
         # add restaurants
 
 
-        ####################
-        # add music team
-        musicteam = Team.objects.create(
-            name='Music Lovers',
-            founder=Actor.objects.all().order_by('?').first()
-        )
-
-
-        ###################
-        # add team members for all teams
-        for team in Team.objects.all():
-            # add team founders and site admin as team admin members
-            Membership.objects.create(
-                team=team,
-                actor=team.founder,
-                admin=True
-            )
-
-            Membership.objects.create(
-                team=team,
-                actor=admin.actor,
-                admin=True
-            )
-
-            # add non-admin team members
-            membercount = random.randint(1, int(Actor.objects.count() / Team.objects.count()))
-            logger.info("creating %s non-admin members of team %s" % (membercount, team))
-            self.mock(
-                model=Membership,
-                factory=MembershipFactory,
-                count=membercount,
-                team=team,
-            )
-
-        # add Actors with no team to a randon team
-        for actor in Actor.objects.filter(membership__isnull=True):
-            Membership.objects.create(
-                team=Team.objects.all().order_by('?').first(),
-                actor=actor,
-            )
 
         logger.info('Done. A superuser was added, username admin password admin. Django admin access and member of all teams. Enjoy!')
 

@@ -3,6 +3,7 @@ import eav
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
+from django.core.exceptions import ObjectDoesNotExist
 
 from team.models import TeamRelatedModel
 
@@ -25,12 +26,14 @@ class Item(TeamRelatedModel):
 
     name = models.CharField(
         max_length=100,
-        help_text='The name of this Item'
+        help_text='The name of this Item. Must be unique within the Category.'
     )
 
     slug = models.SlugField(
         help_text='The slug for this Item. Must be unique within the Category.',
     )
+
+    team_filter = 'category__team'
 
     def __str__(self):
         return "%s (Category: %s)" % (self.name, self.category)
@@ -46,8 +49,14 @@ class Item(TeamRelatedModel):
         self.slug = slugify(self.name)
         super().save(**kwargs)
 
-    team_filter = 'category__team'
-
+    def get_rating(self, property, ratingtype, actor=None):
+        if ratingtype=='average':
+            return round(self.ratings.filter(property=property).aggregate(models.Avg('rating'))['rating__avg'], 2)
+        elif ratingtype=='user':
+            try:
+                return self.ratings.get(property=property, actor=actor).rating
+            except ObjectDoesNotExist:
+                return None
 
 class ItemEavConfig(eav.registry.EavConfig):
      @classmethod

@@ -32,7 +32,7 @@ INSTALLED_APPS = [
 
     'eav',
     'bootstrap4',
-    #'django_extensions',
+    'django_extensions',
 
     'allauth',
     'allauth.account',
@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'team',
     'category',
     'item',
+    'rating',
+    'review',
     'utils',
 ]
 

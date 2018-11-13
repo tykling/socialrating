@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 {% load get_eav_value %}
+{% load rating %}
 
 {% block content %}
 <p class="lead">Details for {{ item.name }}</p>
@@ -11,8 +12,18 @@
   </tr>
   {% for attribute in item.category.eav.get_all_attributes %}
   <tr>
-    <th>{{ attribute.name }}</th>
+    <td><b>{{ attribute.name }}</b><br>{{ attribute.description }}</td>
     <td>{{ item|get_eav_value:attribute.slug }}</td>
+  </tr>
+  {% endfor %}
+  {% for property in item.category.properties.all %}
+  <tr>
+    <td><b>{{ property.name }}</b><br>{{ property.description }}</td>
+    <td>
+        Average Rating: {% get_rating item property 'average' True %} {% get_rating item property 'average' %} ({% get_rating_count item property %} of {{ item.category.team.members.count }} members has rated this)<br>
+        Your Rating: {% get_rating item property 'user' True %} {% get_rating item property 'user' %}
+
+    </td>
   </tr>
   {% endfor %}
 </table>
