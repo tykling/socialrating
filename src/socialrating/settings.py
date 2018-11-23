@@ -19,7 +19,7 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # import local settings
-from .local_settings import *
+from .environment_settings import *
 
 INSTALLED_APPS = [
     'django.contrib.admin',
