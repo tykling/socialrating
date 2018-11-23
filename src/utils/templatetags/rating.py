@@ -12,7 +12,7 @@ def get_rating(context, item, property, ratingtype, stars=False):
         actor=context['request'].user.actor
     )
 
-    if stars:
+    if stars and rating:
         output = ''
         stars = 0
         # add stars
