@@ -51,7 +51,8 @@ class Item(TeamRelatedModel):
 
     def get_rating(self, property, ratingtype, actor=None):
         if ratingtype=='average':
-            return round(self.ratings.filter(property=property).aggregate(models.Avg('rating'))['rating__avg'], 2)
+            if self.ratings.filter(property=property).exists():
+                return round(self.ratings.filter(property=property).aggregate(models.Avg('rating'))['rating__avg'], 2)
         elif ratingtype=='user':
             try:
                 return self.ratings.get(property=property, actor=actor).rating
