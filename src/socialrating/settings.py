@@ -79,6 +79,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'socialrating.wsgi.application'
+ASGI_APPLICATION = "socialrating.routing.application"
 
 AUTH_USER_MODEL = 'actor.User'
 LOGIN_REDIRECT_URL = '/'
