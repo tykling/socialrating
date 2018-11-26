@@ -6,7 +6,7 @@ autobahn==18.11.2
 Automat==0.7.0
 certifi==2018.10.15
 channels==2.1.5
-channels-redis==2.3.1
+#channels-redis==2.3.1
 chardet==3.0.4
 constantly==15.1.0
 daphne==2.2.3
