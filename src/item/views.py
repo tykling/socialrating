@@ -1,53 +1,19 @@
-from django.shortcuts import render
-
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.contenttypes.models import ContentType
 
-from eav.models import Attribute
-
-from team.mixins import TeamViewMixin
 from category.mixins import CategoryViewMixin
+from team.mixins import TeamAdminRequiredMixin
 from .models import Item
 from .forms import ItemForm
+from .mixins import ItemFormMixin
 
 
 class ItemListView(CategoryViewMixin, ListView):
     model = Item
     paginate_by = 100
     template_name = 'item_list.html'
-
-
-class ItemDetailView(CategoryViewMixin, DetailView):
-    model = Item
-    template_name = 'item_detail.html'
-    slug_url_kwarg = 'item_slug'
-
-
-class ItemFormMixin(object):
-    def get_form(self, form_class=None):
-        """
-        Get the form and loop over the fields
-        """
-        form = super().get_form(form_class)
-        for field in form.fields.items():
-            # see if we can find an EAV attribute matching this field
-            try:
-                a = Attribute.objects.get(slug=field[0])
-            except Attribute.DoesNotExist:
-                continue
-
-            # does this EAV field have datatype 'Django Object'?
-            if a.datatype != 'object':
-                continue
-
-            # filter this dropdown to show only the relevant Items
-            if a.entity_ct and a.entity_id:
-                if not a.extra_data:
-                    continue
-                field[1].queryset = Item.objects.filter(category_id=a.extra_data.split("=")[1])
-        return form
 
 
 class ItemCreateView(CategoryViewMixin, ItemFormMixin, CreateView):
@@ -58,9 +24,16 @@ class ItemCreateView(CategoryViewMixin, ItemFormMixin, CreateView):
     def get_initial(self):
         """
         Set self.object to an empty Item with only category defined,
-        so eav knows which Attributes to include in the form for this new Item.
+        this helps django-eav2 to know which Attributes to include in
+        the dynamically generated form for the new Item.
         """
         self.object = Item(category=self.category)
+
+
+class ItemDetailView(CategoryViewMixin, DetailView):
+    model = Item
+    template_name = 'item_detail.html'
+    slug_url_kwarg = 'item_slug'
 
 
 class ItemUpdateView(CategoryViewMixin, ItemFormMixin, UpdateView):
@@ -68,4 +41,20 @@ class ItemUpdateView(CategoryViewMixin, ItemFormMixin, UpdateView):
     template_name = 'item_form.html'
     form_class = ItemForm
     slug_url_kwarg = 'item_slug'
+
+
+class ItemDeleteView(CategoryViewMixin, TeamAdminRequiredMixin, DeleteView):
+    model = Item
+    template_name = 'item_delete.html'
+    slug_url_kwarg = 'item_slug'
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "Item %s has been deleted, along with all Reviews and Votes that related to it." % self.get_object())
+        return super().delete(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return(reverse('team:category:detail', kwargs={
+            'camp_slug': self.camp.slug,
+            'category_slug': self.category.slug,
+        }))
 

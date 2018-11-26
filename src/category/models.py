@@ -35,6 +35,19 @@ class Category(TeamRelatedModel):
         help_text='The description of this category. Markdown is supported.',
     )
 
+    default_context = models.ForeignKey(
+        'context.Context',
+        on_delete=models.PROTECT,
+        help_text='The default Context for new Reviews for Items in this Category. Leave blank to have no default.',
+        null=True,
+        blank=True,
+    )
+
+    requires_context = models.BooleanField(
+        default=True,
+        help_text='Check to make it mandatory to pick a Context for Reviews of Items in this Category.',
+    )
+
     def __str__(self):
         return self.name
 
@@ -48,12 +61,19 @@ class Category(TeamRelatedModel):
         self.slug = slugify(self.name)
         super().save(**kwargs)
 
-    def create_attribute_slug(self, attribute_name):
+    def create_fact_slug(self, fact_name):
         """
         Use the EavSlugField.create_slug_from_name to convert the name (including
         category id to make them unique) to a format which can be used as a Django field name
         """
-        return eav.fields.EavSlugField.create_slug_from_name("category%s_%s" % (self.pk, attribute_name))
+        return eav.fields.EavSlugField.create_slug_from_name("category%s_%s" % (self.pk, fact_name))
+
+    @property
+    def facts(self):
+        """
+        We use the term "fact" as another word for EAV attributes.
+        """
+        return self.eav.get_all_attributes()
 
 # register models with eav
 eav.register(Category)

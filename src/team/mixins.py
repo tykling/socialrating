@@ -11,15 +11,23 @@ logger = logging.getLogger("socialrating.%s" % __name__)
 
 class TeamMemberRequiredMixin(LoginRequiredMixin):
     """
-    A simple mixin to check if the current user is a member of the current team
+    A mixin to sets self.team from URL kwarg team_slug, and return 404 if request.user is not a team member
     """
     def setup(self, *args, **kwargs):
-        """
-        Only set self.team if request.user is a member
-        """
         self.team = get_object_or_404(Team, slug=self.kwargs["team_slug"])
         if not self.team.members.filter(user=self.request.user).exists():
             logger.error("The current user %s is not a member of the team %s" % (self.request.user, self.team))
+            raise Http404
+
+
+class TeamAdminRequiredMixin(TeamMemberRequiredMixin):
+    """
+    A mixin to check if the current user is an admin the current team
+    """
+    def setup(self, *args, **kwargs):
+        if self.request.user.actor not in self.team.members.filter(admin=True):
+            logger.error("The current user %s is not an admin of the team %s" % (self.request.user, self.team))
+            messages.error(self.request, "You must be an admin of the Team to perform this action")
             raise Http404
 
 

@@ -27,19 +27,22 @@ urlpatterns = [
                 include('item.urls', namespace='item')
             ),
             path(
-                'attributes/',
+                'facts/',
                 include([
                     path(
                         'create/',
-                        AttributeCreateView.as_view(),
-                        name='attribute_create',
+                        FactCreateView.as_view(),
+                        name='fact_create',
                     ),
                     path(
-                        '<slug:attribute_slug>/',
-                        AttributeUpdateView.as_view(),
-                        name='attribute_update',
+                        '<slug:fact_slug>/',
+                        FactUpdateView.as_view(),
+                        name='fact_update',
                     ),
                 ]),
+            ),
+            path('ratings/',
+                include('rating.urls', namespace='rating')
             ),
          ]),
     ),

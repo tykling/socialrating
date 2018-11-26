@@ -10,18 +10,18 @@
     <th>Name</th>
     <td>{{ item.name }}</td>
   </tr>
-  {% for attribute in item.category.eav.get_all_attributes %}
+  {% for fact in item.facts.all %}
   <tr>
-    <td><b>{{ attribute.name }}</b><br>{{ attribute.description }}</td>
-    <td>{{ item|get_eav_value:attribute.slug }}</td>
+    <td><b>{{ fact.name }}</b><br>{{ fact.description }}</td>
+    <td>{{ item|get_eav_value:fact.slug }}</td>
   </tr>
   {% endfor %}
-  {% for property in item.category.properties.all %}
+  {% for rating in item.category.ratings.all %}
   <tr>
-    <td><b>{{ property.name }}</b><br>{{ property.description }}</td>
+    <td><b>{{ rating.name }}</b><br>{{ rating.description }}</td>
     <td>
-        Average Rating: {% get_rating item property 'average' True %} {% get_rating item property 'average' %} ({% get_rating_count item property %} of {{ item.category.team.members.count }} members has rated this)<br>
-        Your Rating: {% get_rating item property 'user' True %} {% get_rating item property 'user' %}
+        Average Vote: {% get_rating item rating 'average' True %} {% get_rating item rating 'average' %} ({% get_rating_count item property %} of {{ item.category.team.members.count }} members has rated this)<br>
+        Your Vote: {% get_rating item property 'user' True %} {% get_rating item property 'user' %}
 
     </td>
   </tr>

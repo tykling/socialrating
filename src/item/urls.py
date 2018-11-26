@@ -28,6 +28,14 @@ urlpatterns = [
                 ItemUpdateView.as_view(),
                 name='update',
             ),
+            path(
+                'delete/',
+                ItemDeleteView.as_view(),
+                name='delete',
+            ),
+            path('reviews/',
+                include('review.urls', namespace='review')
+            ),
         ]),
     ),
 ]

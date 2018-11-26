@@ -6,7 +6,8 @@
     <thead>
       <tr>
         <th>Category</th>
-        <th>Attributes</th>
+        <th>Facts</th>
+        <th>Ratings</th>
         <th>Items</th>
         <th>Actions</th>
       </tr>
@@ -17,8 +18,19 @@
         <td>{{ category.name }}</td>
         <td>
             <ul class="list-group">
-            {% for att in category.eav.get_all_attributes %}
-              <li class="list-group-item">{{ att }}</li>
+            {% for fact in category.facts.all %}
+              <li class="list-group-item">{{ fact }}</li>
+            {% empty %}
+            N/A
+            {% endfor %}
+            </ul>
+        </td>
+        <td>
+            <ul class="list-group">
+            {% for rating in category.ratings.all %}
+            <li class="list-group-item">{{ rating.name }} (1-{{ rating.max_rating }} <i class="{{ rating.icon }} text-success"></i>)</li>
+            {% empty %}
+            N/A
             {% endfor %}
             </ul>
         </td>
@@ -33,5 +45,6 @@
 {% else %}
 <p class="lead">No categories found. Go create one!</p>
 {% endif %}
+<a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success">Create Category</a>
 {% endblock content %}
 

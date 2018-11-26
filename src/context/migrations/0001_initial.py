@@ -9,26 +9,27 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('category', '0001_initial'),
+        ('team', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Item',
+            name='Context',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(auto_now_add=True, help_text='The date and time when this object was created')),
                 ('updated', models.DateTimeField(auto_now=True, help_text='The date and time when this object was last updated')),
-                ('name', models.CharField(help_text='The name of this Item. Must be unique within the Category.', max_length=100)),
-                ('slug', models.SlugField(help_text='The slug for this Item. Must be unique within the Category.')),
-                ('category', models.ForeignKey(help_text='The Category on which this Item is based', on_delete=django.db.models.deletion.CASCADE, related_name='items', to='category.Category')),
+                ('name', models.CharField(help_text='The name of this Context. Must be unique within the Team.', max_length=100)),
+                ('slug', models.SlugField(help_text='The slug for this Context. Must be unique within the Team.')),
+                ('description', models.TextField(help_text='The description of this context. Markdown is supported.')),
+                ('team', models.ForeignKey(help_text='The Team to which this Context belongs', on_delete=django.db.models.deletion.PROTECT, related_name='contexts', to='team.Team')),
             ],
             options={
                 'ordering': ['name'],
             },
         ),
         migrations.AlterUniqueTogether(
-            name='item',
-            unique_together={('name', 'category'), ('slug', 'category')},
+            name='context',
+            unique_together={('slug', 'team'), ('name', 'team')},
         ),
     ]

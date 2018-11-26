@@ -49,9 +49,13 @@ class CategoryUpdateView(TeamViewMixin, CreateView):
     fields = ['name', 'description']
 
 
-class AttributeCreateView(CategoryViewMixin, CreateView):
+class FactCreateView(CategoryViewMixin, CreateView):
+    """
+    Facts are just another name for django-eav2 attributes,
+    so we use the eav.models.Attribute model.
+    """
     model = Attribute
-    template_name = 'attribute_form.html'
+    template_name = 'fact_form.html'
     fields = ['name', 'datatype', 'description', 'required']
 
     def get_form(self, form_class=None):
@@ -61,7 +65,7 @@ class AttributeCreateView(CategoryViewMixin, CreateView):
         - add Category select (only relevant for datatype=Django Object fields)
         """
         form = super().get_form(form_class)
-        form.fields['datatype'].help_text='The datatype for this Attribute.'
+        form.fields['datatype'].help_text='The datatype for this Fact.'
 
         # add Category field
         form.fields['category'] = forms.ModelChoiceField(
@@ -74,18 +78,18 @@ class AttributeCreateView(CategoryViewMixin, CreateView):
     def form_valid(self, form):
         """
         Set the entity_ct and entity_id based on self.category.
-        Also set the slug for this attribute.
+        Also set the slug for this Fact.
         Also set extra_data based on the Category picker in the form,
-        but only if this Attribute is of type "Django Object"
+        but only if this Fact is of type "Django Object"
         """
-        attribute = form.save(commit=False)
-        attribute.slug = self.category.create_attribute_slug(attribute.name)
-        attribute.entity_ct=ContentType.objects.get(app_label='category', model='category')
-        attribute.entity_id=self.category.id
-        if attribute.datatype == 'object':
-            attribute.extra_data = 'category.id=%s' % self.category.pk
-        attribute.save()
-        messages.success(self.request, "New attribute created!")
+        fact = form.save(commit=False)
+        fact.slug = self.category.create_fact_slug(fact_name=fact.name)
+        fact.entity_ct=ContentType.objects.get(app_label='category', model='category')
+        fact.entity_id=self.category.id
+        if fact.datatype == 'object':
+            fact.extra_data = 'category.id=%s' % self.category.pk
+        fact.save()
+        messages.success(self.request, "New Fact created!")
 
         return redirect(reverse('team:category:detail', kwargs={
             'team_slug': self.team.slug,
@@ -93,10 +97,14 @@ class AttributeCreateView(CategoryViewMixin, CreateView):
         }))
 
 
-class AttributeUpdateView(CategoryViewMixin, UpdateView):
+class FactUpdateView(CategoryViewMixin, UpdateView):
+    """
+    Facts are just another name for django-eav2 attributes,
+    so we use the eav.models.Attribute model.
+    """
     model = Attribute
-    template_name = 'attribute_form.html'
-    slug_url_kwarg = 'attribute_slug'
+    template_name = 'fact_form.html'
+    slug_url_kwarg = 'fact_slug'
     fields = ['name', 'description', 'required']
 
     def get_success_url(self):

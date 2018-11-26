@@ -5,14 +5,15 @@ register = template.Library()
 from rating.models import Rating
 
 @register.simple_tag(takes_context=True)
-def get_rating(context, item, property, ratingtype, stars=False):
-    rating = item.get_rating(
-        property=property,
+def get_rating(context, item, rating, actor=None, only_latest=False, html=False):
+    average_rating = item.get_rating(
+        rating=rating,
+        actor=actor,
+        only_latest=only_latest,
         ratingtype=ratingtype,
-        actor=context['request'].user.actor
     )
 
-    if stars and rating:
+    if html and rating:
         output = ''
         stars = 0
         # add stars
@@ -22,7 +23,6 @@ def get_rating(context, item, property, ratingtype, stars=False):
 
         # add a half star?
         if round(rating-i) == 1:
-            #output += "<span class='fa-stack fa-stack-1x'><i class='fas fa-star-half-alt'></i><i class='fas fa-star text-muted'></i></span>"
             output += "<i class='fas fa-star-half-alt text-success'></i>"
             stars += 1
 

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rating',
     'review',
     'utils',
+    'context',
 ]
 
 SITE_ID = 1

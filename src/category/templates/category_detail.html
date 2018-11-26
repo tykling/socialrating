@@ -5,36 +5,63 @@
 
 <p>{{ category.description }}</p>
 
-{% if category.eav.get_all_attributes %}
+{% if category.facts.all %}
  <table class="table table-bordered">
     <thead>
       <tr>
-        <th>Attribute Name</th>
-        <th>Attribute Description</th>
-        <th>Attribute Type</th>
-        <th>Attribute Required?</th>
-        <th>Attribute Extra Data</th>
+        <th>Fact Name</th>
+        <th>Fact Description</th>
+        <th>Fact Type</th>
+        <th>Fact Required?</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-    {% for att in category.eav.get_all_attributes %}
+    {% for fact in category.facts.all %}
       <tr>
-        <td>{{ att.name }}</td>
-        <td>{{ att.description }}</td>
-        <td>{{ att.datatype }}</td>
-        <td>{{ att.required }}</td>
-        <td>{{ att.extra_data }}</td>
+        <td>{{ fact.name }}</td>
+        <td>{{ fact.description }}</td>
+        <td>{{ fact.datatype }}</td>
+        <td>{{ fact.required }}</td>
         <td>
-          <a href="{% url 'team:category:attribute_update' team_slug=team.slug category_slug=category.slug attribute_slug=att.slug %}" class="btn btn-primary">Update</a>
+          <a href="{% url 'team:category:fact_update' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-primary">Update Fact</a>
         </td>
       </tr>
     {% endfor %}
     </tbody>
 </table>
 {% else %}
-<p class="lead">No attributes found for this category.</p>
+<p class="lead">No Facts found for this Category.</p>
 {% endif %}
-<a href="{% url 'team:category:attribute_create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create new Attribute</a>
+<a href="{% url 'team:category:fact_create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create new Fact</a>
+
+{% if category.ratings.all %}
+<p>
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Rating Name</th>
+        <th>Rating Description</th>
+        <th>Max Rating</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for rating in category.ratings.all %}
+      <tr>
+        <td>{{ rating.name }}</td>
+        <td>{{ rating.description }}</td>
+        <td>{{ rating.max_rating }}</td>
+        <td>
+          <a href="{% url 'team:category:rating:rating_update' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-primary">Update</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="lead">No ratings found for this category.</p>
+{% endif %}
+<a href="{% url 'team:category:rating:rating_create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create new Rating</a>
 {% endblock content %}
 

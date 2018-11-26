@@ -1,4 +1,5 @@
 import logging, random
+from faker import Faker
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -14,9 +15,12 @@ from team.factories import TeamFactory, MembershipFactory
 
 from category.models import Category
 
-from rating.models import Property, Rating
+from rating.models import Rating, Vote
 
 from review.models import Review
+
+from context.models import Context
+
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
@@ -27,6 +31,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info('Bootstrapping database with mock data...')
+        fake = Faker()
 
         # add Users (which then adds actors)
         self.mock(
@@ -98,11 +103,26 @@ class Command(BaseCommand):
             team=carteam,
             name='Car Maker',
             description='A car maker.',
+            requires_context=False,
         )
         carcat = Category.objects.create(
             team=carteam,
             name='Car',
             description='A car.',
+            requires_context=True,
+        )
+
+
+        # add Contexts for carteam
+        classic_car_context = Context.objects.create(
+            team=carteam,
+            name='Classic Car Meetup, Carville, 2018',
+            description='Use this context for all reviews from the 2018 meetup in Carville.',
+        )
+        japanese_car_context = Context.objects.create(
+            team=carteam,
+            name='Jap Car Fest 2018',
+            description='Use this context for all reviews from the 2018 "Jap Car Fest"',
         )
 
 
@@ -117,7 +137,7 @@ class Command(BaseCommand):
             description='The country this car maker is from',
         )
 
-        # add attributes for Car category
+        # add django-eav2 Attributes for the "Car" Category
         Attribute.objects.create(
             name='Make',
             datatype=Attribute.TYPE_OBJECT,
@@ -146,23 +166,14 @@ class Command(BaseCommand):
             slug=carcat.create_attribute_slug('BHP'),
             description='The BHP of this car',
         )
-        Attribute.objects.create(
-            name='Date Seen',
-            datatype=Attribute.TYPE_DATE,
-            entity_ct=ContentType.objects.get(app_label='category', model='category'),
-            entity_id=carcat.id,
-            slug=carcat.create_attribute_slug('Date Seen'),
-            description='The date and time this car was seen',
-        )
-
-        # add properties for Car category
-        Property.objects.create(
+        # add Ratings for "Car" category
+        Rating.objects.create(
             name='Looks',
             category=carcat,
             max_rating=10,
             description='Rate the looks of this car, 10 is best.',
         )
-        Property.objects.create(
+        Rating.objects.create(
             name='Handling',
             category=carcat,
             max_rating=10,
@@ -190,50 +201,55 @@ class Command(BaseCommand):
             eav__category2_make=ford,
             eav__category2_colour='black',
             eav__category2_bhp='170',
-            eav__category2_date_seen=timezone.now(),
         )
         carcat.items.create(
             name='Focus',
             eav__category2_make=ford,
             eav__category2_colour='blue',
             eav__category2_bhp='95',
-            eav__category2_date_seen=timezone.now(),
         )
         carcat.items.create(
             name='520i E34',
             eav__category2_make=bmw,
             eav__category2_colour='purple',
             eav__category2_bhp='200',
-            eav__category2_date_seen=timezone.now(),
         )
         carcat.items.create(
             name='M3',
             eav__category2_make=bmw,
             eav__category2_colour='white',
             eav__category2_bhp='280',
-            eav__category2_date_seen=timezone.now(),
         )
         carcat.items.create(
             name='406 Estate',
             eav__category2_make=peugeot,
             eav__category2_colour='white',
             eav__category2_bhp='130',
-            eav__category2_date_seen=timezone.now(),
         )
 
-        # add ratings for cars
+        # add reviews for cars
         for car in carcat.items.all():
-            for property in carcat.properties.all():
-                # not everyone votes :(
-                votercount = random.randint(1,carcat.team.members.count())
-                for actor in carcat.team.members.all()[0:votercount]:
-                    rating = Rating.objects.create(
-                        item=car,
-                        actor=actor,
-                        property=property,
-                        rating=random.randint(1, property.max_rating),
-                    )
-                    logger.debug("created rating %s" % rating)
+            # not everyone votes :(
+            votercount = random.randint(1,carcat.team.members.count())
+            for actor in carcat.team.members.all()[0:votercount]:
+                review = Review.objects.create(
+                    actor=actor,
+                    item=car,
+                    review=fake.text() if random.choice([True, False]) else None,
+                    context=random.choice([classic_car_context, japanese_car_context]),
+                )
+                logger.debug("created review %s" % review)
+                # add votes to this review
+                for rating in carcat.ratings.all():
+                    # 50/50 chance if this actor voted for this Rating
+                    if random.choice([True, False]):
+                        vote = Vote.objects.create(
+                            review=review,
+                            rating=rating,
+                            vote=random.randint(1, rating.max_rating),
+                            comment=fake.sentence() if random.choice([True, False]) else None,
+                        )
+                        logger.debug("created vote %s" % vote)
 
         # add categories for foodteam
         restaurant = Category.objects.create(
@@ -272,11 +288,20 @@ class Command(BaseCommand):
             name='Price',
             datatype=Attribute.TYPE_INT,
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
-            entity_id=restaurant.id,
+            entity_id=dish.id,
             required=True,
             slug=restaurant.create_attribute_slug('Price'),
             description='The price in EUR of this dish',
         )
+        Attribute.objects.create(
+            name='Date Eaten',
+            datatype=Attribute.TYPE_DATE,
+            entity_ct=ContentType.objects.get(app_label='category', model='category'),
+            entity_id=dish.id,
+            slug=restaurant.create_attribute_slug('Date Eaten'),
+            description='The date and time this Dish was eaten',
+        )
+
 
         # add restaurants
 
