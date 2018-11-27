@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'eav',
     'bootstrap4',
     #'django_extensions',
+    'django_db_log_requestid',
 
     'allauth',
     'allauth.account',
