@@ -2,6 +2,7 @@
 
 {% block content %}
 {% if team_list %}
+<p class="lead">You are a member of the following teams:</p>
  <table class="table table-bordered">
     <thead>
       <tr>
@@ -16,7 +17,7 @@
         <td>{{ team.name }}</td>
         <td>{{ team.members.count }}</td>
         <td>
-          <a href="{% url 'team:detail' team_slug=team.slug %}" class="btn btn-primary">Details</a>
+          <a href="{% url 'team:detail' team_slug=team.slug %}" class="btn btn-primary">Open Team</a>
         </td>
       </tr>
     {% endfor %}

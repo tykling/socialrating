@@ -1,7 +1,8 @@
 from django.db import models
 from django.template.defaultfilters import slugify
+from django.urls import reverse_lazy
 
-from team.models import TeamRelatedModel
+from team.models import TeamRelatedModel, TeamRelatedUUIDModel
 
 
 class Rating(TeamRelatedModel):
@@ -48,6 +49,10 @@ class Rating(TeamRelatedModel):
 
     team_filter = 'category__team'
 
+    @property
+    def team(self):
+        return self.category.team
+
     def __str__(self):
         return "Rating %s (Category: %s)" % (self.name, self.category)
 
@@ -67,14 +72,14 @@ class Rating(TeamRelatedModel):
             raise ValidationError("Max. rating must be between 2 and 100")
 
 
-class Vote(TeamRelatedModel):
+class Vote(TeamRelatedUUIDModel):
     """
     A Vote contains a reference to a Rating and a Review,
     as well as the actual Vote (a PositiveIntegerField).
     It may also optionally contain a short comment related to this specific vote.
     """
     class Meta:
-        ordering = ['id']
+        ordering = ['pk']
         unique_together = [['review', 'rating']]
 
     review = models.ForeignKey(
@@ -99,9 +104,14 @@ class Vote(TeamRelatedModel):
         max_length=255,
         help_text='An optional short comment related to this specific vote. 255 character limit.',
         blank=True,
+        null=True,
     )
 
     team_filter = 'review__item__category__team'
+
+    @property
+    def team(self):
+        return self.review.item.category.team
 
     def clean(self):
         """

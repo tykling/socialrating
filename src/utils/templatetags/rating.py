@@ -4,39 +4,58 @@ register = template.Library()
 
 from rating.models import Rating
 
-@register.simple_tag(takes_context=True)
-def get_rating(context, item, rating, actor=None, only_latest=False, html=False):
-    average_rating = item.get_rating(
+@register.simple_tag
+def get_average_vote(item, rating):
+    """
+    Template tag to return the average vote across all actors.
+    Only includes the latest vote by each user.
+    """
+    return item.get_average_vote(
         rating=rating,
-        actor=actor,
-        only_latest=only_latest,
-        ratingtype=ratingtype,
     )
 
-    if html and rating:
-        output = ''
-        stars = 0
-        # add stars
-        for i in range(1, int(rating)+1):
-            output += "<i class='fas fa-star text-success'></i>"
-            stars += 1
 
-        # add a half star?
-        if round(rating-i) == 1:
-            output += "<i class='fas fa-star-half-alt text-success'></i>"
-            stars += 1
+@register.simple_tag(takes_context=True)
+def get_actor_vote(context, item, rating):
+    """
+    Template tag to return the latest vote for this actor.
+    """
+    result = item.get_actor_vote(
+        rating=rating,
+        actor=context.request.user.actor,
+    )
+    if result:
+        # a vote is always an integer, no need for .0
+        return int(result)
+    return None
 
-        # add missing stars?
-        if stars < property.max_rating:
-            for j in range(1, (property.max_rating+1)-stars):
-                output += "<i class='fas fa-star text-muted'></i>"
 
-        return mark_safe(output)
-    else:
-        # just return the numeric rating
-        return rating
+@register.filter
+def stars(rating, max_rating):
+    """
+    This template filter returns HTML showing "stars" based on
+    rating and max_rating.
+    """
+    if not rating or not max_rating:
+        return None
 
-@register.simple_tag
-def get_rating_count(item, property):
-    return item.ratings.filter(property=property).count()
+    output = ''
+    stars = 0
+
+    # add full stars
+    for i in range(1, int(rating)+1):
+        output += "<i class='fas fa-star text-success'></i>"
+        stars += 1
+
+    # add a half star?
+    if round(rating-i) == 1:
+        output += "<i class='fas fa-star-half-alt text-success'></i>"
+        stars += 1
+
+    # add missing stars?
+    if stars < max_rating:
+        for j in range(1, (max_rating+1)-stars):
+            output += "<i class='fas fa-star text-muted'></i>"
+
+    return mark_safe(output)
 

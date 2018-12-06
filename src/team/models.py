@@ -2,13 +2,29 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 
-from utils.models import BaseModel
+from utils.models import BaseModel, UUIDBaseModel
 
 
 class TeamRelatedModel(BaseModel):
     """
     An abstract model on which all Team related models are based
-    If a Team related model has no direct FK to Team, then the property 'team_filter' must be set on the model class.
+    If a Team related model has no direct FK to Team, then the 
+    property 'team_filter' must be set on the model class.
+    """
+    team_filter = 'team'
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def get_team_filter(cls):
+        return cls.team_filter
+
+
+class TeamRelatedUUIDModel(UUIDBaseModel):
+    """
+    This is identical to TeamRelatedModel but inherits
+    from UUIDBaseModel instead of BaseModel
     """
     team_filter = 'team'
 
@@ -29,7 +45,11 @@ class Team(BaseModel):
 
     name = models.CharField(
         max_length=128,
-        help_text='The name of the Team'
+        help_text='The name of the Team. Make it short and memorable.'
+    )
+
+    description = models.TextField(
+        help_text='A short description of this team.',
     )
 
     slug = models.SlugField(
@@ -47,7 +67,7 @@ class Team(BaseModel):
     members = models.ManyToManyField(
         'actor.Actor',
         through='team.Membership',
-        related_name='memberships',
+        related_name='teams',
         help_text='The current members of this Team',
     )
 
@@ -65,18 +85,20 @@ class Team(BaseModel):
 
 class Membership(BaseModel):
     """
-    The m2m through model which links User and Team together
+    The m2m through model which links Actor and Team together
     """
     actor = models.ForeignKey(
         'actor.Actor',
         on_delete=models.PROTECT,
         help_text='The Actor to which this Membership belongs',
+        related_name='memberships',
     )
 
     team = models.ForeignKey(
         'team.Team',
         on_delete=models.PROTECT,
         help_text='The Group to which this Membership belongs',
+        related_name='memberships',
     )
 
     admin = models.BooleanField(

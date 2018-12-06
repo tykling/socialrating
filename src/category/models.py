@@ -12,7 +12,7 @@ class Category(TeamRelatedModel):
     Team owners can create, modify, and delete categories.
     """
     class Meta:
-        ordering = ['name']
+        ordering = ['weight', 'name']
         unique_together = [['name', 'team'], ['slug', 'team']]
 
     team = models.ForeignKey(
@@ -33,6 +33,11 @@ class Category(TeamRelatedModel):
 
     description = models.TextField(
         help_text='The description of this category. Markdown is supported.',
+    )
+
+    weight = models.IntegerField(
+        default=10,
+        help_text='Change the weight of a Category to change sorting. Heavier Categories sink to the bottom. Categories with the same weight are sorted by name.',
     )
 
     default_context = models.ForeignKey(

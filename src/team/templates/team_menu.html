@@ -1,34 +1,17 @@
-    <div class="container">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light rounded">
-        <a class="navbar-brand" href="{% url 'team:detail' team_slug=team.slug %}">{{ team.name }}</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="teamnavbar">
-          <ul class="navbar-nav mr-auto">
-            {% for category in team.categories.all %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" id="category{{ category.id }}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ category.name }}</a>
-              <div class="dropdown-menu" aria-labelledby="category{{ category.id }}dropdown">
-                <a class="dropdown-item" href="{% url 'team:category:item:create' team_slug=team.slug category_slug=category.slug %}">Create New</a>
-                <div class="dropdown-divider"></div>
-                {% for item in category.items.all %}
-                <a class="dropdown-item" href="{% url 'team:category:item:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}">{{ item.name }}</a>
-                {% endfor %}
-              </div>
-            </li>
-            {% endfor %}
-
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'team:category:list' team_slug=team.slug %}">Categories</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'team:members' team_slug=team.slug %}">Members</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-3">
+  <a class="navbar-brand" href="{% url 'team:detail' team_slug=team.slug %}">{{ team.name }}</a>
+  <div class="collapse navbar-collapse" id="teamnavbar">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'team:category:list' team_slug=team.slug %}"><i class="fas fa-cog"></i> Configure Categories</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'team:context:list' team_slug=team.slug %}"><i class="fas fa-cog"></i> Configure Contexts</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'team:members' team_slug=team.slug %}"><i class="fas fa-users"></i> Manage Members</a>
+      </li>
+    </ul>
+  </div>
+</nav>
 

@@ -1,16 +1,17 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.urls import reverse_lazy
 
-from team.models import TeamRelatedModel
+from team.models import TeamRelatedModel, TeamRelatedUUIDModel
 
 
-class Review(TeamRelatedModel):
+class Review(TeamRelatedUUIDModel):
     """
     A Review is linked to an Actor and an Item.
     All Ratings are linked to a Review.
     """
     class Meta:
-        ordering = ['id']
+        ordering = ['-created']
 
     actor = models.ForeignKey(
         'actor.Actor',
@@ -30,18 +31,25 @@ class Review(TeamRelatedModel):
         'context.Context',
         on_delete=models.CASCADE,
         related_name='reviews',
-        null=True,
-        blank=True,
         help_text='The Context to which this Review belongs.',
     )
 
-    review = models.TextField(
+    headline = models.CharField(
+        max_length=100,
+        help_text='A short headline for this review',
+    )
+
+    body = models.TextField(
         help_text='The text review. Optional. Markdown is supported (or will be at some point).',
         null=True,
         blank=True,
     )
 
     team_filter = 'item__category__team'
+
+    @property
+    def team(self):
+        return self.item.category.team
 
     def __str__(self):
         return "Review for Item %s by Actor %s" % (
@@ -51,10 +59,10 @@ class Review(TeamRelatedModel):
 
     def get_absolute_url(self):
         return reverse_lazy('team:category:item:review:detail', kwargs={
-            'team_slug': self.team.slug,
-            'category_slug': self.category.slug,
+            'team_slug': self.item.category.team.slug,
+            'category_slug': self.item.category.slug,
             'item_slug': self.item.slug,
-            'review_uuid': self.uuid,
+            'review_uuid': self.pk,
         })
 
     def save(self, **kwargs):
@@ -62,7 +70,7 @@ class Review(TeamRelatedModel):
         Validate a few things
         """
         if self.item.category.requires_context and not self.context:
-            raise ValidationError("You must pick a Context for Items in this Category.")
+            raise ValidationError("You must pick a Context when reviewing Items in this Category.")
 
         # all good
         super().save(**kwargs)

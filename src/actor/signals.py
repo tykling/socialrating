@@ -20,5 +20,5 @@ def create_actor(sender, instance, created, **kwargs):
 
     # create Actor object and return
     actor = Actor.objects.create(user=instance)
-    logger.info("Created Actor %s for new User %s" % (actor.uuid, instance.username))
+    logger.info("Created Actor %s for new User %s" % (actor.pk, instance.username))
 

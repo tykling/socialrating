@@ -3,32 +3,70 @@
 {% load get_eav_value %}
 {% load rating %}
 
-{% block content %}
-<p class="lead">Details for {{ item.name }}</p>
-<table class="table table-bordered">
-  <tr>
-    <th>Name</th>
-    <td>{{ item.name }}</td>
-  </tr>
-  {% for fact in item.facts.all %}
-  <tr>
-    <td><b>{{ fact.name }}</b><br>{{ fact.description }}</td>
-    <td>{{ item|get_eav_value:fact.slug }}</td>
-  </tr>
-  {% endfor %}
-  {% for rating in item.category.ratings.all %}
-  <tr>
-    <td><b>{{ rating.name }}</b><br>{{ rating.description }}</td>
-    <td>
-        Average Vote: {% get_rating item rating 'average' True %} {% get_rating item rating 'average' %} ({% get_rating_count item property %} of {{ item.category.team.members.count }} members has rated this)<br>
-        Your Vote: {% get_rating item property 'user' True %} {% get_rating item property 'user' %}
+{% block team_content %}
+<div class="card">
+  <div class="card-header">
+    <h4>{{ item.name }} ({{ item.category }})</h4>
+  </div>
+  <div class="card-body">
+    <p class="lead">{{ item.name }} is an Item in the Category {{ item.category }}. It was created on {{ item.created }} and last updated on {{ item.updated }}.</p>
+    <div class="row">
+      <div class="col">
+        <h5 class="card-title">Facts</h5>
+      </div>
+      <div class="col">
+        <a href="{% url 'team:category:item:update' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}"><i class="fas fa-edit"></i> Update Facts</a>
+      </div>
+    </div>
+    <table class="table table-bordered">
+      <tr>
+        <td><b>Name</b><br>The name of this {{ item.category.name }}</td>
+        <td>{{ item.name }}</td>
+      </tr>
+      {% for fact in item.facts.all %}
+      <tr>
+        <td><b>{{ fact.name }}</b><br>{{ fact.description }}</td>
+        <td>{{ item|get_eav_value:fact.slug }}</td>
+      </tr>
+      {% endfor %}
+    </table>
 
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+    <h5 class="card-title">Average Votes</h5>
+    {% if item.reviews.all %}
+    <table class="table table-bordered">
+      {% for rating in item.category.ratings.all %}
+      {% get_average_vote item rating as avg_vote %}
+      {% get_actor_vote item rating as actor_vote %}
+      <tr>
+        <td>
+          <b>{{ rating.name }}</b><br>{{ rating.description }}
+        </td>
+        <td class="text-right">
+          Average Vote: {{ avg_vote.0 }} ({{ avg_vote.1 }})<br>
+          Your Latest: {{ actor_vote }}
+        </td>
+        <td>
+          {{ avg_vote.0 | stars:rating.max_rating }}
+          {% if actor_vote %}
+          <br>{{ actor_vote | stars:rating.max_rating }}
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    <h5 class="card-title">
+        Reviews ({{ item.reviews.count }})
+        <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add Review</a>
+    </h5>
+    {% for review in item.reviews.all %}
+    {% include 'includes/review_card.html' %}
+    {% endfor %}
+    {% else %}
+    <p class="lead">No reviews found!</p>
+    <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add Review</a>
+    {% endif %}
+  </div>
+</div>
 
-<a href="{% url 'team:category:item:update' team_slug=item.category.team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-success">Update Item</a>
-
-{% endblock content %}
+{% endblock team_content %}
 

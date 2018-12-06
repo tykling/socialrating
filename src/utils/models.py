@@ -2,6 +2,10 @@ import uuid, logging
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.apps import apps
+from django.contrib.contenttypes.fields import GenericRelation
+
+from eventlog.models import Event
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
@@ -15,18 +19,21 @@ class BaseModel(models.Model):
 
     created = models.DateTimeField(
         auto_now_add=True,
-        help_text='The date and time when this object was created'
+        help_text='The date and time when this object was created.'
     )
 
     updated = models.DateTimeField(
         auto_now=True,
-        help_text='The date and time when this object was last updated'
+        help_text='The date and time when this object was last updated.'
     )
+
+    events = GenericRelation(Event)
 
     def save(self, **kwargs):
         """
-        call this models full_clean() method before saving,
-        which in turn calls .clean_fields(), .clean() and .validate_unique()
+        call the models full_clean() method before saving,
+        which in turn calls .clean_fields(), .clean() and 
+        .validate_unique()
         """
         try:
             self.full_clean()
@@ -42,7 +49,7 @@ class BaseModel(models.Model):
 
 class UUIDBaseModel(BaseModel):
     """
-    A version of BaseModel which uses an UUID as pk
+    A BaseModel to make models use an uuid as PK
     """
     class Meta:
         abstract = True

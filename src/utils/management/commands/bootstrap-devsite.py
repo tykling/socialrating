@@ -54,15 +54,18 @@ class Command(BaseCommand):
         # add teams
         carteam = Team.objects.create(
             name='Car Nerds',
-            founder=Actor.objects.all().order_by('?').first()
+            description='A group of people who drive and review cars',
+            founder=Actor.objects.all().order_by('?').first(),
         )
         foodteam = Team.objects.create(
             name='Foodies',
-            founder=Actor.objects.all().order_by('?').first()
+            description='Hungry people with opinions on food and places that serve food',
+            founder=Actor.objects.all().order_by('?').first(),
         )
         musicteam = Team.objects.create(
             name='Music Lovers',
-            founder=Actor.objects.all().order_by('?').first()
+            description='Concert-going music lovers. Reviews of venues and concerts.',
+            founder=Actor.objects.all().order_by('?').first(),
         )
 
         ###################
@@ -133,7 +136,7 @@ class Command(BaseCommand):
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
             entity_id=makecat.id,
             required=True,
-            slug=makecat.create_attribute_slug('Country'),
+            slug=makecat.create_fact_slug('Country'),
             description='The country this car maker is from',
         )
 
@@ -144,7 +147,7 @@ class Command(BaseCommand):
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
             entity_id=carcat.id,
             required=True,
-            slug=carcat.create_attribute_slug('Make'),
+            slug=carcat.create_fact_slug('Make'),
             description='The make of this car',
             extra_data='category.id=%s' % makecat.id,
         )
@@ -154,7 +157,7 @@ class Command(BaseCommand):
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
             entity_id=carcat.id,
             required=True,
-            slug=carcat.create_attribute_slug('Colour'),
+            slug=carcat.create_fact_slug('Colour'),
             description='The colour of this car',
         )
         Attribute.objects.create(
@@ -163,7 +166,7 @@ class Command(BaseCommand):
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
             entity_id=carcat.id,
             required=True,
-            slug=carcat.create_attribute_slug('BHP'),
+            slug=carcat.create_fact_slug('BHP'),
             description='The BHP of this car',
         )
         # add Ratings for "Car" category
@@ -235,7 +238,8 @@ class Command(BaseCommand):
                 review = Review.objects.create(
                     actor=actor,
                     item=car,
-                    review=fake.text() if random.choice([True, False]) else None,
+                    headline=fake.sentence(),
+                    body=fake.text() if random.choice([True, False]) else None,
                     context=random.choice([classic_car_context, japanese_car_context]),
                 )
                 logger.debug("created review %s" % review)
@@ -270,7 +274,7 @@ class Command(BaseCommand):
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
             entity_id=restaurant.id,
             required=True,
-            slug=restaurant.create_attribute_slug('Location'),
+            slug=restaurant.create_fact_slug('Location'),
             description='The location of this restaurant',
         )
         Attribute.objects.create(
@@ -279,7 +283,7 @@ class Command(BaseCommand):
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
             entity_id=restaurant.id,
             required=True,
-            slug=restaurant.create_attribute_slug('Description'),
+            slug=restaurant.create_fact_slug('Description'),
             description='A short description of this restaurant. Markdown should be supported.',
         )
 
@@ -290,7 +294,7 @@ class Command(BaseCommand):
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
             entity_id=dish.id,
             required=True,
-            slug=restaurant.create_attribute_slug('Price'),
+            slug=restaurant.create_fact_slug('Price'),
             description='The price in EUR of this dish',
         )
         Attribute.objects.create(
@@ -298,7 +302,7 @@ class Command(BaseCommand):
             datatype=Attribute.TYPE_DATE,
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
             entity_id=dish.id,
-            slug=restaurant.create_attribute_slug('Date Eaten'),
+            slug=restaurant.create_fact_slug('Date Eaten'),
             description='The date and time this Dish was eaten',
         )
 

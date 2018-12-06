@@ -1,0 +1,9 @@
+    <nav class="nav flex-column">
+      {% for menucategory in team.categories.all %}
+      <h5>{{ menucategory.name }} <a href="{% url 'team:category:item:create' team_slug=team.slug category_slug=menucategory.slug %}"><i class="fas fa-plus text-success"></i></a></h5>
+        {% for item in menucategory.items.all %}
+        <a class="nav-link" href="{% url 'team:category:item:detail' team_slug=team.slug category_slug=menucategory.slug item_slug=item.slug %}">{{ item.name }}</a>
+        {% endfor %}
+      {% endfor %}
+    </nav>
+

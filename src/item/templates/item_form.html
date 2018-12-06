@@ -1,15 +1,23 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 
-{% block content %}
+{% block team_content %}
+<p class="lead">
+{% if form.instance.pk %}
+Update {{ form.instance.category }} {{ form.instance.name }}
+{% else %}
+Create New {{ form.instance.category }}
+{% endif %}
+</p>
+
 <form method="post" class="form">
   {% csrf_token %}
   {% bootstrap_form form %}
   {% buttons %}
-    <button type="submit" class="btn btn-primary">
-        {% if form.instance.pk %}Update{% else %}Create{% endif %} Item
+    <button type="submit" class="btn btn-success">
+        <i class="fas fa-check"></i> {% if form.instance.pk %}Update{% else %}Create{% endif %} Item
     </button>
   {% endbuttons %}
 </form>
-{% endblock content %}
+{% endblock team_content %}
 

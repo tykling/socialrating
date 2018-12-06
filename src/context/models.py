@@ -10,6 +10,7 @@ class Context(TeamRelatedModel):
     It might be an event, like a music festival grouping concert reviews,
     or it could be something more abstract like "caravan pulling" when reviewing a veichle.
     Team admins can create, modify, and delete contexts.
+    A review must be associated with a context.
     """
     class Meta:
         ordering = ['name']

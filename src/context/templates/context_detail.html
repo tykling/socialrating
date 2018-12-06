@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block team_content %}
+<p class="lead">Details for Context {{ context.name }}</p>
+
+<p>{{ context.description }}</p>
+
+<h3>Reviews in this Context:</h3>
+{% for review in context.reviews.all %}
+{% include 'includes/review_card.html' %}
+{% empty %}
+<p>No reviews found!</p>
+{% endfor %}
+{% endblock team_content %}
+

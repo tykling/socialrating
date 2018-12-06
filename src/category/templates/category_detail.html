@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block team_content %}
 <p class="lead">Details for category {{ category.name }}</p>
 
 <p>{{ category.description }}</p>
@@ -24,7 +24,7 @@
         <td>{{ fact.datatype }}</td>
         <td>{{ fact.required }}</td>
         <td>
-          <a href="{% url 'team:category:fact_update' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-primary">Update Fact</a>
+          <a href="{% url 'team:category:fact:update' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-primary">Update Fact</a>
         </td>
       </tr>
     {% endfor %}
@@ -33,7 +33,9 @@
 {% else %}
 <p class="lead">No Facts found for this Category.</p>
 {% endif %}
-<a href="{% url 'team:category:fact_create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create new Fact</a>
+<a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create new Fact</a>
+
+<hr>
 
 {% if category.ratings.all %}
 <p>
@@ -53,7 +55,7 @@
         <td>{{ rating.description }}</td>
         <td>{{ rating.max_rating }}</td>
         <td>
-          <a href="{% url 'team:category:rating:rating_update' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-primary">Update</a>
+          <a href="{% url 'team:category:rating:update' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-primary">Update</a>
         </td>
       </tr>
     {% endfor %}
@@ -62,6 +64,6 @@
 {% else %}
 <p class="lead">No ratings found for this category.</p>
 {% endif %}
-<a href="{% url 'team:category:rating:rating_create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create new Rating</a>
-{% endblock content %}
+<a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create new Rating</a>
+{% endblock team_content %}
 

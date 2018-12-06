@@ -14,16 +14,29 @@
     <link href="{% static 'css/fontawesome-5.5.0.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/fontawesome-brands-5.5.0.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/fontawesome-solid-5.5.0.min.css' %}" rel="stylesheet">
-</head>
+  </head>
 
   <body>
     {% include 'navbar.html' %}
-    {% if team %}{% include 'team_menu.html' %}{% endif %}
     <main role="main" class="container">
-        {% bootstrap_messages %}
-        {% block content %}
+      {% bootstrap_messages %}
+      {% block content %}
+      {% if team %}
+      {% include 'team_menu.html' %}
+      <div class="row">
+        <div class="col-2">
+          {% include 'item_menu.html' %}
+        </div>
+        <div class="col-10">
+          {% block team_content %}
+          <p>block 'team_content' was not replaced, so this default text from base.html is shown instead</p>
+          {% endblock team_content %}
+        </div>
+      </div>
+      {% else %}
           <p>block 'content' was not replaced, so this default text from base.html is shown instead</p>
-        {% endblock content %}
+      {% endif %}
+      {% endblock content %}
     </main>
 
     <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"></script>

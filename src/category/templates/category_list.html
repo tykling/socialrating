@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block team_content %}
 {% if category_list %}
  <table class="table table-bordered">
     <thead>
@@ -46,5 +46,5 @@
 <p class="lead">No categories found. Go create one!</p>
 {% endif %}
 <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success">Create Category</a>
-{% endblock content %}
+{% endblock team_content %}
 

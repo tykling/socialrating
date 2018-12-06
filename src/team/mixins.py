@@ -3,6 +3,7 @@ import logging
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 from team.models import Team
 
@@ -15,7 +16,7 @@ class TeamMemberRequiredMixin(LoginRequiredMixin):
     """
     def setup(self, *args, **kwargs):
         self.team = get_object_or_404(Team, slug=self.kwargs["team_slug"])
-        if not self.team.members.filter(user=self.request.user).exists():
+        if not self.team.members.filter(pk=self.request.user.actor.pk).exists():
             logger.error("The current user %s is not a member of the team %s" % (self.request.user, self.team))
             raise Http404
 
@@ -25,8 +26,9 @@ class TeamAdminRequiredMixin(TeamMemberRequiredMixin):
     A mixin to check if the current user is an admin the current team
     """
     def setup(self, *args, **kwargs):
-        if self.request.user.actor not in self.team.members.filter(admin=True):
-            logger.error("The current user %s is not an admin of the team %s" % (self.request.user, self.team))
+        self.team = get_object_or_404(Team, slug=self.kwargs["team_slug"])
+        if not self.team.memberships.filter(actor=self.request.user.actor, admin=True).exists():
+            logger.error("The current user %s is not an admin of the team %s" % (self.request.user.actor, self.team))
             messages.error(self.request, "You must be an admin of the Team to perform this action")
             raise Http404
 

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block team_content %}
+{% if context_list %}
+ <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Context</th>
+        <th>Description</th>
+        <th>Reviews</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for context in context_list %}
+      <tr>
+        <td>{{ context.name }}</td>
+        <td>{{ context.description }}</td>
+        <td>{{ context.reviews.count }}</td>
+        <td>
+          <a href="{% url 'team:context:detail' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary">Details</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="lead">No contexts found. Go create one!</p>
+{% endif %}
+<a href="{% url 'team:context:create' team_slug=team.slug %}" class="btn btn-success">Create New Context</a>
+{% endblock team_content %}
+

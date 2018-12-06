@@ -26,17 +26,17 @@ urlpatterns = [
                 TeamDetailView.as_view(),
                 name='detail',
             ),
-
             path(
                 'members/',
                 TeamMemberView.as_view(),
                 name='members',
             ),
-
             path('categories/',
                 include('category.urls', namespace='category')
             ),
-
+            path('contexts/',
+                include('context.urls', namespace='context')
+            ),
         ]),
     ),
 ]

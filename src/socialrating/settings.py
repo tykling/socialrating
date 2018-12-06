@@ -42,11 +42,13 @@ INSTALLED_APPS = [
     'actor',
     'team',
     'category',
-    'item',
-    'rating',
-    'review',
-    'utils',
     'context',
+    'fact',
+    'item',
+    'review',
+    'rating',
+    'utils',
+    'eventlog',
 ]
 
 SITE_ID = 1

@@ -7,6 +7,8 @@ from django.urls import reverse_lazy
 from django.core.exceptions import ObjectDoesNotExist
 
 from team.models import TeamRelatedModel
+from eventlog.models import Event
+from rating.models import Vote
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
@@ -38,6 +40,10 @@ class Item(TeamRelatedModel):
 
     team_filter = 'category__team'
 
+    @property
+    def team(self):
+        return self.category.team
+
     def __str__(self):
         return "%s (Category: %s)" % (self.name, self.category)
 
@@ -55,36 +61,62 @@ class Item(TeamRelatedModel):
         self.slug = slugify(self.name)
         super().save(**kwargs)
 
-    def get_rating(self, rating, actor=None, only_latest=True):
+    def get_average_vote(self, rating, only_latest=True):
         """
         Get the average Vote for a given Rating for this Item.
-        Optionally limit to reviews from only one Actor by passing an Actor object.
-        Set only_latest=False to include all reviews. By default only the latest review from each Actor is considered. 
+        By default only the latest Vote from each Actor is considered. 
+        Set only_latest=False to include multiple Votes from each actor.
         """
-        # First get all Reviews for this Item
-        reviews = self.reviews.all().order_by('actor', 'created')
-        logger.debug("Found %s reviews of item %s" % reviews.count())
+        votes = Vote.objects.filter(
+            review__item=self,
+            rating=rating,
+        ).order_by('review__actor', '-created')
+        logger.debug("Found %s votes to consider" % votes.count())
 
-        # Do we only want a specific Actor?
-        if actor:
-            reviews = reviews.filter(actor=actor)
-            logger.debug("Filtered reviews by actor, we have %s reviews now" % reviews.count())
-
-        # Are we only considering the latest Review from each Actor? 
         if only_latest:
-            reviews = reviews.distinct('actor')
-            logger.debug("Including only the latest Review from each Actor, we have %s reviews now" % reviews.count())
+            votes = votes.distinct('review__actor')
+            logger.debug("Including only the latest Vote from each Actor, we have %s votes now" % votes.count())
 
-        # Get the Votes
-        votes = Vote.objects.filter(rating=rating, review__in=reviews)
-        logger.debug("Found %s Votes for Rating %s in the %s Reviews considered" % (votes.count, rating, reviews.count()))
         if not votes:
+            return (None, 0)
+
+        # return a rounded average, manually because:
+        # aggregate() + distinct(fields) not implemented.
+        sum = 0
+        for vote in votes.values_list('vote', flat=True):
+            sum += vote
+        print(sum, votes.count())
+        return (round(sum/votes.count(), 2), votes.count())
+
+
+    def get_actor_vote(self, rating, actor, only_latest=True):
+        """
+        Get the average Vote for a given Rating for this Actor
+        for this Item.
+        By default only the latest Vote is considered.
+        Set only_latest=False to include all Votes.
+        """
+        votes = Vote.objects.filter(
+            review__item=self,
+            rating=rating,
+            review__actor=actor,
+        )
+
+        if only_latest and votes:
+            # just return the value of the latest vote directly
+            return votes.latest('created').vote
+
+        if not votes:
+            # nothing to do here
             return None
 
-        # return a rounded average
-        result = round(votes.aggregate(models.Avg('vote'))['vote__avg'], 2)
-        logger.debug("Returning result %s" % result)
-        return result
+        # return a rounded average, manually because:
+        # aggregate() + distinct(fields) not implemented.
+        sum = 0
+        for vote in votes.values_list('vote', flat=True):
+            sum += vote
+        return round(sum/votes.count(), 2)
+
 
     @property
     def facts(self):

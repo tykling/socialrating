@@ -17,6 +17,11 @@ class ItemListView(CategoryViewMixin, ListView):
 
 
 class ItemCreateView(CategoryViewMixin, ItemFormMixin, CreateView):
+    """
+    ItemCreateView uses ItemForm which subclasses
+    eav.forms.BaseDynamicEntityForm so the required
+    django-eav2 fields are added dynamically
+    """
     model = Item
     template_name = 'item_form.html'
     form_class = ItemForm
@@ -28,6 +33,16 @@ class ItemCreateView(CategoryViewMixin, ItemFormMixin, CreateView):
         the dynamically generated form for the new Item.
         """
         self.object = Item(category=self.category)
+
+    def get_form(self):
+        form = super().get_form()
+        # include the category in help_text for the name field
+        form.fields['name'].help_text = 'The name of this %s' % self.category.name
+
+        # include the category in the label for all fields
+        for name, field in form.fields.items():
+            field.label="%s %s" % (self.category.name, field.label)
+        return form
 
 
 class ItemDetailView(CategoryViewMixin, DetailView):
@@ -53,8 +68,7 @@ class ItemDeleteView(CategoryViewMixin, TeamAdminRequiredMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
-        return(reverse('team:category:detail', kwargs={
-            'camp_slug': self.camp.slug,
-            'category_slug': self.category.slug,
+        return(reverse('team:detail', kwargs={
+            'team_slug': self.team.slug,
         }))
 

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 
-{% block content %}
+{% block team_content %}
 <form method="post" class="form">
   {% csrf_token %}
   {% bootstrap_form form %}
@@ -11,5 +11,5 @@
     </button>
   {% endbuttons %}
 </form>
-{% endblock content %}
+{% endblock team_content %}
 

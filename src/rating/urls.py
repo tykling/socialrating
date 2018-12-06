@@ -8,7 +8,7 @@ urlpatterns = [
     path(
         'create/',
         RatingCreateView.as_view(),
-        name='rating_create',
+        name='create',
     ),
     path(
         '<slug:rating_slug>/',
@@ -16,17 +16,17 @@ urlpatterns = [
             path(
                 '',
                 RatingDetailView.as_view(),
-                name='rating_detail',
+                name='detail',
             ),
             path(
                 'update/',
                 RatingUpdateView.as_view(),
-                name='rating_update',
+                name='update',
             ),
             path(
                 'delete/',
                 RatingDeleteView.as_view(),
-                name='rating_delete',
+                name='delete',
             ),
          ]),
     ),

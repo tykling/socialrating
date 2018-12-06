@@ -1,0 +1,44 @@
+{% load rating %}
+
+<div class="card border-success">
+  <div class="card-body">
+    <h5 class="card-title">{{ review.headline }}</h5>
+    {% if review.body %}
+    <p class="card-text">{{ review.body }}</p>
+    {% endif %}
+  </div>
+  {% if review.votes.all %}
+  <ul class="list-group list-group-flush">
+    {% for vote in review.votes.all %}
+    <li class="list-group-item">
+        <table class="tbl w-100">
+          <tr>
+            <td>
+              <b>{{ vote.rating.name }}</b><br>
+              {{ vote.rating.description }}
+            </td>
+            <td class="w-50">
+              {{ vote.vote | stars:vote.rating.max_rating }}<br>
+              {{ vote.comment | default:"N/A" }}
+            </td>
+          </tr>
+        </table>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <div class="card-body text-right">
+      {% if cardtype == "full" %}
+      <a href="{% url 'team:category:item:detail' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug %}" class="card-link btn btn-primary"><i class="fas fa-undo"></i> Back to {{ review.item.name }}</a>
+      {% endif %}
+      {% if request.user.actor == review.actor %}
+      <a href="{% url 'team:category:item:review:update' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-edit"></i> Update Review</a>
+      <a href="#" class="card-link btn btn-danger"><i class="fas fa-times"></i> Delete Review</a>
+    {% endif %}
+  </div>
+  <div class="card-footer text-muted">
+      Review by {% if review.actor.user %}{{ review.actor.user.username }}{% else %}{{ review.actor.uuid }}{% endif %} at {{ review.created }} - {{ review.created | timesince }} ago
+  </div>
+</div>
+<br>
+
