@@ -95,7 +95,7 @@ class Command(BaseCommand):
             )
 
         # add Actors with no team to a random team
-        for actor in Actor.objects.filter(membership__isnull=True):
+        for actor in Actor.objects.filter(memberships__isnull=True):
             Membership.objects.create(
                 team=Team.objects.all().order_by('?').first(),
                 actor=actor,
