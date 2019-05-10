@@ -61,10 +61,6 @@ class Context(TeamRelatedModel):
         if not 'context.view_context' in get_perms(self.team.group, self):
             assign_perm('context.view_context', self.team.group, self)
 
-        # fix context.add_context permission if needed 
-        if not 'context.add_context' in get_perms(self.team.admingroup, self):
-            assign_perm('context.add_context', self.team.admingroup)
-
         # fix context.change_context permission if needed 
         if not 'context.change_context' in get_perms(self.team.admingroup, self):
             assign_perm('context.change_context', self.team.admingroup, self)

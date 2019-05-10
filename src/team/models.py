@@ -126,6 +126,10 @@ class Team(BaseModel):
         if not 'category.add_category' in get_perms(self.admingroup, self):
             assign_perm('category.add_category', self.admingroup, self)
 
+        # fix context.add_context permission if needed
+        if not 'context.add_context' in get_perms(self.admingroup, self):
+            assign_perm('context.add_context', self.admingroup)
+
 
 class Membership(BaseModel):
     """
