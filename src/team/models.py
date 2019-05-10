@@ -122,6 +122,10 @@ class Team(BaseModel):
         if not 'team.delete_team' in get_perms(self.admingroup, self):
             assign_perm('team.delete_team', self.admingroup, self)
 
+        # fix category.add_category permission if needed
+        if not 'category.add_category' in get_perms(self.admingroup, self):
+            assign_perm('category.add_category', self.admingroup, self)
+
 
 class Membership(BaseModel):
     """
