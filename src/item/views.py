@@ -24,7 +24,7 @@ class ItemDetailView(CategorySlugMixin, PermissionRequiredMixin, DetailView):
     permission_required = 'item.view_item'
 
 
-class ItemCreateView(CategorySlugMixin, PermissionRequiredMixin, ItemFormMixin, CreateView):
+class ItemCreateView(CategorySlugMixin, ItemFormMixin, CreateView):
     """
     ItemCreateView uses ItemForm which subclasses
     eav.forms.BaseDynamicEntityForm so the required
