@@ -63,10 +63,6 @@ class Item(TeamRelatedModel):
         if not 'item.view_item' in get_perms(self.team.group, self):
             assign_perm('item.view_item', self.team.group, self)
 
-        # fix item.add_item permission if needed 
-        if not 'item.add_item' in get_perms(self.team.group, self):
-            assign_perm('item.add_item', self.team.group)
-
         # fix item.change_item permission if needed 
         if not 'item.change_item' in get_perms(self.team.admingroup, self):
             assign_perm('item.change_item', self.team.admingroup, self)

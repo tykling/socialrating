@@ -2,6 +2,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.contenttypes.models import ContentType
+from django.http import Http404
 from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
 from category.mixins import CategorySlugMixin
