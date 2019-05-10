@@ -6,6 +6,11 @@ app_name = 'rating'
 
 urlpatterns = [
     path(
+        '',
+        RatingListView.as_view(),
+        name='list',
+    ),
+    path(
         'create/',
         RatingCreateView.as_view(),
         name='create',

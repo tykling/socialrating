@@ -30,7 +30,10 @@ class RatingCreateView(CategorySlugMixin, CreateView):
         rating.category = self.category
         rating.save()
         messages.success(self.request, "New rating created!")
-        return redirect(reverse('team:category:rating:list', kwargs={'team_slug': self.team.slug, 'category_slug': self.category.slug}))
+        return redirect(reverse('team:category:detail', kwargs={
+            'team_slug': self.team.slug,
+            'category_slug': self.category.slug
+        }))
 
 
 class RatingDetailView(CategorySlugMixin, DetailView):
