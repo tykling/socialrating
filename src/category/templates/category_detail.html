@@ -48,7 +48,7 @@
 {% else %}
 <p class="lead">No Facts found for this Category.</p>
 {% endif %}
-{% if perms.add_attribute %}
+{% if perms.eav.add_attribute %}
   <a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create new Fact</a>
 {% endif %}
 
@@ -90,7 +90,7 @@
 {% else %}
 <p class="lead">No ratings found for this category.</p>
 {% endif %}
-{% if perms.add_rating %}
+{% if perms.rating.add_rating %}
   <a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create new Rating</a>
 {% endif %}
 {% endblock team_content %}
