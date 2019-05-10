@@ -10,7 +10,7 @@ from team.mixins import *
 from .models import Context
 
 
-class ContextListView(TeamSlugMixin, PermissionListMixin, ListView):
+class ContextListView(TeamSlugMixin, TeamFilterMixin, PermissionListMixin, ListView):
     model = Context
     paginate_by = 100
     template_name = 'context_list.html'
