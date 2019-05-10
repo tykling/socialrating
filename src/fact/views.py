@@ -51,7 +51,7 @@ class FactCreateView(CategorySlugMixin, CreateView):
         fact.entity_ct=ContentType.objects.get(app_label='category', model='category')
         fact.entity_id=self.category.id
         if fact.datatype == 'object':
-            fact.extra_data = 'category.id=%s' % self.category.pk
+            fact.extra_data = 'category.id=%s' % form.cleaned_data['category'].pk
         fact.save()
         messages.success(self.request, "New Fact created!")
 
