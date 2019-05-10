@@ -4,14 +4,16 @@
  <table class="table table-bordered">
     <thead>
       <tr>
-        <th>Team Member Name</th>
+        <th>Username</th>
+        <th>Name</th>
         <th>Team Role</th>
         <th>Member Actions</th>
       </tr>
     </thead>
     <tbody>
-    {% for membership in team.membership_set.all %}
+    {% for membership in team.memberships.all %}
       <tr>
+        <td>{{ membership.actor.user.username }}</td>
         <td>{{ membership.actor.user.full_name }}</td>
         <td>{% if membership.admin %}Administrator{% else %}Member{% endif %}</td>
         <td>

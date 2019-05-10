@@ -2,8 +2,15 @@
 {% load bootstrap4 %}
 {% load get_eav_value %}
 {% load rating %}
+{% load leaflet_tags %}
+{% load humanize %}
 
-{% block team_content %}
+{% block extra_head %}
+  {% leaflet_js %}
+  {% leaflet_css %}
+{% endblock extra_head %}
+
+{% block category_content %}
 <div class="card">
   <div class="card-header">
     <h4>{{ item.name }} ({{ item.category }})</h4>
@@ -15,7 +22,7 @@
         <h5 class="card-title">Facts</h5>
       </div>
       <div class="col">
-        <a href="{% url 'team:category:item:update' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}"><i class="fas fa-edit"></i> Update Facts</a>
+          <a href="{% url 'team:category:item:update' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}"><i class="fas fa-edit"></i> Update {{ item.name }} Facts</a>
       </div>
     </div>
     <table class="table table-bordered">
@@ -25,8 +32,56 @@
       </tr>
       {% for fact in item.facts.all %}
       <tr>
-        <td><b>{{ fact.name }}</b><br>{{ fact.description }}</td>
-        <td>{{ item|get_eav_value:fact.slug }}</td>
+          <td><b>{{ fact.name }} ({{ fact.datatype }})</b><br>{{ fact.description }}</td>
+          {% if fact.datatype == "point" %}
+          <td>
+            {% with item|get_eav_value:fact.slug as point %}
+                <script type="text/javascript">
+                    // add a listener to add the marker on the map after it initialises
+                    window.addEventListener("map:init", function (e) {
+                       var detail = e.detail;
+                       // we might have multiple maps, make sure we have the right one
+                       if (detail.id == '{{ fact.slug }}') {
+                            L.marker([{{ point.y }}, {{ point.x }}]).addTo(detail.map);
+                            detail.map.setView([{{ point.y }}, {{ point.x }}], 15);
+                        };
+                    }, false);
+                </script>
+                {% leaflet_map fact.slug %}
+                <p>Lat: {{ point.y }} Lon: {{ point.x }}</p>
+            {% endwith %}
+          </td>
+          {% elif fact.datatype == "area" %}
+          <td>
+            {% with item|get_eav_value:fact.slug as area %}
+                <script type="text/javascript">
+                    // add a listener to add the area on the map after it initialises
+                    window.addEventListener("map:init", function (e) {
+                       var detail = e.detail;
+                       // we might have multiple maps, make sure we have the right one
+                       if (detail.id == '{{ fact.slug }}') {
+                            // Creating multi polygon options
+                            var multiPolygonOptions = {color:'red'};
+
+                            // Creating multi polygon
+                            var multipolygon = L.geoJSON({{ area.geojson|safe }}, multiPolygonOptions);
+
+                            // Adding multi polygon to map
+                            multipolygon.addTo(detail.map);
+
+                            // zoom and center map
+                            detail.map.setView([{{ area.point_on_surface.y }}, {{ area.point_on_surface.x }}], 15);
+                        };
+                    }, false);
+                </script>
+                {% leaflet_map fact.slug %}
+                <p>{{ area.num_points }} points</p>
+                <p>{{ area.area|floatformat:20 }} m2</p>
+            {% endwith %}
+          </td>
+          {% else %}
+          <td>{{ item|get_eav_value:fact.slug }}</td>
+          {% endif %}
       </tr>
       {% endfor %}
     </table>
@@ -36,14 +91,16 @@
     <table class="table table-bordered">
       {% for rating in item.category.ratings.all %}
       {% get_average_vote item rating as avg_vote %}
+      {% if request.user.is_authenticated %}
       {% get_actor_vote item rating as actor_vote %}
+      {% endif %}
       <tr>
         <td>
           <b>{{ rating.name }}</b><br>{{ rating.description }}
         </td>
         <td class="text-right">
           Average Vote: {{ avg_vote.0 }} ({{ avg_vote.1 }})<br>
-          Your Latest: {{ actor_vote }}
+          Your Latest: {{ actor_vote|default:"N/A" }}
         </td>
         <td>
           {{ avg_vote.0 | stars:rating.max_rating }}
@@ -56,17 +113,17 @@
     </table>
     <h5 class="card-title">
         Reviews ({{ item.reviews.count }})
-        <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add Review</a>
+        <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Review</a>
     </h5>
     {% for review in item.reviews.all %}
     {% include 'includes/review_card.html' %}
     {% endfor %}
     {% else %}
     <p class="lead">No reviews found!</p>
-    <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add Review</a>
+    <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Review</a>
     {% endif %}
   </div>
 </div>
 
-{% endblock team_content %}
+{% endblock category_content %}
 

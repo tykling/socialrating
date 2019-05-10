@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-import wrapt
 import django.views
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
@@ -29,11 +28,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites', # needed for allauth
+    'django.contrib.humanize',
 
     'eav',
     'bootstrap4',
     #'django_extensions',
-    'django_db_log_requestid',
 
     'allauth',
     'allauth.account',
@@ -49,6 +48,12 @@ INSTALLED_APPS = [
     'rating',
     'utils',
     'eventlog',
+    'attachment',
+
+    # only needed for GIS functionality
+    'django.contrib.gis', # geodjango
+    'leaflet', # pretty maps
+    'guardian',
 ]
 
 SITE_ID = 1
@@ -87,6 +92,11 @@ ASGI_APPLICATION = "socialrating.routing.application"
 
 AUTH_USER_MODEL = 'actor.User'
 LOGIN_REDIRECT_URL = '/'
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+)
+#ANONYMOUS_USER_NAME = "AnonymousUser"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -115,6 +125,7 @@ USE_TZ = True
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_src')] # find static files here
 STATIC_ROOT = os.path.join(BASE_DIR, "static") # collect static files here
 STATIC_URL = '/static/' # serve static files here
+MEDIA_ROOT = 'media/' # keep uploads here
 
 LOGGING = {
     'version': 1,
@@ -141,11 +152,4 @@ LOGGING = {
         },
     },
 }
-
-# use wrapt to patch django.views.View to call self.setup() if it exists
-@wrapt.patch_function_wrapper(django.views.View, 'dispatch')
-def view_dispatch_setup_wrapper(wrapped, instance, args, kwargs):
-    if hasattr(instance, 'setup'):
-        instance.setup(*args, **kwargs)
-    return wrapped(*args, **kwargs)
 

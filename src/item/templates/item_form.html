@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
+{% load leaflet_tags %}
+
+{% block extra_head %}
+  {{ form.media }}
+  {% leaflet_js plugins="forms" %}
+  {% leaflet_css plugins="forms" %}
+{% endblock extra_head %}
 
 {% block team_content %}
 <p class="lead">

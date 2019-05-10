@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load guardian_tags %}
 
 {% block team_content %}
-{% if category_list %}
+{% if team.categories.all %}
  <table class="table table-bordered">
     <thead>
       <tr>
@@ -13,7 +14,9 @@
       </tr>
     </thead>
     <tbody>
-    {% for category in category_list %}
+    {% for category in team.categories.all %}
+      {% get_obj_perms request.user for category as "category_perms" %}
+      {% if "view_category" in category_perms %}
       <tr>
         <td>{{ category.name }}</td>
         <td>
@@ -36,15 +39,26 @@
         </td>
         <td>{{ category.items.count }}</td>
         <td>
-          <a href="{% url 'team:category:detail' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary">Details</a>
+          {% if "view_category" in category_perms %}
+            <a href="{% url 'team:category:detail' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Details</a>
+          {% endif %}
+          {% if "change_category" in category_perms %}
+            <a href="{% url 'team:category:update' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i> Update</a>
+          {% endif %}
+          {% if "delete_category" in category_perms %}
+            <a href="{% url 'team:category:delete' team_slug=team.slug category_slug=category.slug %}" class="btn btn-danger btn-xs"><i class="fas fa-times"></i> Delete</a>
+          {% endif %}
         </td>
       </tr>
+      {% endif %}
     {% endfor %}
     </tbody>
 </table>
 {% else %}
 <p class="lead">No categories found. Go create one!</p>
 {% endif %}
-<a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success">Create Category</a>
+{% if "add_category" in category_perms %}
+  <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success">Create Category</a>
+{% endif %}
 {% endblock team_content %}
 

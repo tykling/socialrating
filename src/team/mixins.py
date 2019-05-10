@@ -10,34 +10,37 @@ from team.models import Team
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class TeamMemberRequiredMixin(LoginRequiredMixin):
+class TeamSlugMixin:
     """
-    A mixin to sets self.team from URL kwarg team_slug, and return 404 if request.user is not a team member
+    A mixin to set self.team based on team_slug from the URL
+    It also checks if the current user is a member of the team and returns 404 if not.
+    This check is mostly for the sake of the user. Proper permissions are checked later with guardian.
     """
     def setup(self, *args, **kwargs):
-        self.team = get_object_or_404(Team, slug=self.kwargs["team_slug"])
-        if not self.team.members.filter(pk=self.request.user.actor.pk).exists():
-            logger.error("The current user %s is not a member of the team %s" % (self.request.user, self.team))
+        logger.debug("Inside TeamSlugMixin")
+        super().setup(*args, **kwargs)
+        self.team = get_object_or_404(Team, slug=kwargs["team_slug"])
+        if not hasattr(self.request.user, 'actor') or self.request.user.actor not in self.team.members.all():
             raise Http404
 
 
-class TeamAdminRequiredMixin(TeamMemberRequiredMixin):
+class TeamAdminRequiredMixin:
     """
-    A mixin to check if the current user is an admin the current team
+    Check if self.request.user is an admin of self.team
     """
     def setup(self, *args, **kwargs):
-        self.team = get_object_or_404(Team, slug=self.kwargs["team_slug"])
-        if not self.team.memberships.filter(actor=self.request.user.actor, admin=True).exists():
-            logger.error("The current user %s is not an admin of the team %s" % (self.request.user.actor, self.team))
-            messages.error(self.request, "You must be an admin of the Team to perform this action")
+        # run super() first so we have self.request available
+        super().setup(*args, **kwargs)
+        if self.request.user.actor not in self.team.members.filter(admin=True):
             raise Http404
 
 
-class TeamViewMixin(TeamMemberRequiredMixin):
+class TeamFilterMixin:
     """
-    This mixin filters get_queryset to only show items related to self.team. This
-    requires the models used in views that use TeamViewMixin to have a team_filter property,
-    a string (or list of strings) like "category__team" to be used in .filter()
+    This mixin filters get_queryset to only show items related to 
+    self.team. This requires the models used in views that use TeamFilterMixin
+    to have a team_filter property, a string (or list of strings) like 
+    "category__team" to be used in .filter()
     """
     def get_queryset(self):
         """

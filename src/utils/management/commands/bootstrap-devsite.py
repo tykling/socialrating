@@ -94,7 +94,7 @@ class Command(BaseCommand):
                 team=team,
             )
 
-        # add Actors with no team to a random team
+        # add remaining Actors with no team to a random team
         for actor in Actor.objects.filter(memberships__isnull=True):
             Membership.objects.create(
                 team=Team.objects.all().order_by('?').first(),
@@ -106,13 +106,11 @@ class Command(BaseCommand):
             team=carteam,
             name='Car Maker',
             description='A car maker.',
-            requires_context=False,
         )
         carcat = Category.objects.create(
             team=carteam,
             name='Car',
             description='A car.',
-            requires_context=True,
         )
 
 
@@ -270,12 +268,12 @@ class Command(BaseCommand):
         # add attributes for "Restaurant" category
         Attribute.objects.create(
             name='Location',
-            datatype=Attribute.TYPE_TEXT,
+            datatype=Attribute.TYPE_POINT,
             entity_ct=ContentType.objects.get(app_label='category', model='category'),
             entity_id=restaurant.id,
             required=True,
             slug=restaurant.create_fact_slug('Location'),
-            description='The location of this restaurant',
+            description='The location (coordinates) of this restaurant',
         )
         Attribute.objects.create(
             name='Description',

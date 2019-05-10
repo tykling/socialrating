@@ -5,6 +5,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from django.core.exceptions import ObjectDoesNotExist
+from guardian.shortcuts import get_perms, assign_perm
 
 from team.models import TeamRelatedModel
 from eventlog.models import Event
@@ -55,11 +56,25 @@ class Item(TeamRelatedModel):
         })
 
     def save(self, **kwargs):
-        """
-        Update the slug of the Item
-        """
         self.slug = slugify(self.name)
         super().save(**kwargs)
+
+        # fix item.view_item permission if needed 
+        if not 'item.view_item' in get_perms(self.team.group, self):
+            assign_perm('item.view_item', self.team.group, self)
+
+        # fix item.add_item permission if needed 
+        if not 'item.add_item' in get_perms(self.team.group, self):
+            assign_perm('item.add_item', self.team.group)
+
+        # fix item.change_item permission if needed 
+        if not 'item.change_item' in get_perms(self.team.admingroup, self):
+            assign_perm('item.change_item', self.team.admingroup, self)
+
+        # fix item.delete_item permission if needed 
+        if not 'item.delete_item' in get_perms(self.team.admingroup, self):
+            assign_perm('item.delete_item', self.team.admingroup, self)
+
 
     def get_average_vote(self, rating, only_latest=True):
         """

@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
+from guardian.shortcuts import get_perms, assign_perm
 
 from team.models import TeamRelatedModel, TeamRelatedUUIDModel
 
@@ -51,6 +52,10 @@ class Review(TeamRelatedUUIDModel):
     def team(self):
         return self.item.category.team
 
+    @property
+    def category(self):
+        return self.item.category
+
     def __str__(self):
         return "Review for Item %s by Actor %s" % (
             self.item,
@@ -66,12 +71,23 @@ class Review(TeamRelatedUUIDModel):
         })
 
     def save(self, **kwargs):
-        """
-        Validate a few things
-        """
-        if self.item.category.requires_context and not self.context:
-            raise ValidationError("You must pick a Context when reviewing Items in this Category.")
-
-        # all good
         super().save(**kwargs)
+
+        # fix review.view_review permission if needed 
+        if not 'review.view_review' in get_perms(self.team.group, self):
+            assign_perm('review.view_review', self.team.group, self)
+
+        # fix review.add_review permission if needed 
+        if not 'review.add_review' in get_perms(self.team.group, self):
+            assign_perm('review.add_review', self.team.group)
+
+        # fix review.change_review permission if needed 
+        if not 'review.change_review' in get_perms(self.actor.user, self):
+            assign_perm('review.change_review', self.actor.user, self)
+
+        # fix review.delete_review permission if needed
+        if not 'review.delete_review' in get_perms(self.team.admingroup, self):
+            assign_perm('review.delete_review', self.team.admingroup, self)
+        if not 'review.delete_review' in get_perms(self.actor.user, self):
+            assign_perm('review.delete_review', self.actor.user, self)
 

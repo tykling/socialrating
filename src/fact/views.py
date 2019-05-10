@@ -6,13 +6,12 @@ from django.shortcuts import redirect, reverse
 from django.contrib.contenttypes.models import ContentType
 from django import forms
 
-from eav.models import Attribute
+from eav.models import Attribute, Value
 
-from category.mixins import CategoryViewMixin
-from team.mixins import TeamAdminRequiredMixin
+from category.mixins import CategorySlugMixin
 
 
-class FactCreateView(CategoryViewMixin, TeamAdminRequiredMixin, CreateView):
+class FactCreateView(CategorySlugMixin, CreateView):
     """
     Facts are just another name for django-eav2 attributes,
     so we use the eav.models.Attribute model.
@@ -34,7 +33,7 @@ class FactCreateView(CategoryViewMixin, TeamAdminRequiredMixin, CreateView):
         # add Category field
         form.fields['category'] = forms.ModelChoiceField(
             queryset=self.team.categories.all(),
-            help_text='The Category. Only relevant if this is an Object field',
+            help_text='The Category of the Object. Only relevant if this is an Object field',
             required=False,
         )
 
@@ -62,13 +61,13 @@ class FactCreateView(CategoryViewMixin, TeamAdminRequiredMixin, CreateView):
         }))
 
 
-class FactDetailView(CategoryViewMixin, DetailView):
+class FactDetailView(CategorySlugMixin, DetailView):
     model = Attribute
     template_name = 'fact_detail.html'
     slug_url_kwarg = 'fact_slug'
 
 
-class FactUpdateView(CategoryViewMixin, TeamAdminRequiredMixin, UpdateView):
+class FactUpdateView(CategorySlugMixin, UpdateView):
     """
     Facts are just another name for django-eav2 attributes,
     so we use the eav.models.Attribute model.
@@ -85,18 +84,24 @@ class FactUpdateView(CategoryViewMixin, TeamAdminRequiredMixin, UpdateView):
         })
 
 
-class FactDeleteView(CategoryViewMixin, TeamAdminRequiredMixin, DeleteView):
+class FactDeleteView(CategorySlugMixin, DeleteView):
     model = Attribute
     template_name = 'fact_delete.html'
     slug_url_kwarg = 'fact_slug'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['category'] = self.category
+        return context
+
     def delete(self, request, *args, **kwargs):
+        Value.objects.filter(attribute=self.get_object()).delete()
         messages.success(self.request, "Fact %s has been deleted, along with all data related to it." % self.get_object())
         return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
         return(reverse('team:category:detail', kwargs={
-            'camp_slug': self.camp.slug,
+            'team_slug': self.team.slug,
             'category_slug': self.category.slug,
         }))
 

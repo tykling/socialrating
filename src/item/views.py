@@ -2,21 +2,29 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.contenttypes.models import ContentType
+from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
-from category.mixins import CategoryViewMixin
-from team.mixins import TeamAdminRequiredMixin
+from category.mixins import CategorySlugMixin
 from .models import Item
 from .forms import ItemForm
 from .mixins import ItemFormMixin
 
 
-class ItemListView(CategoryViewMixin, ListView):
+class ItemListView(CategorySlugMixin, PermissionListMixin, ListView):
     model = Item
     paginate_by = 100
     template_name = 'item_list.html'
+    permission_required = 'item.view_item'
 
 
-class ItemCreateView(CategoryViewMixin, ItemFormMixin, CreateView):
+class ItemDetailView(CategorySlugMixin, PermissionRequiredMixin, DetailView):
+    model = Item
+    template_name = 'item_detail.html'
+    slug_url_kwarg = 'item_slug'
+    permission_required = 'item.view_item'
+
+
+class ItemCreateView(CategorySlugMixin, PermissionRequiredMixin, ItemFormMixin, CreateView):
     """
     ItemCreateView uses ItemForm which subclasses
     eav.forms.BaseDynamicEntityForm so the required
@@ -25,6 +33,14 @@ class ItemCreateView(CategoryViewMixin, ItemFormMixin, CreateView):
     model = Item
     template_name = 'item_form.html'
     form_class = ItemForm
+
+    def setup(self, *args, **kwargs):
+        """
+        TODO: Figure out why PermissionRequiredMixin doesn't seem to work with CreateView
+        """
+        super().setup(*args, **kwargs)
+        if not self.request.user.has_perm('item.add_item'):
+            raise Http404
 
     def get_initial(self):
         """
@@ -45,23 +61,19 @@ class ItemCreateView(CategoryViewMixin, ItemFormMixin, CreateView):
         return form
 
 
-class ItemDetailView(CategoryViewMixin, DetailView):
-    model = Item
-    template_name = 'item_detail.html'
-    slug_url_kwarg = 'item_slug'
-
-
-class ItemUpdateView(CategoryViewMixin, ItemFormMixin, UpdateView):
+class ItemUpdateView(CategorySlugMixin, PermissionRequiredMixin, ItemFormMixin, UpdateView):
     model = Item
     template_name = 'item_form.html'
     form_class = ItemForm
     slug_url_kwarg = 'item_slug'
+    permission_required = 'item.change_item'
 
 
-class ItemDeleteView(CategoryViewMixin, TeamAdminRequiredMixin, DeleteView):
+class ItemDeleteView(CategorySlugMixin, PermissionRequiredMixin, DeleteView):
     model = Item
     template_name = 'item_delete.html'
     slug_url_kwarg = 'item_slug'
+    permission_required = 'item.delete_item'
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Item %s has been deleted, along with all Reviews and Votes that related to it." % self.get_object())

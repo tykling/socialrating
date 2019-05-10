@@ -1,6 +1,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
+from guardian.shortcuts import get_perms, assign_perm
 
 from team.models import TeamRelatedModel, TeamRelatedUUIDModel
 
@@ -67,6 +68,22 @@ class Rating(TeamRelatedModel):
         self.slug = slugify(self.name)
         super().save(**kwargs)
 
+        # fix rating.view_rating permission if needed 
+        if not 'rating.view_rating' in get_perms(self.team.group, self):
+            assign_perm('rating.view_rating', self.team.group, self)
+
+        # fix rating.add_rating permission if needed 
+        if not 'rating.add_rating' in get_perms(self.team.admingroup, self):
+            assign_perm('rating.add_rating', self.team.admingroup)
+
+        # fix rating.change_rating permission if needed 
+        if not 'rating.change_rating' in get_perms(self.team.admingroup, self):
+            assign_perm('rating.change_rating', self.team.admingroup, self)
+
+        # fix rating.delete_rating permission if needed 
+        if not 'rating.delete_rating' in get_perms(self.team.admingroup, self):
+            assign_perm('rating.delete_rating', self.team.admingroup, self)
+
     def clean(self):
         if self.max_rating < 2 or self.max_rating > 100:
             raise ValidationError("Max. rating must be between 2 and 100")
@@ -113,11 +130,31 @@ class Vote(TeamRelatedUUIDModel):
     def team(self):
         return self.review.item.category.team
 
+    def save(self, **kwargs):
+        super().save(**kwargs)
+
+        # fix rating.view_vote permission if needed
+        if not 'rating.view_vote' in get_perms(self.team.group, self):
+            assign_perm('rating.view_vote', self.team.group, self)
+
+        # fix rating.add_vote permission if needed
+        if not 'rating.add_vote' in get_perms(self.team.group, self):
+            assign_perm('rating.add_vote', self.team.group)
+
+        # fix rating.change_vote permission if needed
+        if not 'rating.change_vote' in get_perms(self.review.actor.user, self):
+            assign_perm('rating.change_vote', self.review.actor.user, self)
+
+        # fix rating.delete_vote permission if needed
+        if not 'rating.delete_vote' in get_perms(self.review.actor.user, self):
+            assign_perm('rating.delete_vote', self.review.actor.user, self)
+
+
     def clean(self):
         """
         Add some basic sanity checks:
         - Make sure there is no conflict before saving
-        - Make sure the rating falls inside the limits of the Property
+        - Make sure the vote falls inside the limits of the Rating
         """
         if self.rating not in self.review.item.category.ratings.all():
             raise ValidationError("The rating %s belongs to a different Category than the Item %s" % (

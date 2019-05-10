@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block category_content %}
+{% if attachment_list %}
+ <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>uuid</th>
+        <th>Filename</th>
+        <th>Mimetype</th>
+        <th>Size</th>
+        <th>Thumbnail</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for attachment in attachment_list %}
+      {% get_obj_perms request.user for attachment as "attachment_perms" %}
+      {% if "view_attachment" in attachment_perms %}
+      <tr>
+        <td>{{ attachment.uuid }}</td>
+        <td>{{ attachment.attachment.name }}</td>
+        <td>{{ attachment.mimetype }}</td>
+        <td>{{ attachment.size }} bytes</td>
+        <td>
+          <img src="{% url 'team:category:item:review:attachment:attachment' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}?thumbnail" width="50%" heigth="225" class="img-thumbnail">
+        </td>
+        <td>
+          {% if "change_attachment" in attachment_perms %}
+            <a href="{% url 'team:category:item:review:attachment:update' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}" class="btn btn-primary">Update</a>
+          {% endif %}
+          {% if "delete_attachment" in attachment_perms %}
+            <a href="{% url 'team:category:item:review:attachment:delete' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}" class="btn btn-danger">Delete</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="lead">No categories found. Go create one!</p>
+{% endif %}
+{% if "add_category" in category_perms %}
+  <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success">Create Category</a>
+{% endif %}
+{% endblock category_content %}
+

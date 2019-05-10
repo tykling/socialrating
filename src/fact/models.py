@@ -1,3 +1,5 @@
 from django.db import models
 
-# Create your models here.
+# facts are just another name for EAV Attributes,
+# no models here
+

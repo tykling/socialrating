@@ -1,5 +1,7 @@
 import logging
 
+from guardian.conf import settings
+
 from .models import Actor
 
 logger = logging.getLogger("socialrating.%s" % __name__)
@@ -11,6 +13,11 @@ def create_actor(sender, instance, created, **kwargs):
     """
     if not created:
         # only create actor for new users
+        return
+
+    if instance.username == settings.ANONYMOUS_USER_NAME:
+        # this is the django-guardian anonymous user,
+        # no actor needed
         return
 
     # bail out if we already have an actor

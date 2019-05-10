@@ -1,10 +1,11 @@
 from django.contrib import admin
 from . import models
+from guardian.admin import GuardedModelAdmin
 
-class TeamAdmin(admin.ModelAdmin):
+class TeamAdmin(GuardedModelAdmin):
     pass
 
-class MembershipAdmin(admin.ModelAdmin):
+class MembershipAdmin(GuardedModelAdmin):
     def get_username(self, obj):
         return obj.actor.user.username
 

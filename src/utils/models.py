@@ -4,6 +4,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
+from django.utils import timezone
 
 from eventlog.models import Event
 
@@ -23,7 +24,7 @@ class BaseModel(models.Model):
     )
 
     updated = models.DateTimeField(
-        auto_now=True,
+        auto_now_add=True,
         help_text='The date and time when this object was last updated.'
     )
 
@@ -44,6 +45,10 @@ class BaseModel(models.Model):
             logger.error(message)
             # dont save, re-raise the exception
             raise
+
+        # update the timstamp before saving
+        self.updated=timezone.now()
+
         super().save(**kwargs)
 
 

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block team_content %}
+<p class="lead">
+{% if form.instance.review %}Update{% else %}Create{% endif %} Attachment
+</p>
+<form method="post" class="form" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  {% buttons %}
+    <button type="submit" class="btn btn-success">
+        <i class="fas fa-check"></i> {% if form.instance.review %}Update{% else %}Create{% endif %} Attachment
+    </button>
+  {% endbuttons %}
+</form>
+{% endblock team_content %}
+

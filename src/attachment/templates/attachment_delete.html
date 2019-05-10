@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block team_content %}
+<h2>Really delete this Attachment?</h2>
+<img src="{% url 'team:category:item:review:attachment:attachment' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}?thumbnail" width="50%" heigth="225" class="img-thumbnail">
+
+<p class="lead">{{ attachment.description }}</p>
+
+<form method="post" class="form">
+  {% csrf_token %}
+  {% buttons %}
+    <a href="{% url 'team:category:item:review:detail' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid %}" class="btn btn-primary"><i class="fas fa-undo"></i> No, Go Back</a>
+    <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Yes, Delete Attachment</button>
+  {% endbuttons %}
+</form>
+{% endblock team_content %}
+

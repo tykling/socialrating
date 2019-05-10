@@ -23,6 +23,16 @@ urlpatterns = [
                 CategoryDetailView.as_view(),
                 name='detail',
             ),
+            path(
+                'update/',
+                CategoryUpdateView.as_view(),
+                name='update',
+            ),
+            path(
+                'delete/',
+                CategoryDeleteView.as_view(),
+                name='delete',
+            ),
             path('items/',
                 include('item.urls', namespace='item')
             ),

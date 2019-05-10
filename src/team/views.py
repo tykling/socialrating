@@ -10,38 +10,43 @@ from django.contrib import messages
 from django.shortcuts import redirect, reverse
 from django.contrib.contenttypes.models import ContentType
 
+from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
+
 from .models import Team, Membership
-from .mixins import TeamMemberRequiredMixin
-from eventlog.models import Event
+from .mixins import *
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class TeamListView(LoginRequiredMixin, ListView):
+class TeamListView(LoginRequiredMixin, PermissionListMixin, ListView):
     """
-    The TeamListView requires no special permissions. It simply lists the teams of which the current user is a member.
+    The TeamListView requires no special permissions.
+    It simply lists the teams which the current user has permissions to see.
     """
     model = Team
     paginate_by = 100
     template_name = 'team_list.html'
-
-    def get_queryset(self):
-        """
-        Only list Teams which the current user is a member of
-        """
-        return Team.objects.filter(memberships__actor=self.request.user.actor).distinct()
+    permission_required = 'team.view_team'
 
 
-class TeamDetailView(TeamMemberRequiredMixin, DetailView):
+class TeamDetailView(PermissionRequiredMixin, DetailView):
+    """
+    Uses TeamMixin to make sure self.team is available before TeamMemberRequiredMixin runs
+    """
     model = Team
     template_name = 'team_detail.html'
     slug_url_kwarg = 'team_slug'
+    permission_required = 'team.view_team'
 
 
-class TeamMemberView(TeamMemberRequiredMixin, DetailView):
+class TeamMemberView(PermissionRequiredMixin, DetailView):
+    """
+    Uses TeamMixin to make sure self.team is available before TeamMemberRequiredMixin runs
+    """
     model = Team
     template_name = 'team_members.html'
     slug_url_kwarg = 'team_slug'
+    permission_required = 'team.view_team'
 
 
 class TeamCreateView(LoginRequiredMixin, CreateView):
@@ -57,12 +62,6 @@ class TeamCreateView(LoginRequiredMixin, CreateView):
         team = form.save(commit=False)
         team.founder = self.request.user.actor
         team.save()
-        # register event
-        #Event.objects.create(
-        #    event_type=Event.CREATE,
-        #    content_type=ContentType.objects.get_for_model(Team),
-        #    object_id=team.pk,
-        #)
 
         # add founder as team member
         membership = Membership.objects.create(
@@ -75,8 +74,12 @@ class TeamCreateView(LoginRequiredMixin, CreateView):
         return redirect(reverse('team:list'))
 
 
-class TeamUpdateView(LoginRequiredMixin, UpdateView):
+class TeamUpdateView(PermissionRequiredMixin, UpdateView):
+    """
+    Use TeamMixin to make sure self.team is available before TeamAdminRequiredMixin runs
+    """
     model = Team
     template_name = 'team_form.html'
     fields = ['description']
+    permission_required = 'team.change_team'
 

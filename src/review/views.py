@@ -1,36 +1,64 @@
+import magic
+import logging
+
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django import forms
 from django.shortcuts import redirect, reverse
+from django.db import transaction
+from django.contrib import messages
+from django.http import Http404
+from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
-from item.mixins import ItemViewMixin
+from item.mixins import ItemSlugMixin
+
 from rating.models import Vote
-from team.mixins import TeamViewMixin
 from context.models import Context
-
+from attachment.models import Attachment
+from team.mixins import TeamFilterMixin
 from .models import Review
 
+logger = logging.getLogger("socialrating.%s" % __name__)
 
-class ReviewListView(ItemViewMixin, ListView):
+
+class ReviewListView(ItemSlugMixin, PermissionListMixin, ListView):
     model = Review
     paginate_by = 100
     template_name = 'review_list.html'
+    permission_required = 'review.view_review'
 
     def get_queryset(self):
         return super().get_queryset().filter(item=self.item)
 
 
-class ReviewCreateView(TeamViewMixin, ItemViewMixin, CreateView):
+class ReviewDetailView(ItemSlugMixin, PermissionRequiredMixin, DetailView):
+    model = Review
+    template_name = 'review_detail.html'
+    pk_url_kwarg = 'review_uuid'
+    permission_required = 'review.view_review'
+
+
+class ReviewCreateView(ItemSlugMixin, CreateView):
     model = Review
     template_name = 'review_form.html'
     fields = ['headline', 'body', 'context']
+    permission_required = 'review.view_review'
 
-    def get_context_data(self):
+    def setup(self, *args, **kwargs):
+        """
+        TODO: Figure out why PermissionRequiredMixin doesn't seem to work with CreateView
+        """
+        super().setup(*args, **kwargs)
+        if not self.request.user.has_perm('review.add_review'):
+            logger.error("user %s does not have review.add_review permissions" % self.request.user)
+            raise Http404
+
+    def get_context_data(self, **kwargs):
         """
         Add Item to the context
         """
-        context = super().get_context_data()
+        context = super().get_context_data(**kwargs)
         context['item'] = self.item
         return context
 
@@ -55,7 +83,22 @@ class ReviewCreateView(TeamViewMixin, ItemViewMixin, CreateView):
                 label='%s: A short comment for the Vote above' % rating.name,
                 required=False,
             )
-            form.fields['context'].queryset = Context.objects.filter(team=self.team)
+
+        # set queryset for context
+        form.fields['context'].queryset = Context.objects.filter(team=self.team)
+        form.fields['context'].empty_label=None
+
+        # add attachments field (support multiple files)
+        form.fields['attachments'] = forms.FileField(
+            widget=forms.ClearableFileInput(
+                attrs={
+                    'multiple': True,
+                }
+            ),
+            label='Attach files to the Review',
+            required=False,
+        )
+
         return form
 
     def form_valid(self, form):
@@ -63,24 +106,46 @@ class ReviewCreateView(TeamViewMixin, ItemViewMixin, CreateView):
         First save the new Review,
         then save any Votes, Attachments and Tags.
         """
-        review = form.save(commit=False)
-        review.item = self.item
-        review.actor = self.request.user.actor
-        review.save()
+        # save everything in a single transaction so we save it all or nothing
+        with transaction.atomic():
+            review = form.save(commit=False)
+            review.item = self.item
+            review.actor = self.request.user.actor
+            review.save()
 
-        # loop over ratings available for this item,
-        # saving a new Vote for each as needed
-        for rating in self.item.category.ratings.all():
-            votefield = "%s_vote" % rating.slug
-            commentfield = "%s_comment" % rating.slug
-            if votefield in form.fields and form.cleaned_data[votefield]:
-                Vote.objects.create(
-                    review=review,
-                    rating=rating,
-                    vote=form.cleaned_data[votefield],
-                    comment=form.cleaned_data[commentfield] if commentfield in form.cleaned_data else '',
-                )
+            # loop over ratings available for this item,
+            # saving a new Vote for each as needed
+            for rating in self.item.category.ratings.all():
+                votefield = "%s_vote" % rating.slug
+                commentfield = "%s_comment" % rating.slug
+                if votefield in form.fields and form.cleaned_data[votefield]:
+                    Vote.objects.create(
+                        review=review,
+                        rating=rating,
+                        vote=form.cleaned_data[votefield],
+                        comment=form.cleaned_data[commentfield] if commentfield in form.cleaned_data else '',
+                    )
 
+            if form.is_multipart():
+                # loop over any uploaded files and create an 
+                # Attachment object for each as we go
+                files = form.files.getlist('attachments')
+                for attachment in files:
+                    mimetype = magic.from_buffer(attachment.read(), mime=True)
+                    saved = Attachment.objects.create(
+                        review=review,
+                        attachment=attachment,
+                        mimetype=mimetype,
+                        size=attachment.size,
+                    )
+
+        messages.success(self.request, "Saved review %s (%s votes, %s attachments)" % (
+            review.pk,
+            review.votes.count(),
+            review.attachments.count()
+        ))
+
+        # redirect to the saved review
         return redirect(reverse(
             'team:category:item:review:detail',
             kwargs={
@@ -92,31 +157,124 @@ class ReviewCreateView(TeamViewMixin, ItemViewMixin, CreateView):
         ))
 
 
-class ReviewDetailView(ItemViewMixin, DetailView):
-    model = Review
-    template_name = 'review_detail.html'
-    pk_url_kwarg = 'review_uuid'
-
-
-class ReviewUpdateView(ItemViewMixin, UpdateView):
+class ReviewUpdateView(ItemSlugMixin, PermissionRequiredMixin, UpdateView):
     model = Review
     template_name = 'review_form.html'
     pk_url_kwarg = 'review_uuid'
     fields = ['headline', 'body', 'context']
+    permission_required = 'review.change_review'
+
+    def get_form(self, form_class=None):
+        """
+        - Add ratings to the form
+        - Set initial Context QuerySet
+        - Add attachments FileField to the form
+        - TODO: Add tags field to the form
+        """
+        form = super().get_form(form_class)
+        for rating in self.item.category.ratings.all():
+            # make a list of choices
+            choices = []
+            for choice in range(1, rating.max_rating+1):
+                choices.append((choice, choice))
+
+            try:
+                vote = Vote.objects.get(
+                    review=self.get_object(),
+                    rating=rating,
+                )
+            except Vote.DoesNotExist:
+                vote = None
+
+            # add the TypedChoiceField
+            form.fields["%s_vote" % rating.slug] = forms.TypedChoiceField(
+                choices=choices,
+                coerce=int,
+                widget=forms.widgets.RadioSelect,
+                required=False,
+                initial=vote.vote if vote else None,
+                label='%s: Please vote between 1-%s' % (rating.name, rating.max_rating),
+            )
+
+            # add the comment CharField
+            form.fields["%s_comment" % rating.slug] = forms.CharField(
+                required=False,
+                initial=vote.comment if vote else '',
+                label='%s: A short comment for the Vote above' % rating.name,
+            )
+
+            # set the list of Contexts for this team
+            form.fields['context'].queryset = Context.objects.filter(team=self.team)
+
+        return form
+
+    def get_context_data(self, **kwargs):
+        """
+        Add Item to the context
+        """
+        context = super().get_context_data(**kwargs)
+        context['item'] = self.item
+        return context
+
+    def form_valid(self, form):
+        """
+        First save the Review,
+        then save any Votes, Attachments and Tags.
+        """
+        if form.has_changed():
+            review = form.save()
+
+            # loop over ratings available for this item,
+            # creating or updating a Vote for each as needed
+            for rating in self.item.category.ratings.all():
+                votefield = "%s_vote" % rating.slug
+                commentfield = "%s_comment" % rating.slug
+                if votefield in form.fields and form.cleaned_data[votefield]:
+                    # does this vote already in database?
+                    if Vote.objects.filter(
+                        review=review,
+                        rating=rating,
+                        vote=form.cleaned_data[votefield],
+                        comment=form.cleaned_data[commentfield] if commentfield in form.cleaned_data else '',
+                    ).exists():
+                        # this vote already exists in the database, no need to save it again
+                        # TODO: when does this happen?
+                        continue
+
+                    # we either need to create a new Vote or update an existing
+                    vote, created = Vote.objects.update_or_create(
+                        review=review,
+                        rating=rating,
+                        defaults={
+                            'vote': form.cleaned_data[votefield],
+                            'comment': form.cleaned_data[commentfield] if commentfield in form.cleaned_data else '',
+                        }
+                    )
+
+        return redirect(reverse(
+            'team:category:item:review:detail',
+            kwargs={
+                'team_slug': self.team.slug,
+                'category_slug': self.item.category.slug,
+                'item_slug': self.item.slug,
+                'review_uuid': self.get_object().pk
+            }
+        ))
 
 
-class ReviewDeleteView(ItemViewMixin, DeleteView):
+class ReviewDeleteView(ItemSlugMixin, PermissionRequiredMixin, DeleteView):
     model = Review
     template_name = 'review_delete.html'
     pk_url_kwarg = 'review_uuid'
+    permission_required = 'review.delete_review'
 
     def delete(self, request, *args, **kwargs):
-        messages.success(self.request, "Review %s has been deleted, along with all Votes that related to it." % self.get_object())
+        messages.success(self.request, "Review %s has been deleted, along with all Votes, Attachments and Tags that related to it." % self.get_object())
         return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
         return(reverse('team:category:item:detail', kwargs={
-            'camp_slug': self.camp.slug,
+            'team_slug': self.team.slug,
             'category_slug': self.category.slug,
             'item_slug': self.item.slug,
         }))

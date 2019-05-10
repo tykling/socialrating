@@ -28,6 +28,9 @@ urlpatterns = [
                 ReviewDeleteView.as_view(),
                 name='delete',
             ),
+            path('attachments/',
+                include('attachment.urls', namespace='attachment')
+            ),
          ]),
     ),
 ]

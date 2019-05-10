@@ -14,6 +14,7 @@
     <link href="{% static 'css/fontawesome-5.5.0.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/fontawesome-brands-5.5.0.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/fontawesome-solid-5.5.0.min.css' %}" rel="stylesheet">
+    {% block extra_head %}{% endblock extra_head %}
   </head>
 
   <body>
@@ -23,16 +24,18 @@
       {% block content %}
       {% if team %}
       {% include 'team_menu.html' %}
+      {% block team_content %}
       <div class="row">
         <div class="col-2">
           {% include 'item_menu.html' %}
         </div>
         <div class="col-10">
-          {% block team_content %}
-          <p>block 'team_content' was not replaced, so this default text from base.html is shown instead</p>
-          {% endblock team_content %}
+            {% block category_content %}
+            <p>block 'category_content' was not replaced, so this default text from base.html is shown instead</p>
+            {% endblock category_content %}
         </div>
       </div>
+      {% endblock team_content %}
       {% else %}
           <p>block 'content' was not replaced, so this default text from base.html is shown instead</p>
       {% endif %}

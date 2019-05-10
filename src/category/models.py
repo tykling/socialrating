@@ -3,6 +3,7 @@ import eav
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
+from guardian.shortcuts import get_perms, assign_perm
 
 from team.models import TeamRelatedModel
 
@@ -48,11 +49,6 @@ class Category(TeamRelatedModel):
         blank=True,
     )
 
-    requires_context = models.BooleanField(
-        default=True,
-        help_text='Check to make it mandatory to pick a Context for Reviews of Items in this Category.',
-    )
-
     def __str__(self):
         return self.name
 
@@ -65,6 +61,23 @@ class Category(TeamRelatedModel):
     def save(self, **kwargs):
         self.slug = slugify(self.name)
         super().save(**kwargs)
+
+        # fix category.view_category permission if needed 
+        if not 'category.view_category' in get_perms(self.team.group, self):
+            assign_perm('category.view_category', self.team.group, self)
+
+        # fix category.add_category permission if needed 
+        if not 'category.add_category' in get_perms(self.team.admingroup, self):
+            assign_perm('category.add_category', self.team.admingroup)
+
+        # fix category.change_category permission if needed 
+        if not 'category.change_category' in get_perms(self.team.admingroup, self):
+            assign_perm('category.change_category', self.team.admingroup, self)
+
+        # fix category.delete_category permission if needed 
+        if not 'category.delete_category' in get_perms(self.team.admingroup, self):
+            assign_perm('category.delete_category', self.team.admingroup, self)
+
 
     def create_fact_slug(self, fact_name):
         """

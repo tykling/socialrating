@@ -1,0 +1,79 @@
+from django.db import models
+from guardian.shortcuts import get_perms, assign_perm
+
+from team.models import TeamRelatedModel, TeamRelatedUUIDModel
+from utils.uploads import get_attachment_path
+
+
+class Attachment(TeamRelatedUUIDModel):
+    """
+    An Attachment is any file uploaded in the system.
+    All attachments belong to a Review.
+    """
+    class Meta:
+        ordering = ['pk']
+
+    review = models.ForeignKey(
+        'review.Review',
+        on_delete=models.CASCADE,
+        related_name='attachments',
+        help_text='The Review to which this Attachment belongs.',
+    )
+
+    attachment = models.FileField(
+        help_text='The file',
+        upload_to=get_attachment_path,
+    )
+
+    mimetype = models.CharField(
+        max_length=255,
+        help_text="The mimetype of this file as detected by python-magic on upload."
+    )
+
+    size = models.IntegerField(
+        help_text="The size in bytes of this file"
+    )
+
+    description = models.CharField(
+        max_length=255,
+        help_text="The description for this attachment.",
+        blank=True,
+    )
+
+    team_filter = 'review__item__category__team'
+
+    @property
+    def team(self):
+        return self.review.item.category.team
+
+    @property
+    def category(self):
+        return self.review.item.category
+
+    @property
+    def item(self):
+        return self.review.item
+
+    @property
+    def actor(self):
+        return self.review.actor
+
+    def save(self, **kwargs):
+        super().save(**kwargs)
+
+        # fix attachment.view_attachment permission if needed 
+        if not 'attachment.view_attachment' in get_perms(self.team.group, self):
+            assign_perm('attachment.view_attachment', self.team.group, self)
+
+        # fix attachment.add_attachment permission if needed 
+        if not 'attachment.add_attachment' in get_perms(self.team.group, self):
+            assign_perm('attachment.add_attachment', self.team.group)
+
+        # fix attachment.change_attachment permission if needed 
+        if not 'attachment.change_attachment' in get_perms(self.actor.user, self):
+            assign_perm('attachment.change_attachment', self.actor.user, self)
+
+        # fix attachment.delete_attachment permission if needed
+        if not 'attachment.delete_attachment' in get_perms(self.actor.user, self):
+            assign_perm('attachment.delete_attachment', self.actor.user, self)
+

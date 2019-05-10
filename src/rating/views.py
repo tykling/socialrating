@@ -3,11 +3,11 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib import messages
 
-from category.mixins import CategoryViewMixin
+from category.mixins import CategorySlugMixin
 from .models import Rating
 
 
-class RatingListView(CategoryViewMixin, ListView):
+class RatingListView(CategorySlugMixin, ListView):
     model = Rating
     paginate_by = 100
     template_name = 'rating_list.html'
@@ -16,7 +16,7 @@ class RatingListView(CategoryViewMixin, ListView):
         return super().get_queryset().filter(category=self.category)
 
 
-class RatingCreateView(CategoryViewMixin, CreateView):
+class RatingCreateView(CategorySlugMixin, CreateView):
     model = Rating
     template_name = 'rating_form.html'
     fields = ['name', 'description', 'max_rating', 'icon']
@@ -32,20 +32,20 @@ class RatingCreateView(CategoryViewMixin, CreateView):
         return redirect(reverse('team:category:rating:list', kwargs={'team_slug': self.team.slug, 'category_slug': self.category.slug}))
 
 
-class RatingDetailView(CategoryViewMixin, DetailView):
+class RatingDetailView(CategorySlugMixin, DetailView):
     model = Rating
     template_name = 'rating_detail.html'
     slug_url_kwarg = 'rating_slug'
 
 
-class RatingUpdateView(CategoryViewMixin, UpdateView):
+class RatingUpdateView(CategorySlugMixin, UpdateView):
     model = Rating
     template_name = 'rating_form.html'
     slug_url_kwarg = 'rating_slug'
     fields = ['name', 'description', 'icon']
 
 
-class RatingDeleteView(CategoryViewMixin, DeleteView):
+class RatingDeleteView(CategorySlugMixin, DeleteView):
     model = Rating
     template_name = 'review_delete.html'
     slug_url_kwarg = 'rating_slug'

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block team_content %}
+<h2>Delete <i>{{ object.name }}</i> Fact ?</h2>
+<p class="lead">Deleting this Fact will also delete all <i>{{ object.name }}</i> data for all <i>{{ category.name }}</i> objects!
+<form method="post" class="form">
+  {% csrf_token %}
+  {% buttons %}
+    <a href="{% url 'team:category:detail' team_slug=category.team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-undo"></i> No, Go Back</button></a>
+    <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Yes, Delete Fact</button>
+  {% endbuttons %}
+</form>
+{% endblock team_content %}
+
