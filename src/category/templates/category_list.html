@@ -57,7 +57,7 @@
 {% else %}
 <p class="lead">No categories found. Go create one!</p>
 {% endif %}
-{% if "add_category" in category_perms %}
+{% if perms.category.add_category %}
   <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success">Create Category</a>
 {% endif %}
 {% endblock team_content %}
