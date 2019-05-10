@@ -72,10 +72,6 @@ class Rating(TeamRelatedModel):
         if not 'rating.view_rating' in get_perms(self.team.group, self):
             assign_perm('rating.view_rating', self.team.group, self)
 
-        # fix rating.add_rating permission if needed 
-        if not 'rating.add_rating' in get_perms(self.team.admingroup, self):
-            assign_perm('rating.add_rating', self.team.admingroup)
-
         # fix rating.change_rating permission if needed 
         if not 'rating.change_rating' in get_perms(self.team.admingroup, self):
             assign_perm('rating.change_rating', self.team.admingroup, self)
