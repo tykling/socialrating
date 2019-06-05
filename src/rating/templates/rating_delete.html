@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block team_content %}
+<h2>Delete Rating <i>{{ rating.name }}</i>?</h2>
+<p class="lead">Deleting this Rating will also delete all related votes, for all <i>{{ rating.category.name }}</i> objects!</p>
+
+<form method="post" class="form">
+  {% csrf_token %}
+  {% buttons %}
+    <a href="{% url 'team:category:rating:detail' team_slug=rating.category.team.slug category_slug=rating.category.slug rating_slug=rating.slug %}" class="btn btn-primary"><i class="fas fa-undo"></i> No, Go Back</button></a>
+    <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Yes, Delete Rating</button>
+  {% endbuttons %}
+</form>
+{% endblock team_content %}
+

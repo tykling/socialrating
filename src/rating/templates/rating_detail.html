@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+{% get_obj_perms request.user for rating as "rating_perms" %}
+
+<p class="lead">Details for Rating {{ rating.name }}
+  <a href="{% url 'team:category:rating:update' team_slug=team.slug category_slug=rating.category.slug rating_slug=rating.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i> Update</a>
+</p>
+
+<p>{{ rating.description }}</p>
+
+<div class="button-group">
+{% if "change_rating" in rating_perms %}
+  <a href="{% url 'team:category:rating:update' team_slug=team.slug category_slug=rating.category.slug rating_slug=rating.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i> Update</a>
+{% endif %}
+{% if "delete_rating" in rating_perms %}
+  <a href="{% url 'team:category:rating:delete' team_slug=team.slug category_slug=rating.category.slug rating_slug=rating.slug %}" class="btn btn-danger btn-xs"><i class="fas fa-times"></i> Delete</a>
+{% endif %}
+</div>
+{% endblock team_content %}
+

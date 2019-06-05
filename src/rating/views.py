@@ -51,7 +51,7 @@ class RatingUpdateView(CategorySlugMixin, UpdateView):
 
 class RatingDeleteView(CategorySlugMixin, DeleteView):
     model = Rating
-    template_name = 'review_delete.html'
+    template_name = 'rating_delete.html'
     slug_url_kwarg = 'rating_slug'
 
     def delete(self, request, *args, **kwargs):
@@ -60,7 +60,7 @@ class RatingDeleteView(CategorySlugMixin, DeleteView):
 
     def get_success_url(self):
         return(reverse('team:category:detail', kwargs={
-            'camp_slug': self.camp.slug,
+            'team_slug': self.team.slug,
             'category_slug': self.category.slug,
         }))
 
