@@ -122,26 +122,6 @@ class Team(BaseModel):
         if not 'team.delete_team' in get_perms(self.admingroup, self):
             assign_perm('team.delete_team', self.admingroup, self)
 
-        # fix category.add_category permission if needed
-        if not 'category.add_category' in get_perms(self.admingroup, self):
-            assign_perm('category.add_category', self.admingroup, self)
-
-        # fix context.add_context permission if needed
-        if not 'context.add_context' in get_perms(self.admingroup, self):
-            assign_perm('context.add_context', self.admingroup)
-
-        # fix item.add_item permission if needed
-        if not 'item.add_item' in get_perms(self.group, self):
-            assign_perm('item.add_item', self.group)
-
-        # fix rating.add_rating permission if needed
-        if not 'rating.add_rating' in get_perms(self.admingroup, self):
-            assign_perm('rating.add_rating', self.admingroup)
-
-        # fix attribute.add_attribute permission if needed
-        if not 'attribute.add_attribute' in get_perms(self.admingroup, instance):
-            assign_perm('attribute.add_attribute', self.admingroup, instance)
-
 
 class Membership(BaseModel):
     """
