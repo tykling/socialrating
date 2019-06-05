@@ -79,6 +79,10 @@
                 <p>{{ area.area|floatformat:20 }} m2</p>
             {% endwith %}
           </td>
+          {% elif fact.datatype == "object" %}
+            {% with item|get_eav_value:fact.slug as myfact %}
+              <td><a href="{{ myfact.get_absolute_url }}">{{ myfact }}</a></td>
+            {% endwith %}
           {% else %}
           <td>{{ item|get_eav_value:fact.slug }}</td>
           {% endif %}
