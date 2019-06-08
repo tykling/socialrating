@@ -10,7 +10,8 @@ from django.contrib import messages
 from django.shortcuts import redirect, reverse
 from django.contrib.contenttypes.models import ContentType
 
-from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
+from guardian.mixins import PermissionListMixin
+from utils.mixins import PermissionRequiredOr403Mixin
 
 from .models import Team, Membership
 from .mixins import *
@@ -29,34 +30,17 @@ class TeamListView(LoginRequiredMixin, PermissionListMixin, ListView):
     permission_required = 'team.view_team'
 
 
-class TeamDetailView(PermissionRequiredMixin, DetailView):
-    """
-    Uses TeamMixin to make sure self.team is available before TeamMemberRequiredMixin runs
-    """
-    model = Team
-    template_name = 'team_detail.html'
-    slug_url_kwarg = 'team_slug'
-    permission_required = 'team.view_team'
-
-
-class TeamMemberView(PermissionRequiredMixin, DetailView):
-    """
-    Uses TeamMixin to make sure self.team is available before TeamMemberRequiredMixin runs
-    """
-    model = Team
-    template_name = 'team_members.html'
-    slug_url_kwarg = 'team_slug'
-    permission_required = 'team.view_team'
-
-
 class TeamCreateView(LoginRequiredMixin, CreateView):
+    """
+    The TeamCreateView requires no special permissions.
+    """
     model = Team
     template_name = 'team_form.html'
     fields = ['name', 'description']
 
     def form_valid(self, form):
         """
-        Set the current user as an admin member of the new team
+        Set the current user as team founder and as an admin member of the new team
         """
         # save team including founder
         team = form.save(commit=False)
@@ -71,15 +55,32 @@ class TeamCreateView(LoginRequiredMixin, CreateView):
         )
         messages.success(self.request, "New team created!")
 
-        return redirect(reverse('team:list'))
+        return redirect(reverse('team:detail', kwargs={'team_slug': team.slug}))
 
 
-class TeamUpdateView(PermissionRequiredMixin, UpdateView):
-    """
-    Use TeamMixin to make sure self.team is available before TeamAdminRequiredMixin runs
-    """
+class TeamDetailView(PermissionRequiredOr403Mixin, DetailView):
+    model = Team
+    template_name = 'team_detail.html'
+    slug_url_kwarg = 'team_slug'
+    permission_required = 'team.view_team'
+
+
+class TeamMemberView(PermissionRequiredOr403Mixin, DetailView):
+    model = Team
+    template_name = 'team_members.html'
+    slug_url_kwarg = 'team_slug'
+    permission_required = 'team.view_team'
+
+
+class TeamUpdateView(PermissionRequiredOr403Mixin, UpdateView):
     model = Team
     template_name = 'team_form.html'
     fields = ['description']
+    slug_url_kwarg = 'team_slug'
     permission_required = 'team.change_team'
+
+    def form_valid(self, form):
+        team = form.save()
+        messages.success(self.request, "Team updated!")
+        return redirect(reverse('team:detail', kwargs={'team_slug': team.slug}))
 

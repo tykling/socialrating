@@ -27,6 +27,11 @@ urlpatterns = [
                 name='detail',
             ),
             path(
+                'update/',
+                TeamUpdateView.as_view(),
+                name='update',
+            ),
+            path(
                 'members/',
                 TeamMemberView.as_view(),
                 name='members',

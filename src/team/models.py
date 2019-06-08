@@ -7,6 +7,7 @@ from django.contrib.auth.models import Group
 from guardian.shortcuts import get_perms, assign_perm
 
 from utils.models import BaseModel, UUIDBaseModel
+from actor.models import Actor
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
@@ -122,6 +123,13 @@ class Team(BaseModel):
         if not 'team.delete_team' in get_perms(self.admingroup, self):
             assign_perm('team.delete_team', self.admingroup, self)
 
+    @property
+    def adminmembers(self):
+        return Actor.objects.filter(
+            memberships__team=self,
+            memberships__admin=True
+        )
+
 
 class Membership(BaseModel):
     """
@@ -155,12 +163,12 @@ class Membership(BaseModel):
         """
         if not self.actor.user.groups.filter(name=self.team.group.name).exists():
             # add the user to django group
-            logger.debug("Adding user %s to group %s" % (self.actor.user, self.team.group))
+            #logger.debug("Adding user %s to group %s" % (self.actor.user, self.team.group))
             self.actor.user.groups.add(self.team.group)
 
         if self.admin and not self.actor.user.groups.filter(name=self.team.admingroup.name).exists():
             # add the user to django admingroup
-            logger.debug("Adding user %s to admingroup %s" % (self.actor.user, self.team.admingroup))
+            #logger.debug("Adding user %s to admingroup %s" % (self.actor.user, self.team.admingroup))
             self.actor.user.groups.add(self.team.admingroup)
 
         super().save(**kwargs)
