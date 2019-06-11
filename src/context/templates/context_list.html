@@ -2,6 +2,7 @@
 
 {% block team_content %}
 {% if context_list %}
+<h2>Contexts for {{ team.name }}</h2>
  <table class="table table-bordered">
     <thead>
       <tr>
@@ -18,7 +19,8 @@
         <td>{{ context.description }}</td>
         <td>{{ context.reviews.count }}</td>
         <td>
-          <a href="{% url 'team:context:detail' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary">Details</a>
+          <a href="{% url 'team:context:detail' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Details</a>
+          <a href="{% url 'team:context:delete' team_slug=team.slug context_slug=context.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
         </td>
       </tr>
     {% endfor %}
@@ -27,6 +29,6 @@
 {% else %}
 <p class="lead">No contexts found. Go create one!</p>
 {% endif %}
-<a href="{% url 'team:context:create' team_slug=team.slug %}" class="btn btn-success">Create New Context</a>
+<a href="{% url 'team:context:create' team_slug=team.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create New Context</a>
 {% endblock team_content %}
 

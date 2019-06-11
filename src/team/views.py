@@ -47,12 +47,6 @@ class TeamCreateView(LoginRequiredMixin, CreateView):
         team.founder = self.request.user.actor
         team.save()
 
-        # add founder as team member
-        membership = Membership.objects.create(
-            actor=self.request.user.actor,
-            team=team,
-            admin=True
-        )
         messages.success(self.request, "New team created!")
 
         return redirect(reverse('team:detail', kwargs={'team_slug': team.slug}))

@@ -1,7 +1,6 @@
 import logging
 
 from django.db import models
-from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from guardian.shortcuts import get_perms, assign_perm
 
@@ -51,21 +50,16 @@ class Context(TeamRelatedModel):
             'context_slug': self.slug
         })
 
+    def grant_permissions(self):
+        #logger.debug("Assigning permissions for context %s" % self)
+        assign_perm('context.view_context', self.team.group, self)
+        assign_perm('context.change_context', self.team.admingroup, self)
+        assign_perm('context.delete_context', self.team.admingroup, self)
+
     def save(self, **kwargs):
-        # do we have a slug?
-        if not self.slug:
-            self.slug = slugify(self.name)
+        # save the Context
         super().save(**kwargs)
 
-        # fix context.view_context permission if needed 
-        if not 'context.view_context' in get_perms(self.team.group, self):
-            assign_perm('context.view_context', self.team.group, self)
-
-        # fix context.change_context permission if needed 
-        if not 'context.change_context' in get_perms(self.team.admingroup, self):
-            assign_perm('context.change_context', self.team.admingroup, self)
-
-        # fix context.delete_context permission if needed 
-        if not 'context.delete_context' in get_perms(self.team.admingroup, self):
-            assign_perm('context.delete_context', self.team.admingroup, self)
+        # grant permissions for the context
+        self.grant_permissions()
 

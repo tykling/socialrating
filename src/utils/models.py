@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils import timezone
+from django.template.defaultfilters import slugify
 
 from eventlog.models import Event
 
@@ -14,9 +15,12 @@ logger = logging.getLogger("socialrating.%s" % __name__)
 class BaseModel(models.Model):
     """
     All models in this project are subclassed from this BaseModel
+    It adds created and updated datetime fields. It also sets it so
+    no default permissions are created for new model instances.
     """
     class Meta:
         abstract = True
+        default_permissions = ()
 
     created = models.DateTimeField(
         auto_now_add=True,
@@ -32,10 +36,19 @@ class BaseModel(models.Model):
 
     def save(self, **kwargs):
         """
-        call the models full_clean() method before saving,
+        Always validate before saving, even if the save doesn't
+        happen inside a form:
+        Call the models full_clean() method before saving,
         which in turn calls .clean_fields(), .clean() and 
         .validate_unique()
         """
+        # create a slug if we don't already have one. Max 50 chars.
+        if hasattr(self, 'slug') and not self.slug:
+            self.slug = slugify(self.name[0:50])
+            if not self.slug:
+                raise Exception("Unable to slugify, cannot save")
+
+        # do the validation
         try:
             self.full_clean()
         except ValidationError as e:

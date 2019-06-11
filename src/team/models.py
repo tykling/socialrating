@@ -98,30 +98,40 @@ class Team(BaseModel):
     def get_absolute_url(self):
         return reverse_lazy('team:detail', kwargs={'team_slug': self.slug})
 
+    def grant_permissions(self):
+        assign_perm('team.view_team', self.group, self)
+        assign_perm('team.change_team', self.admingroup, self)
+        assign_perm('team.delete_team', self.admingroup, self)
+
+    def create_django_groups(self):
+        self.group = Group.objects.create(name=self.name)
+        self.admingroup = Group.objects.create(name=self.name + " Admins")
+
+    def add_founder_membership(self):
+        # add founder as an admin team member
+        membership = Membership.objects.create(
+            actor=self.founder,
+            team=self,
+            admin=True
+        )
+
     def save(self, **kwargs):
         # create slug if we have none
         if not self.slug:
+            # create slug
             self.slug=slugify(self.name)
 
-        if not self.pk:
-            # this is a new Team, create django groups
-            self.group = Group.objects.create(name=self.name)
-            self.admingroup = Group.objects.create(name=self.name + " Admins")
+        pk = self.pk
+        if not pk:
+            # this is a new Team, create django groups before saving
+            self.create_django_groups()
 
-        # ok, save
         super().save(**kwargs)
 
-        # fix team.view_team permission if needed
-        if not 'team.view_team' in get_perms(self.group, self):
-            assign_perm('team.view_team', self.group, self)
-
-        # fix team.change_team permission if needed
-        if not 'team.change_team' in get_perms(self.admingroup, self):
-            assign_perm('team.change_team', self.admingroup, self)
-
-        # fix team.delete_team permission if needed
-        if not 'team.delete_team' in get_perms(self.admingroup, self):
-            assign_perm('team.delete_team', self.admingroup, self)
+        if not pk:
+            # this is a new team, add founder as member and grant Team permissions
+            self.add_founder_membership()
+            self.grant_permissions()
 
     @property
     def adminmembers(self):
@@ -135,6 +145,9 @@ class Membership(BaseModel):
     """
     The m2m through model which links Actor and Team together
     """
+    class Meta:
+        unique_together = [('actor', 'team')]
+
     actor = models.ForeignKey(
         'actor.Actor',
         on_delete=models.PROTECT,
@@ -157,10 +170,8 @@ class Membership(BaseModel):
     def __str__(self):
         return "%s is %s of team %s" % (self.actor.user.username, "an admin" if self.admin else "a member", self.team.name)
 
-    def save(self, **kwargs):
-        """
-        Create Django group memberships to match this Team membership
-        """
+    def fix_group_memberships(self):
+        #logger.debug("Group memberships for %s before: %s" % (self.actor, self.actor.user.groups.all()))
         if not self.actor.user.groups.filter(name=self.team.group.name).exists():
             # add the user to django group
             #logger.debug("Adding user %s to group %s" % (self.actor.user, self.team.group))
@@ -171,5 +182,13 @@ class Membership(BaseModel):
             #logger.debug("Adding user %s to admingroup %s" % (self.actor.user, self.team.admingroup))
             self.actor.user.groups.add(self.team.admingroup)
 
+        #logger.debug("Group memberships for %s after: %s" % (self.actor, self.actor.user.groups.all()))
+
+
+    def save(self, **kwargs):
+        """
+        Create Django group memberships to match this Team membership
+        """
         super().save(**kwargs)
+        self.fix_group_memberships()
 

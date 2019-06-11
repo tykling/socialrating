@@ -10,7 +10,6 @@ from team.models import TeamRelatedModel
 class Category(TeamRelatedModel):
     """
     A category defines a type of thing/place/event. A Category belongs to a Team.
-    Team owners can create, modify, and delete categories.
     """
     class Meta:
         ordering = ['weight', 'name']
@@ -58,26 +57,17 @@ class Category(TeamRelatedModel):
             'category_slug': self.slug
         })
 
+    def grant_permissions(self):
+        #logger.debug("Assigning permissions for category %s" % self)
+        assign_perm('category.view_category', self.team.group, self)
+        assign_perm('category.change_category', self.team.admingroup, self)
+        assign_perm('category.delete_category', self.team.admingroup, self)
+
     def save(self, **kwargs):
-        self.slug = slugify(self.name)
+        # save the category
         super().save(**kwargs)
-
-        # fix category.view_category permission if needed 
-        if not 'category.view_category' in get_perms(self.team.group, self):
-            assign_perm('category.view_category', self.team.group, self)
-
-        # fix category.add_category permission if needed 
-        if not 'category.add_category' in get_perms(self.team.admingroup, self):
-            assign_perm('category.add_category', self.team.admingroup)
-
-        # fix category.change_category permission if needed 
-        if not 'category.change_category' in get_perms(self.team.admingroup, self):
-            assign_perm('category.change_category', self.team.admingroup, self)
-
-        # fix category.delete_category permission if needed 
-        if not 'category.delete_category' in get_perms(self.team.admingroup, self):
-            assign_perm('category.delete_category', self.team.admingroup, self)
-
+        # grant permissions for the category
+        self.grant_permissions()
 
     def create_fact_slug(self, fact_name):
         """

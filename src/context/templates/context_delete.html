@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block team_content %}
+<h2>Delete Context <i>{{ object.name }}</i> ?</h2>
+<p class="lead">Deleting this Context will also delete all <i>{{ object.name }}</i> reviews, votes and attachments!
+<form method="post" class="form">
+  {% csrf_token %}
+  {% buttons %}
+    <a href="{% url 'team:context:detail' team_slug=context.team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-undo"></i> No, Go Back</button></a>
+    <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Yes, Delete Context</button>
+  {% endbuttons %}
+</form>
+{% endblock team_content %}
+

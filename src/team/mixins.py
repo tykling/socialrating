@@ -1,7 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404
-from django.http import Http404
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
@@ -12,27 +12,21 @@ logger = logging.getLogger("socialrating.%s" % __name__)
 
 class TeamSlugMixin:
     """
-    A mixin to set self.team based on team_slug from the URL
-    It also checks if the current user is a member of the team and returns 404 if not.
-    This check is mostly for the sake of the user. Proper permissions are checked later with guardian.
+    A mixin to set self.team based on team_slug from the URL,
+    or return 404 if the slug was not found.
+    Then check if request.user has permissions to view the team,
+    and return 403 if not.
     """
     def setup(self, *args, **kwargs):
-        logger.debug("Inside TeamSlugMixin")
+        # super setup() so we have self.request available
         super().setup(*args, **kwargs)
+
+        # get the team or return 404
         self.team = get_object_or_404(Team, slug=kwargs["team_slug"])
-        if not hasattr(self.request.user, 'actor') or self.request.user.actor not in self.team.members.all():
-            raise Http404
 
-
-class TeamAdminRequiredMixin:
-    """
-    Check if self.request.user is an admin of self.team
-    """
-    def setup(self, *args, **kwargs):
-        # run super() first so we have self.request available
-        super().setup(*args, **kwargs)
-        if self.request.user.actor not in self.team.members.filter(admin=True):
-            raise Http404
+        # check permissions
+        if not self.request.user.has_perm('team.view_team', self.team):
+            raise PermissionDenied
 
 
 class TeamFilterMixin:
