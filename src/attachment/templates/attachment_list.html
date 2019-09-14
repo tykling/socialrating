@@ -40,10 +40,11 @@
     </tbody>
 </table>
 {% else %}
-<p class="lead">No categories found. Go create one!</p>
+<p class="lead">No attachments found.</p>
 {% endif %}
-{% if "add_category" in category_perms %}
-  <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success">Create Category</a>
+{% get_obj_perms request.user for review as "review_perms" %}
+{% if "change_review" in review_perms %}
+<a href="{% url 'team:category:item:review:attachment:create' team_slug=review.team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-success">Create Attachment</a>
 {% endif %}
 {% endblock category_content %}
 

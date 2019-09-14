@@ -1,5 +1,4 @@
-import logging, random
-from faker import Faker
+import logging, random, factory
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -31,7 +30,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info('Bootstrapping database with mock data...')
-        fake = Faker()
 
         # add Users (which then adds actors)
         self.mock(
@@ -71,30 +69,14 @@ class Command(BaseCommand):
         ###################
         # add team members for all teams
         for team in Team.objects.all():
-            # add team founders and site admin as team admin members
-            Membership.objects.create(
-                team=team,
-                actor=team.founder,
-                admin=True
-            )
-
+            # add site admin as admin team member of all teams
             Membership.objects.create(
                 team=team,
                 actor=admin.actor,
                 admin=True
             )
 
-            # add non-admin team members
-            membercount = random.randint(1, int(Actor.objects.count() / Team.objects.count()))
-            logger.info("creating %s non-admin members of team %s" % (membercount, team))
-            self.mock(
-                model=Membership,
-                factory=MembershipFactory,
-                count=membercount,
-                team=team,
-            )
-
-        # add remaining Actors with no team to a random team
+        # add all remaining Actors with no team to a random team
         for actor in Actor.objects.filter(memberships__isnull=True):
             Membership.objects.create(
                 team=Team.objects.all().order_by('?').first(),
@@ -236,8 +218,8 @@ class Command(BaseCommand):
                 review = Review.objects.create(
                     actor=actor,
                     item=car,
-                    headline=fake.sentence(),
-                    body=fake.text() if random.choice([True, False]) else None,
+                    headline=factory.Faker("sentence").generate(),
+                    body=factory.Faker("text").generate() if random.choice([True, False]) else None,
                     context=random.choice([classic_car_context, japanese_car_context]),
                 )
                 logger.debug("created review %s" % review)
@@ -249,7 +231,7 @@ class Command(BaseCommand):
                             review=review,
                             rating=rating,
                             vote=random.randint(1, rating.max_rating),
-                            comment=fake.sentence() if random.choice([True, False]) else None,
+                            comment=factory.Faker("sentence").generate() if random.choice([True, False]) else None,
                         )
                         logger.debug("created vote %s" % vote)
 
@@ -315,8 +297,9 @@ class Command(BaseCommand):
     def mock(self, model, factory, count, chunksize=10, bulk=True, **kwargs):
         """
         The mock function has two modes of operation, bulk or not.
-        Djangos bulk_create method is fast but does not call the .save() method,
-        and does not trigger signals. Use bulk if possible, it is much faster.
+        Djangos bulk_create method is fast but does not call the .save()
+        method, and does not trigger signals. Use bulk if possible, it
+        is much faster.
         """
         logger.info("Creating %s instances of model %s using factory %s and kwargs %s" % (count, model, factory, kwargs))
         if bulk:

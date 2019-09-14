@@ -3,7 +3,7 @@
 
 {% block team_content %}
 {% get_obj_perms request.user for category as "category_perms" %}
-<p class="lead">Details for category {{ category.name }}
+<p class="lead">Details for Category {{ category.name }}
 {% if "change_category" in category_perms %}
   <a href="{% url 'team:category:update' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i> Update</a>
 {% endif %}

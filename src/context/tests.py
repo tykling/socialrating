@@ -12,7 +12,7 @@ class ContextViewTestCase(TeamViewTestCase):
 
     def setUp(self):
         """ The setUp method is run before each test """
-        # make sure to call TeamViewTestCase.setup_teams() so we have some teams to work with
+        # make sure to call TeamViewTestCase.setUp() so we have some teams to work with
         super().setUp()
 
         # create contexts
@@ -182,7 +182,7 @@ class ContextUpdateViewTest(ContextViewTestCase):
         self.assertEqual(response.status_code, 403)
 
 
-    def test_team_update_regular_member(self):
+    def test_context_update_regular_member(self):
         # login as a regular team member
         self.client.force_login(self.team2_member)
         response = self.client.post(
@@ -192,7 +192,7 @@ class ContextUpdateViewTest(ContextViewTestCase):
         self.assertEqual(response.status_code, 403)
 
 
-    def test_team_update_regular_member_other_team(self):
+    def test_context_update_regular_member_other_team(self):
         # login as a regular team member of another team
         self.client.force_login(self.team1_member)
         response = self.client.post(
@@ -202,7 +202,7 @@ class ContextUpdateViewTest(ContextViewTestCase):
         self.assertEqual(response.status_code, 403)
 
 
-    def test_team_update_admin_member(self):
+    def test_context_update_admin_member(self):
         # login as the team admin user
         self.client.force_login(self.team2_admin)
         response = self.client.post(
@@ -216,7 +216,7 @@ class ContextUpdateViewTest(ContextViewTestCase):
         self.assertContains(response, "Context updated!")
 
 
-    def test_team_update_admin_member_other_team(self):
+    def test_context_update_admin_member_other_team(self):
         # login as the team admin user
         self.client.force_login(self.team1_admin)
         response = self.client.post(

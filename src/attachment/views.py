@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib import messages
 from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
 from review.mixins import ReviewSlugMixin
@@ -21,6 +22,12 @@ class AttachmentListView(ReviewSlugMixin, PermissionListMixin, ListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(review=self.review)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['review'] = self.review
+        print(context)
+        return context
 
 
 class AttachmentView(ReviewSlugMixin, PermissionRequiredMixin, DetailView):

@@ -71,8 +71,9 @@ class Category(TeamRelatedModel):
 
     def create_fact_slug(self, fact_name):
         """
-        Use the EavSlugField.create_slug_from_name to convert the name (including
-        category id to make them unique) to a format which can be used as a Django field name
+        Use the EavSlugField.create_slug_from_name to convert the name
+        (including category id to make them unique) to a format which
+        can be used as a Django field name
         """
         return eav.fields.EavSlugField.create_slug_from_name("category%s_%s" % (self.pk, fact_name))
 
