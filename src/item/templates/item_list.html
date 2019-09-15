@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load get_eav_value %}
+{% load guardian_tags %}
+{% load rating %}
+
+{% block team_content %}
+{% if item_list %}
+<h2>Items in Category {{ category.name }}</h2>
+ <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Item</th>
+        {% for fact in item_list.0.facts.all %}
+        <th>{{ fact.name }}</th>
+        {% endfor %}
+        {% for rating in item_list.0.ratings.all %}
+        <th>{{ rating.name }}</th>
+        {% endfor %}
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for item in item_list %}
+      {% get_obj_perms request.user for item as "item_perms" %}
+      {% if "view_item" in item_perms %}
+      <tr>
+        <td>{{ item.name }}</td>
+        {% for fact in item.facts.all %}
+          <td>
+            {{ item|get_eav_value:fact.slug }}
+          </td>
+        {% endfor %}
+        {% for rating in item.category.ratings.all %}
+        <td style="white-space: nowrap" class="text-right">
+          {% get_average_vote item rating as avg_vote %}
+          {% get_actor_vote item rating as actor_vote %}
+          Average Vote: {{ avg_vote.0 }} ({{ avg_vote.1 }})<br>
+          {{ avg_vote.0 | stars:rating.max_rating }}
+          <br>
+          {% if actor_vote %}
+          Your Latest: {{ actor_vote|default:"N/A" }}<br>
+          {{ actor_vote | stars:rating.max_rating }}
+          {% endif %}
+        </td>
+        {% endfor %}
+        <td>
+          <a href="{% url 'team:category:item:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Details</a>
+          {% if "change_item" in item_perms %}
+            <a href="{% url 'team:category:item:update' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i> Update</a>
+          {% endif %}
+          {% if "delete_item" in item_perms %}
+            <a href="{% url 'team:category:item:delete' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-danger btn-xs"><i class="fas fa-times"></i> Delete</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="lead">No items found. Go create one!</p>
+{% endif %}
+{% if perms.item.add_item %}
+  <a href="{% url 'team:category:item:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create Item</a>
+{% endif %}
+{% endblock team_content %}
+

@@ -11,10 +11,14 @@ from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
 from review.mixins import ReviewSlugMixin
 from utils.svgthumbnail import svgthumbnail
+from utils.mixins import PermissionRequiredOr403Mixin
 from .models import Attachment
 
 
 class AttachmentListView(ReviewSlugMixin, PermissionListMixin, ListView):
+    """
+    List all attachments belonging to a specific review
+    """
     model = Attachment
     paginate_by = 100
     template_name = 'attachment_list.html'
@@ -26,14 +30,14 @@ class AttachmentListView(ReviewSlugMixin, PermissionListMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['review'] = self.review
-        print(context)
         return context
 
 
-class AttachmentView(ReviewSlugMixin, PermissionRequiredMixin, DetailView):
+class AttachmentView(ReviewSlugMixin, PermissionRequiredOr403Mixin, DetailView):
     """
-    This view returns a http response with the file for an Attachment object,
-    with the proper mimetype.
+    This view returns a http response with the contents of the file
+    and the proper mimetype.
+    It can also return a thumbnail instead of the actual file.
     TODO: Make the webserver serve the files
     """
     model = Attachment
@@ -70,27 +74,28 @@ class AttachmentView(ReviewSlugMixin, PermissionRequiredMixin, DetailView):
 
 
 class AttachmentCreateView(ReviewSlugMixin, CreateView):
+    """
+    This view allows the user to add new attachments to an existing
+    review.
+    """
     model = Attachment
     template_name = 'attachment_form.html'
-    fields = ['attachment', 'description']
-
-    def setup(self, *args, **kwargs):
-        """
-        TODO: Figure out why PermissionRequiredMixin doesn't seem to work with CreateView
-        """
-        super().setup(*args, **kwargs)
-        if not self.request.user.has_perms('attachment.add_attachment'):
-            raise Http404
+    fields = ['attachments']
 
     def form_valid(self, form):
-        attachment = form.save(commit=False)
-        attachment.review=self.review
-        attachment.save()
+        save_form_attachments(
+            form=form,
+            fieldname="attachments",
+            review=review
+        )
 
-        messages.success(self.request, "Saved new attachment %s for review %s" % (
-            attachment.pk,
-            attachment.review,
-        ))
+        messages.success(
+            self.request,
+            "Saved new attachment %s for review %s" % (
+                attachment.pk,
+                attachment.review,
+            )
+        )
 
         # redirect to the saved review
         return redirect(reverse(
@@ -105,6 +110,9 @@ class AttachmentCreateView(ReviewSlugMixin, CreateView):
 
 
 class AttachmentUpdateView(ReviewSlugMixin, PermissionRequiredMixin, UpdateView):
+    """
+    View to update the description of an existing Attachment
+    """
     model = Attachment
     template_name = 'attachment_form.html'
     fields = ['description']
@@ -112,12 +120,16 @@ class AttachmentUpdateView(ReviewSlugMixin, PermissionRequiredMixin, UpdateView)
     permission_required = 'attachment.change_attachment'
 
     def get_success_url(self):
-        return(reverse('team:category:item:review:detail', kwargs={
-            'team_slug': self.team.slug,
-            'category_slug': self.category.slug,
-            'item_slug': self.item.slug,
-            'review_uuid': self.review.pk,
-        }))
+        return(reverse(
+            'team:category:item:review:attachment:detail',
+            kwargs={
+                'team_slug': self.team.slug,
+                'category_slug': self.category.slug,
+                'item_slug': self.item.slug,
+                'review_uuid': self.review.pk,
+                'attachment_uuid': self.get_object().pk,
+            }
+        )) 
 
 
 class AttachmentDeleteView(ReviewSlugMixin, PermissionRequiredMixin, DeleteView):

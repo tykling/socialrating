@@ -17,7 +17,7 @@ class CategoryViewTestCase(ContextViewTestCase):
         # make sure to call ContextViewTestCase.setUp() so we have some teams and contexts to work with
         super().setUp()
 
-        # create categories
+        # create 3 categories for each team
         for team in [self.team1, self.team2]:
             for i in range(1,3):
                 category = CategoryFactory(team=team)
@@ -33,8 +33,12 @@ class CategoryViewTestCase(ContextViewTestCase):
         }
 
         # define other urls
-        self.list_url = reverse("team:category:list", kwargs={'team_slug': self.team1.slug})
-        self.create_url = reverse("team:category:create", kwargs={'team_slug': self.team1.slug})
+        self.list_url = reverse("team:category:list", kwargs={
+            'team_slug': self.team1.slug
+        })
+        self.create_url = reverse("team:category:create", kwargs={
+            'team_slug': self.team1.slug
+        })
         self.update_url = reverse("team:category:update", kwargs={
             'team_slug': self.team2.slug,
             'category_slug': self.team2_category3.slug,

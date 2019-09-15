@@ -16,6 +16,7 @@ from item.mixins import ItemSlugMixin
 from rating.models import Vote
 from context.models import Context
 from attachment.models import Attachment
+from attachment.utils import save_form_attachments
 from team.mixins import TeamFilterMixin
 from .models import Review
 
@@ -43,7 +44,7 @@ class ReviewCreateView(ItemSlugMixin, CreateView):
     model = Review
     template_name = 'review_form.html'
     fields = ['headline', 'body', 'context']
-    permission_required = 'review.view_review'
+    permission_required = 'review.create_review'
 
     def setup(self, *args, **kwargs):
         """
@@ -95,7 +96,7 @@ class ReviewCreateView(ItemSlugMixin, CreateView):
                     'multiple': True,
                 }
             ),
-            label='Attach files to the Review',
+            label='Attach files to the Review (descriptions can be added after upload)',
             required=False,
         )
 
@@ -103,8 +104,8 @@ class ReviewCreateView(ItemSlugMixin, CreateView):
 
     def form_valid(self, form):
         """
-        First save the new Review,
-        then save any Votes, Attachments and Tags.
+        First save the new Review, then save any Votes, Attachments and
+        Tags.
         """
         # save everything in a single transaction so we save it all or nothing
         with transaction.atomic():
@@ -119,31 +120,36 @@ class ReviewCreateView(ItemSlugMixin, CreateView):
                 votefield = "%s_vote" % rating.slug
                 commentfield = "%s_comment" % rating.slug
                 if votefield in form.fields and form.cleaned_data[votefield]:
+                    # do we have a comment for this vote?
+                    if commentfield in form.cleaned_data:
+                        comment = form.cleaned_data[commentfield]
+                    else:
+                        comment = ""
+                    # create the Vote object
                     Vote.objects.create(
                         review=review,
                         rating=rating,
                         vote=form.cleaned_data[votefield],
-                        comment=form.cleaned_data[commentfield] if commentfield in form.cleaned_data else '',
+                        comment=comment,
                     )
 
+            # save any attachments
             if form.is_multipart():
-                # loop over any uploaded files and create an 
-                # Attachment object for each as we go
-                files = form.files.getlist('attachments')
-                for attachment in files:
-                    mimetype = magic.from_buffer(attachment.read(), mime=True)
-                    saved = Attachment.objects.create(
-                        review=review,
-                        attachment=attachment,
-                        mimetype=mimetype,
-                        size=attachment.size,
-                    )
+                save_form_attachments(
+                    form=form,
+                    fieldname="attachments",
+                    review=review,
+                )
 
-        messages.success(self.request, "Saved review %s (%s votes, %s attachments)" % (
-            review.pk,
-            review.votes.count(),
-            review.attachments.count()
-        ))
+        # all done
+        messages.success(
+            self.request,
+            "Saved review %s (%s votes, %s attachments)" % (
+                review.pk,
+                review.votes.count(),
+                review.attachments.count(),
+            )
+        )
 
         # redirect to the saved review
         return redirect(reverse(

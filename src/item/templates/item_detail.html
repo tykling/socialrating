@@ -95,9 +95,7 @@
     <table class="table table-bordered">
       {% for rating in item.category.ratings.all %}
       {% get_average_vote item rating as avg_vote %}
-      {% if request.user.is_authenticated %}
       {% get_actor_vote item rating as actor_vote %}
-      {% endif %}
       <tr>
         <td>
           <b>{{ rating.name }}</b><br>{{ rating.description }}

@@ -3,7 +3,7 @@
       {% for menucategory in team.categories.all %}
         {% get_obj_perms request.user for menucategory as "category_perms" %}
         {% if "view_category" in category_perms %}
-          <h5>{{ menucategory.name }} <a href="{% url 'team:category:item:create' team_slug=team.slug category_slug=menucategory.slug %}"><i class="fas fa-plus text-success"></i></a></h5>
+          <h5>{{ menucategory.name }} <a href="{% url 'team:category:item:list' team_slug=team.slug category_slug=menucategory.slug %}"><i class="fas fa-list text-success"></i></a> <a href="{% url 'team:category:item:create' team_slug=team.slug category_slug=menucategory.slug %}"><i class="fas fa-plus text-success"></i></a></h5>
           {% for item in menucategory.items.all %}
             {% get_obj_perms request.user for item as "item_perms" %}
             {% if "view_item" in item_perms %}

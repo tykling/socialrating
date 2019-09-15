@@ -36,6 +36,7 @@ class Item(TeamRelatedModel):
     )
 
     slug = models.SlugField(
+        max_length=100,
         help_text='The slug for this Item. Must be unique within the Category.',
     )
 
@@ -55,21 +56,19 @@ class Item(TeamRelatedModel):
             'item_slug': self.slug,
         })
 
+    def grant_permissions(self):
+        #logger.debug("Assigning permissions for item %s" % self)
+        assign_perm('item.view_item', self.team.group, self)
+        assign_perm('item.change_item', self.team.group, self)
+        assign_perm('item.delete_item', self.team.group, self)
+
     def save(self, **kwargs):
+        # create/update slug
         self.slug = slugify(self.name)
+        # save the Item
         super().save(**kwargs)
-
-        # fix item.view_item permission if needed 
-        if not 'item.view_item' in get_perms(self.team.group, self):
-            assign_perm('item.view_item', self.team.group, self)
-
-        # fix item.change_item permission if needed 
-        if not 'item.change_item' in get_perms(self.team.admingroup, self):
-            assign_perm('item.change_item', self.team.admingroup, self)
-
-        # fix item.delete_item permission if needed 
-        if not 'item.delete_item' in get_perms(self.team.admingroup, self):
-            assign_perm('item.delete_item', self.team.admingroup, self)
+        # grant permissions for the Item
+        self.grant_permissions()
 
 
     def get_average_vote(self, rating, only_latest=True):
@@ -132,10 +131,14 @@ class Item(TeamRelatedModel):
     @property
     def facts(self):
         """
-        We use the term "fact" to describe some aspect of an Item which is indisputable.
-        It is just another word for EAV attributes.
+        We use the term "fact" to describe some aspect of an Item which
+        is indisputable. Fact is just another word for EAV attributes.
         """
         return self.eav.get_all_attributes()
+
+    @property
+    def ratings(self):
+        return self.category.ratings.all()
 
 
 class ItemEavConfig(eav.registry.EavConfig):
@@ -146,6 +149,7 @@ class ItemEavConfig(eav.registry.EavConfig):
          Attributes which apply to the Category of this Item.
          """
          return entity.category.eav.get_all_attributes()
+
 
 # register Item model with django-eav2
 eav.register(Item, ItemEavConfig)

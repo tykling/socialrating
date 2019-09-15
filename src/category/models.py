@@ -28,6 +28,7 @@ class Category(TeamRelatedModel):
     )
 
     slug = models.SlugField(
+        max_length=100,
         help_text='The slug for this Category. Must be unique within the Team.',
     )
 
@@ -64,6 +65,8 @@ class Category(TeamRelatedModel):
         assign_perm('category.delete_category', self.team.admingroup, self)
 
     def save(self, **kwargs):
+        # create/update slug
+        self.slug = slugify(self.name)
         # save the category
         super().save(**kwargs)
         # grant permissions for the category

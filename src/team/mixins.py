@@ -28,6 +28,14 @@ class TeamSlugMixin:
         if not self.request.user.has_perm('team.view_team', self.team):
             raise PermissionDenied
 
+    def get_context_data(self, **kwargs):
+        """
+        Add Team to context
+        """
+        context = super().get_context_data(**kwargs)
+        context['team'] = self.team
+        return context
+
 
 class TeamFilterMixin:
     """

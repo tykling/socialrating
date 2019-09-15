@@ -14,14 +14,22 @@ class ItemSlugMixin(CategorySlugMixin):
     Inherits from CategoryMixin so we also have self.category available
     """
     def setup(self, *args, **kwargs):
-        logger.debug("Inside ItemMixin")
-        # call super() now so CategoryMixin runs first
+        # call super() now so CategorySlugMixin runs first
         super().setup(*args, **kwargs)
         self.item = get_object_or_404(
             Item,
             category=self.category,
             slug=self.kwargs["item_slug"],
         )
+
+    def get_context_data(self, **kwargs):
+        """
+        Add Item to context
+        """
+        context = super().get_context_data(**kwargs)
+        context['item'] = self.item
+        return context
+
 
 class ItemFormMixin:
     """
