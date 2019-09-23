@@ -18,6 +18,7 @@ from context.models import Context
 from attachment.models import Attachment
 from attachment.utils import save_form_attachments
 from team.mixins import TeamFilterMixin
+from utils.mixins import PermissionRequiredOr403Mixin
 from .models import Review
 
 logger = logging.getLogger("socialrating.%s" % __name__)
@@ -33,7 +34,7 @@ class ReviewListView(ItemSlugMixin, PermissionListMixin, ListView):
         return super().get_queryset().filter(item=self.item)
 
 
-class ReviewDetailView(ItemSlugMixin, PermissionRequiredMixin, DetailView):
+class ReviewDetailView(ItemSlugMixin, PermissionRequiredOr403Mixin, DetailView):
     model = Review
     template_name = 'review_detail.html'
     pk_url_kwarg = 'review_uuid'
@@ -44,16 +45,14 @@ class ReviewCreateView(ItemSlugMixin, CreateView):
     model = Review
     template_name = 'review_form.html'
     fields = ['headline', 'body', 'context']
-    permission_required = 'review.create_review'
+    permission_required = 'item.add_review'
 
-    def setup(self, *args, **kwargs):
+    def get_permission_object(self):
         """
-        TODO: Figure out why PermissionRequiredMixin doesn't seem to work with CreateView
+        Only users with item.add_review permission for self.item are
+        allowed to create new Reviews here
         """
-        super().setup(*args, **kwargs)
-        if not self.request.user.has_perm('review.add_review'):
-            logger.error("user %s does not have review.add_review permissions" % self.request.user)
-            raise Http404
+        return self.item
 
     def get_context_data(self, **kwargs):
         """
@@ -163,7 +162,7 @@ class ReviewCreateView(ItemSlugMixin, CreateView):
         ))
 
 
-class ReviewUpdateView(ItemSlugMixin, PermissionRequiredMixin, UpdateView):
+class ReviewUpdateView(ItemSlugMixin, PermissionRequiredOr403Mixin, UpdateView):
     model = Review
     template_name = 'review_form.html'
     pk_url_kwarg = 'review_uuid'
@@ -257,6 +256,16 @@ class ReviewUpdateView(ItemSlugMixin, PermissionRequiredMixin, UpdateView):
                         }
                     )
 
+        # all done
+        messages.success(
+            self.request,
+            "Updated review %s (%s votes, %s attachments)" % (
+                review.pk,
+                review.votes.count(),
+                review.attachments.count(),
+            )
+        )
+
         return redirect(reverse(
             'team:category:item:review:detail',
             kwargs={
@@ -268,18 +277,18 @@ class ReviewUpdateView(ItemSlugMixin, PermissionRequiredMixin, UpdateView):
         ))
 
 
-class ReviewDeleteView(ItemSlugMixin, PermissionRequiredMixin, DeleteView):
+class ReviewDeleteView(ItemSlugMixin, PermissionRequiredOr403Mixin, DeleteView):
     model = Review
     template_name = 'review_delete.html'
     pk_url_kwarg = 'review_uuid'
     permission_required = 'review.delete_review'
 
     def delete(self, request, *args, **kwargs):
-        messages.success(self.request, "Review %s has been deleted, along with all Votes, Attachments and Tags that related to it." % self.get_object())
+        messages.success(self.request, "Review has been deleted, along with all Votes, Attachments and Tags that related to it.")
         return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
-        return(reverse('team:category:item:detail', kwargs={
+        return(reverse('team:category:item:review:list', kwargs={
             'team_slug': self.team.slug,
             'category_slug': self.category.slug,
             'item_slug': self.item.slug,

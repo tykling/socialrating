@@ -16,12 +16,12 @@ class ItemViewTestCase(CategoryViewTestCase):
     def setUp(self):
         """ The setUp method is run before each test """
         # make sure to call CategoryViewTestCase.setUp() so we have
-        # some teams, contexts and items to work with
+        # some teams, contexts and categories to work with
         super().setUp()
 
-        # create 10-20 items per category
+        # create 3-5 items per category
         for category in Category.objects.all():
-            for i in range(1,random.randint(10,20)):
+            for i in range(1,random.randint(3,5)):
                 item = ItemFactory(category=category)
 
         # remember an item for later
@@ -257,19 +257,12 @@ class ItemDeleteViewTest(ItemViewTestCase):
 
 
     def test_item_delete_member(self):
-        """ Assert that regular teammembers can delete Items """
+        """ Assert that regular teammembers can not delete Items """
         self.client.force_login(self.team2_member)
         response = self.client.post(
             path=self.delete_url,
-            follow=True,
         )
-        # did we get redirected to the item list view?
-        self.assertContains(response, "Items in Category %s" % self.item.category.name, status_code=200)
-        # did the item disappear from the list?
-        self.assertNotContains(response, self.item.name)
-        # do we have the success message?
-        self.assertContains(response, "Item has been deleted")
-
+        self.assertEqual(response.status_code, 403)
 
     def test_item_delete_admin(self):
         """ Assert that team admins can delete items """

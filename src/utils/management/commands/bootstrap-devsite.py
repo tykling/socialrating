@@ -227,11 +227,18 @@ class Command(BaseCommand):
                 for rating in carcat.ratings.all():
                     # 50/50 chance if this actor voted for this Rating
                     if random.choice([True, False]):
+                        # 50/50 chance if this actor left a comment for this Vote
+                        if random.choice([True, False]):
+                            comment = factory.Faker("sentence").generate()
+                        else:
+                            comment = None
+
+                        # create the Vote
                         vote = Vote.objects.create(
                             review=review,
                             rating=rating,
                             vote=random.randint(1, rating.max_rating),
-                            comment=factory.Faker("sentence").generate() if random.choice([True, False]) else None,
+                            comment=comment,
                         )
                         logger.debug("created vote %s" % vote)
 

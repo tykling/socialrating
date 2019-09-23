@@ -41,11 +41,11 @@ class ItemCreateView(CategorySlugMixin, ItemFormMixin, PermissionRequiredOr403Mi
     model = Item
     template_name = 'item_form.html'
     form_class = ItemForm
-    permission_required = 'category.view_category'
+    permission_required = 'category.add_item'
 
     def get_permission_object(self):
         """
-        Only users with category.view_category permission for
+        Only users with category.add_item permission for
         self.category are allowed to create new Items
         """
         return self.category

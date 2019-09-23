@@ -32,7 +32,7 @@ class CategoryCreateView(TeamSlugMixin, PermissionRequiredOr403Mixin, CreateView
     model = Category
     template_name = 'category_form.html'
     fields = ['name', 'description']
-    permission_required = 'team.change_team'
+    permission_required = 'team.add_category'
 
     def get_permission_object(self):
         """

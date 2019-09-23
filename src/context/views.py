@@ -32,11 +32,11 @@ class ContextCreateView(TeamSlugMixin, PermissionRequiredOr403Mixin, CreateView)
     model = Context
     template_name = 'context_form.html'
     fields = ['name', 'description']
-    permission_required = 'team.change_team'
+    permission_required = 'team.add_context'
 
     def get_permission_object(self):
         """
-        Only users with team.change_team permission for self.team are
+        Only users with team.add_context permission for self.team are
         allowed to create new Contexts
         """
         return self.team

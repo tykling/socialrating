@@ -70,24 +70,18 @@ class Review(TeamRelatedUUIDModel):
             'review_uuid': self.pk,
         })
 
+    def grant_permissions(self):
+        """
+        - All team members may see a review
+        - Only the Review author may change the Review
+        - Only team admins and the Review author may delete a Review
+        """
+        assign_perm('review.view_review', self.team.group, self)
+        assign_perm('review.change_review', self.actor.user, self)
+        assign_perm('review.delete_review', self.actor.user, self)
+        assign_perm('review.delete_review', self.team.admingroup, self)
+
     def save(self, **kwargs):
         super().save(**kwargs)
-
-        # fix review.view_review permission if needed 
-        if not 'review.view_review' in get_perms(self.team.group, self):
-            assign_perm('review.view_review', self.team.group, self)
-
-        # fix review.add_review permission if needed 
-        if not 'review.add_review' in get_perms(self.team.group, self):
-            assign_perm('review.add_review', self.team.group)
-
-        # fix review.change_review permission if needed 
-        if not 'review.change_review' in get_perms(self.actor.user, self):
-            assign_perm('review.change_review', self.actor.user, self)
-
-        # fix review.delete_review permission if needed
-        if not 'review.delete_review' in get_perms(self.team.admingroup, self):
-            assign_perm('review.delete_review', self.team.admingroup, self)
-        if not 'review.delete_review' in get_perms(self.actor.user, self):
-            assign_perm('review.delete_review', self.actor.user, self)
+        self.grant_permissions()
 

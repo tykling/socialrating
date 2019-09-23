@@ -24,8 +24,8 @@ class User(AbstractUser):
 
 class Actor(UUIDBaseModel):
     """
-    Everything in socialrating relates to an Actor rather than directly to a User object.
-    An actor has a nullable OneToOneField to User.
+    Everything in socialrating relates to an Actor rather than directly
+    to a User object. An actor has a nullable OneToOneField to User.
     Actors are never deleted, but User objects can be deleted.
     """
     user = models.OneToOneField(

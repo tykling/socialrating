@@ -14,6 +14,9 @@ class Category(TeamRelatedModel):
     class Meta:
         ordering = ['weight', 'name']
         unique_together = [['name', 'team'], ['slug', 'team']]
+        permissions = (
+            ('add_item', 'Add Item belonging to this Category'),
+        )
 
     team = models.ForeignKey(
         'team.Team',
@@ -59,10 +62,16 @@ class Category(TeamRelatedModel):
         })
 
     def grant_permissions(self):
-        #logger.debug("Assigning permissions for category %s" % self)
+        """
+        - All team members may view a Category
+        - Admins may update a Category
+        - Admins may delete a Category
+        - All team members may create new Items in the Category
+        """
         assign_perm('category.view_category', self.team.group, self)
         assign_perm('category.change_category', self.team.admingroup, self)
         assign_perm('category.delete_category', self.team.admingroup, self)
+        assign_perm('category.add_item', self.team.group, self)
 
     def save(self, **kwargs):
         # create/update slug

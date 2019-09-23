@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load get_eav_value %}
+{% load guardian_tags %}
+{% load rating %}
+
+{% block team_content %}
+{% if review_list %}
+<h4>Reviews for {{ item.name }} ({{ review_list.count }} reviews)</h4>
+  {% for review in review_list %}
+    {% include 'includes/review_card.html' %}
+  {% endfor %}
+{% else %}
+<p class="lead">No reviews found. Go create one!</p>
+{% endif %}
+{% if perms.review.add_review %}
+  <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-success">Create Review</a>
+{% endif %}
+{% endblock team_content %}
+

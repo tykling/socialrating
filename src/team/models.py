@@ -49,6 +49,11 @@ class Team(BaseModel):
     """
     class Meta:
         ordering = ['name']
+        permissions = (
+            ('add_category', 'Add Category belonging to this Team'),
+            ('add_context', 'Add Context belonging to this Team'),
+        )
+
 
     group = models.OneToOneField(
         Group,
@@ -99,13 +104,28 @@ class Team(BaseModel):
         return reverse_lazy('team:detail', kwargs={'team_slug': self.slug})
 
     def grant_permissions(self):
+        """
+        - All team members may view the Team
+        - Admins may change the Team
+        - Admins may delete the Team
+        - Admins may create a new Category
+        - Admins may create a new Context
+        """
         assign_perm('team.view_team', self.group, self)
         assign_perm('team.change_team', self.admingroup, self)
         assign_perm('team.delete_team', self.admingroup, self)
+        assign_perm('team.add_category', self.admingroup, self)
+        assign_perm('team.add_context', self.admingroup, self)
+
 
     def create_django_groups(self):
+        # create group
         self.group = Group.objects.create(name=self.name)
-        self.admingroup = Group.objects.create(name=self.name + " Admins")
+        # create admingroup
+        self.admingroup = Group.objects.create(
+            name=self.name + " Admins",
+        )
+
 
     def add_founder_membership(self):
         # add founder as an admin team member
@@ -115,22 +135,23 @@ class Team(BaseModel):
             admin=True
         )
 
+
     def save(self, **kwargs):
-        # create slug if we have none
-        if not self.slug:
-            # create slug
-            self.slug=slugify(self.name)
-
+        # save pk for later
         pk = self.pk
+        # is this a new team?
         if not pk:
-            # this is a new Team, create django groups before saving
+            # create or update slug
+            self.slug=slugify(self.name)
+            # create django groups as needed before saving
             self.create_django_groups()
-
+        # save team
         super().save(**kwargs)
-
+        # is this a new team?
         if not pk:
-            # this is a new team, add founder as member and grant Team permissions
+            # this is a new team, add founder as member
             self.add_founder_membership()
+            # and grant Team permissions
             self.grant_permissions()
 
     @property
@@ -171,18 +192,18 @@ class Membership(BaseModel):
         return "%s is %s of team %s" % (self.actor.user.username, "an admin" if self.admin else "a member", self.team.name)
 
     def fix_group_memberships(self):
-        #logger.debug("Group memberships for %s before: %s" % (self.actor, self.actor.user.groups.all()))
-        if not self.actor.user.groups.filter(name=self.team.group.name).exists():
-            # add the user to django group
-            #logger.debug("Adding user %s to group %s" % (self.actor.user, self.team.group))
+        """
+        Fix Django group memberships based on this group membership
+        """
+        if not self.actor.user.groups.filter(
+            name=self.team.group.name
+        ).exists():
             self.actor.user.groups.add(self.team.group)
 
-        if self.admin and not self.actor.user.groups.filter(name=self.team.admingroup.name).exists():
-            # add the user to django admingroup
-            #logger.debug("Adding user %s to admingroup %s" % (self.actor.user, self.team.admingroup))
+        if self.admin and not self.actor.user.groups.filter(
+            name=self.team.admingroup.name
+        ).exists():
             self.actor.user.groups.add(self.team.admingroup)
-
-        #logger.debug("Group memberships for %s after: %s" % (self.actor, self.actor.user.groups.all()))
 
 
     def save(self, **kwargs):

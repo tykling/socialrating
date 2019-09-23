@@ -51,7 +51,11 @@ class Context(TeamRelatedModel):
         })
 
     def grant_permissions(self):
-        #logger.debug("Assigning permissions for context %s" % self)
+        """
+        - All team members may view a Context
+        - Admin members may change a Context
+        - Admin members may delete a Context
+        """
         assign_perm('context.view_context', self.team.group, self)
         assign_perm('context.change_context', self.team.admingroup, self)
         assign_perm('context.delete_context', self.team.admingroup, self)
@@ -59,7 +63,6 @@ class Context(TeamRelatedModel):
     def save(self, **kwargs):
         # save the Context
         super().save(**kwargs)
-
         # grant permissions for the context
         self.grant_permissions()
 
