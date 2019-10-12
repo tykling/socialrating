@@ -17,7 +17,13 @@
         <td>{{ team.name }}</td>
         <td>{{ team.members.count }}</td>
         <td>
-          <a href="{% url 'team:detail' team_slug=team.slug %}" class="btn btn-primary">Open Team</a>
+          <a href="{% url 'team:detail' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Open Team</a>
+          {% if 'team.change_team' in perms %}
+          <a href="{% url 'team:update' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update Team</a>
+          {% endif %}
+          {% if 'team.delete_team' in perms %}
+          <a href="{% url 'team:delete' team_slug=team.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete Team</a>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}

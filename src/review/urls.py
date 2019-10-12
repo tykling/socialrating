@@ -2,41 +2,30 @@ from django.urls import path, include
 
 from .views import *
 
-app_name = 'review'
+app_name = "review"
 
 urlpatterns = [
+    path("", ReviewListView.as_view(), name="list"),
+    path("create/", ReviewCreateView.as_view(), name="create"),
     path(
-        '',
-        ReviewListView.as_view(),
-        name='list',
-    ),
-    path(
-        'create/',
-        ReviewCreateView.as_view(),
-        name='create',
-    ),
-    path(
-        '<uuid:review_uuid>/',
-        include([
-            path(
-                '',
-                ReviewDetailView.as_view(),
-                name='detail',
-            ),
-            path(
-                'update/',
-                ReviewUpdateView.as_view(),
-                name='update',
-            ),
-            path(
-                'delete/',
-                ReviewDeleteView.as_view(),
-                name='delete',
-            ),
-            path('attachments/',
-                include('attachment.urls', namespace='attachment')
-            ),
-         ]),
+        "<uuid:review_uuid>/",
+        include(
+            [
+                path("", ReviewDetailView.as_view(), name="detail"),
+                path(
+                    "settings/",
+                    include(
+                        [
+                            path("", ReviewDetailView.as_view(), name="settings"),
+                            path("update/", ReviewUpdateView.as_view(), name="update"),
+                            path("delete/", ReviewDeleteView.as_view(), name="delete"),
+                        ]
+                    ),
+                ),
+                path(
+                    "attachments/", include("attachment.urls", namespace="attachment")
+                ),
+            ]
+        ),
     ),
 ]
-

@@ -1,0 +1,35 @@
+{% load guardian_tags %}
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Fact Name</th>
+        <th>Fact Description</th>
+        <th>Fact Type</th>
+        <th>Fact Required?</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for fact in fact_list %}
+      {% get_obj_perms request.user for fact as "fact_perms" %}
+      {% if "view_attribute" in fact_perms %}
+      <tr>
+        <td>{{ fact.name }}</td>
+        <td>{{ fact.description }}</td>
+        <td>{{ fact.datatype }}</td>
+        <td>{{ fact.required }}</td>
+        <td>
+          <a href="{% url 'team:category:fact:detail' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Details</a>
+          {% if "change_attribute" in fact_perms %}
+            <a href="{% url 'team:category:fact:update' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+          {% endif %}
+          {% if "delete_attribute" in fact_perms %}
+            <a href="{% url 'team:category:fact:delete' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+

@@ -21,7 +21,7 @@ class ItemViewTestCase(CategoryViewTestCase):
 
         # create 3-5 items per category
         for category in Category.objects.all():
-            for i in range(1,random.randint(3,5)):
+            for i in range(1, random.randint(3, 5)):
                 item = ItemFactory(category=category)
 
         # remember an item for later
@@ -29,29 +29,39 @@ class ItemViewTestCase(CategoryViewTestCase):
         self.detail_url = self.item.get_absolute_url()
 
         # save data to create a new item
-        self.item_data = {
-            'name': factory.Faker('sentence').generate(),
-        }
+        self.item_data = {"name": factory.Faker("sentence").generate()}
 
         # define other urls
-        self.list_url = reverse("team:category:item:list", kwargs={
-            'team_slug': self.item.team.slug,
-            'category_slug': self.item.category.slug,
-        })
-        self.create_url = reverse("team:category:item:create", kwargs={
-            'team_slug': self.item.team.slug,
-            'category_slug': self.item.category.slug,
-        })
-        self.update_url = reverse("team:category:item:update", kwargs={
-            'team_slug': self.item.team.slug,
-            'category_slug': self.item.category.slug,
-            'item_slug': self.item.slug,
-        })
-        self.delete_url = reverse("team:category:item:delete", kwargs={
-            'team_slug': self.item.team.slug,
-            'category_slug': self.item.category.slug,
-            'item_slug': self.item.slug,
-        })
+        self.list_url = reverse(
+            "team:category:item:list",
+            kwargs={
+                "team_slug": self.item.team.slug,
+                "category_slug": self.item.category.slug,
+            },
+        )
+        self.create_url = reverse(
+            "team:category:item:create",
+            kwargs={
+                "team_slug": self.item.team.slug,
+                "category_slug": self.item.category.slug,
+            },
+        )
+        self.update_url = reverse(
+            "team:category:item:update",
+            kwargs={
+                "team_slug": self.item.team.slug,
+                "category_slug": self.item.category.slug,
+                "item_slug": self.item.slug,
+            },
+        )
+        self.delete_url = reverse(
+            "team:category:item:delete",
+            kwargs={
+                "team_slug": self.item.team.slug,
+                "category_slug": self.item.category.slug,
+                "item_slug": self.item.slug,
+            },
+        )
 
 
 class ItemListViewTest(ItemViewTestCase):
@@ -65,17 +75,18 @@ class ItemListViewTest(ItemViewTestCase):
             self.assertContains(
                 response,
                 "Items in Category %s" % self.item.category.name,
-                status_code=200
+                status_code=200,
             )
             # make sure we list all items for the category
             for item in self.item.category.items.all():
                 self.assertContains(response, item.name)
             # and none of the items from some other category
-            for item in self.team2.categories.exclude(
-                pk=self.item.category.pk
-            ).first().items.all():
+            for item in (
+                self.team2.categories.exclude(pk=self.item.category.pk)
+                .first()
+                .items.all()
+            ):
                 self.assertNotContains(response, item.name)
-
 
     def test_item_list_nonmember(self):
         """ Assert that non-members can not list items """
@@ -94,13 +105,10 @@ class ItemDetailViewTest(ItemViewTestCase):
             response = self.client.get(self.detail_url)
             self.assertContains(
                 response,
-                "%s is an Item in the Category %s." % (
-                    self.item.name,
-                    self.item.category.name
-                ),
-                status_code=200
+                "%s is an Item in the Category %s."
+                % (self.item.name, self.item.category.name),
+                status_code=200,
             )
-
 
     def test_item_detail_nonmember(self):
         """ Assert that item details denied for a non-member """
@@ -115,12 +123,8 @@ class ItemCreateViewTest(ItemViewTestCase):
     def test_item_create_unauthenticated(self):
         """ Assert that unauthenticated users can not create Items """
         # try creating without login
-        response = self.client.post(
-            path=self.create_url,
-            data=self.item_data,
-        )
+        response = self.client.post(path=self.create_url, data=self.item_data)
         self.assertEqual(response.status_code, 403)
-
 
     def test_item_create_admin(self):
         """ Assert that an admin member can create Items """
@@ -128,14 +132,10 @@ class ItemCreateViewTest(ItemViewTestCase):
         self.client.force_login(self.team2_admin)
 
         # create the item and follow the redirect
-        response = self.client.post(
-            self.create_url,
-            data=self.item_data,
-            follow=True,
-        )
+        response = self.client.post(self.create_url, data=self.item_data, follow=True)
 
         # make sure item name is in the response, and that status_code is 200
-        self.assertContains(response, self.item_data['name'], status_code=200)
+        self.assertContains(response, self.item_data["name"], status_code=200)
 
         # also check for the messages.success() message
         self.assertContains(response, "New Item created!")
@@ -146,18 +146,13 @@ class ItemCreateViewTest(ItemViewTestCase):
         self.client.force_login(self.team2_member)
 
         # create the item and follow the redirect
-        response = self.client.post(
-            self.create_url,
-            data=self.item_data,
-            follow=True,
-        )
+        response = self.client.post(self.create_url, data=self.item_data, follow=True)
 
         # make sure item name is in the response, and that status_code is 200
-        self.assertContains(response, self.item_data['name'], status_code=200)
+        self.assertContains(response, self.item_data["name"], status_code=200)
 
         # also check for the messages.success() message
         self.assertContains(response, "New Item created!")
-
 
     def test_item_create_nonmember(self):
         """ Assert that non-members can not create Items """
@@ -166,10 +161,7 @@ class ItemCreateViewTest(ItemViewTestCase):
         self.client.force_login(self.team1_member)
 
         # create the item and make sure we get 403
-        response = self.client.post(
-            self.create_url,
-            data=self.item_data,
-        )
+        response = self.client.post(self.create_url, data=self.item_data)
         self.assertEqual(response.status_code, 403)
 
 
@@ -179,60 +171,43 @@ class ItemUpdateViewTest(ItemViewTestCase):
     def test_item_update_unauthenticated(self):
         """ Assert that unauthenticated users can not update items """
         # first try updating without login
-        response = self.client.post(
-            path=self.update_url,
-            data=self.item_data,
-        )
+        response = self.client.post(path=self.update_url, data=self.item_data)
         self.assertEqual(response.status_code, 403)
-
 
     def test_item_update_regular_member(self):
         """ Assert that regular team members can update items """
         # login as a regular team member
         self.client.force_login(self.team2_member)
-        #print("posting to %s" % self.update_url)
+        # print("posting to %s" % self.update_url)
         response = self.client.post(
-            path=self.update_url,
-            data=self.item_data,
-            follow=True,
+            path=self.update_url, data=self.item_data, follow=True
         )
         # check for the new item name and the messages.success() message
-        self.assertContains(response, self.item_data['name'], status_code=200)
+        self.assertContains(response, self.item_data["name"], status_code=200)
         self.assertContains(response, "Item updated!")
-
 
     def test_item_update_admin_member(self):
         """ Assert that team admins can update items """
         # login as the team admin user
         self.client.force_login(self.team2_admin)
         response = self.client.post(
-            path=self.update_url,
-            data=self.item_data,
-            follow=True,
+            path=self.update_url, data=self.item_data, follow=True
         )
         # check for the new item name and the messages.success() message
-        self.assertContains(response, self.item_data['name'], status_code=200)
+        self.assertContains(response, self.item_data["name"], status_code=200)
         self.assertContains(response, "Item updated!")
-
 
     def test_team_update_regular_member_other_team(self):
         """ Assert that regular members of other teams can not update items """
         # login as a regular team member of another team
         self.client.force_login(self.team1_member)
-        response = self.client.post(
-            path=self.update_url,
-            data=self.item_data,
-        )
+        response = self.client.post(path=self.update_url, data=self.item_data)
         self.assertEqual(response.status_code, 403)
-
 
     def test_item_update_admin_member_other_team(self):
         """ Assert that admins of other teams can not update items """
         self.client.force_login(self.team1_admin)
-        response = self.client.post(
-            path=self.update_url,
-            data=self.item_data,
-        )
+        response = self.client.post(path=self.update_url, data=self.item_data)
         self.assertEqual(response.status_code, 403)
 
 
@@ -241,40 +216,30 @@ class ItemDeleteViewTest(ItemViewTestCase):
 
     def test_item_delete_unauthenticated(self):
         """ Assert that unauthenticated users can not delete Items """
-        response = self.client.post(
-            path=self.delete_url,
-        )
+        response = self.client.post(path=self.delete_url)
         self.assertEqual(response.status_code, 403)
-
 
     def test_item_delete_nonmember(self):
         """ Assert that non teammembers can not delete Items """
         self.client.force_login(self.team1_member)
-        response = self.client.post(
-            path=self.delete_url,
-        )
+        response = self.client.post(path=self.delete_url)
         self.assertEqual(response.status_code, 403)
-
 
     def test_item_delete_member(self):
         """ Assert that regular teammembers can not delete Items """
         self.client.force_login(self.team2_member)
-        response = self.client.post(
-            path=self.delete_url,
-        )
+        response = self.client.post(path=self.delete_url)
         self.assertEqual(response.status_code, 403)
 
     def test_item_delete_admin(self):
         """ Assert that team admins can delete items """
         self.client.force_login(self.team2_admin)
-        response = self.client.post(
-            path=self.delete_url,
-            follow=True,
-        )
+        response = self.client.post(path=self.delete_url, follow=True)
         # did we get redirected to the item list view?
-        self.assertContains(response, "Items in Category %s" % self.item.category.name, status_code=200)
+        self.assertContains(
+            response, "Items in Category %s" % self.item.category.name, status_code=200
+        )
         # did the item disappear from the list?
         self.assertNotContains(response, self.item.name)
         # do we have the success message?
         self.assertContains(response, "Item has been deleted")
-

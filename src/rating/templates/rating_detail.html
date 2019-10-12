@@ -15,6 +15,7 @@
 {% if "delete_rating" in rating_perms %}
   <a href="{% url 'team:category:rating:delete' team_slug=team.slug category_slug=rating.category.slug rating_slug=rating.slug %}" class="btn btn-danger btn-xs"><i class="fas fa-times"></i> Delete</a>
 {% endif %}
+<a href="{% url 'team:category:rating:list' team_slug=team.slug category_slug=rating.category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> Rating List</a>
 </div>
 {% endblock team_content %}
 

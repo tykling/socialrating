@@ -5,14 +5,10 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('actor', '0001_initial'),
-        ('team', '0001_initial'),
-    ]
+    dependencies = [("actor", "0001_initial"), ("team", "0001_initial")]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='membership',
-            unique_together={('actor', 'team')},
-        ),
+            name="membership", unique_together={("actor", "team")}
+        )
     ]

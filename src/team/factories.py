@@ -11,7 +11,7 @@ class TeamFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Team
 
-    name = factory.Faker('company')
+    name = factory.Faker("company")
     founder = factory.Iterator(Actor.objects.all())
 
 
@@ -21,4 +21,3 @@ class MembershipFactory(factory.django.DjangoModelFactory):
 
     actor = factory.Iterator(Actor.objects.all())
     team = factory.Iterator(Team.objects.all())
-

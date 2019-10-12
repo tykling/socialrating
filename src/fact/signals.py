@@ -14,17 +14,20 @@ def create_fact_permissions(sender, instance, created, **kwargs):
         return
     category = instance.entity_fk
 
-    # fix attribute.view_attribute permission if needed 
-    if not 'attribute.view_attribute' in get_perms(category.team.group, instance):
-        assign_perm('attribute.view_attribute', category.team.group, instance)
+    # fix attribute.view_attribute permission if needed
+    if not "attribute.view_attribute" in get_perms(category.team.group, instance):
+        assign_perm("attribute.view_attribute", category.team.group, instance)
 
-    # fix attribute.change_attribute permission if needed 
-    if not 'attribute.change_attribute' in get_perms(category.team.admingroup, instance):
-        assign_perm('attribute.change_attribute', category.team.admingroup, instance)
+    # fix attribute.change_attribute permission if needed
+    if not "attribute.change_attribute" in get_perms(
+        category.team.admingroup, instance
+    ):
+        assign_perm("attribute.change_attribute", category.team.admingroup, instance)
 
-    # fix attribute.delete_attribute permission if needed 
-    if not 'attribute.delete_attribute' in get_perms(category.team.admingroup, instance):
-        assign_perm('attribute.delete_attribute', category.team.admingroup, instance)
+    # fix attribute.delete_attribute permission if needed
+    if not "attribute.delete_attribute" in get_perms(
+        category.team.admingroup, instance
+    ):
+        assign_perm("attribute.delete_attribute", category.team.admingroup, instance)
 
     logger.debug("Created permissions for Fact %s" % instance)
-

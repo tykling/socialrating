@@ -19,33 +19,34 @@ from attachment.models import Attachment
 from attachment.utils import save_form_attachments
 from team.mixins import TeamFilterMixin
 from utils.mixins import PermissionRequiredOr403Mixin
+from utils.mixins import BreadCrumbMixin as BCMixin
+
 from .models import Review
+from .mixins import ReviewSlugMixin
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class ReviewListView(ItemSlugMixin, PermissionListMixin, ListView):
+class ReviewListView(ItemSlugMixin, PermissionListMixin, BCMixin, ListView):
     model = Review
     paginate_by = 100
-    template_name = 'review_list.html'
-    permission_required = 'review.view_review'
+    template_name = "review_list.html"
+    permission_required = "review.view_review"
 
     def get_queryset(self):
+        """
+        Only return Reviews for the Item in question
+        """
         return super().get_queryset().filter(item=self.item)
 
 
-class ReviewDetailView(ItemSlugMixin, PermissionRequiredOr403Mixin, DetailView):
+class ReviewCreateView(
+    ItemSlugMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
+):
     model = Review
-    template_name = 'review_detail.html'
-    pk_url_kwarg = 'review_uuid'
-    permission_required = 'review.view_review'
-
-
-class ReviewCreateView(ItemSlugMixin, CreateView):
-    model = Review
-    template_name = 'review_form.html'
-    fields = ['headline', 'body', 'context']
-    permission_required = 'item.add_review'
+    template_name = "review_form.html"
+    fields = ["headline", "body", "context"]
+    permission_required = "item.add_review"
 
     def get_permission_object(self):
         """
@@ -59,43 +60,38 @@ class ReviewCreateView(ItemSlugMixin, CreateView):
         Add Item to the context
         """
         context = super().get_context_data(**kwargs)
-        context['item'] = self.item
+        context["item"] = self.item
         return context
 
     def get_form(self, form_class=None):
         """
-        Add ratings to the form and set initial Context
-        QuerySet
+        Add ratings to the form and set initial Context QuerySet
         """
         form = super().get_form(form_class)
         for rating in self.item.category.ratings.all():
             choices = []
-            for choice in range(1, rating.max_rating+1):
+            for choice in range(1, rating.max_rating + 1):
                 choices.append((choice, choice))
             form.fields["%s_vote" % rating.slug] = forms.TypedChoiceField(
                 choices=choices,
                 coerce=int,
                 widget=forms.widgets.RadioSelect,
                 required=False,
-                label='%s: Please vote between 1-%s' % (rating.name, rating.max_rating),
+                label="%s: Please vote between 1-%s" % (rating.name, rating.max_rating),
             )
             form.fields["%s_comment" % rating.slug] = forms.CharField(
-                label='%s: A short comment for the Vote above' % rating.name,
+                label="%s: A short comment for the Vote above" % rating.name,
                 required=False,
             )
 
-        # set queryset for context
-        form.fields['context'].queryset = Context.objects.filter(team=self.team)
-        form.fields['context'].empty_label=None
+        # set queryset for context, only show Contexts for this Team
+        form.fields["context"].queryset = Context.objects.filter(team=self.team)
+        form.fields["context"].empty_label = None
 
         # add attachments field (support multiple files)
-        form.fields['attachments'] = forms.FileField(
-            widget=forms.ClearableFileInput(
-                attrs={
-                    'multiple': True,
-                }
-            ),
-            label='Attach files to the Review (descriptions can be added after upload)',
+        form.fields["attachments"] = forms.FileField(
+            widget=forms.ClearableFileInput(attrs={"multiple": True}),
+            label="Attach files to the Review (descriptions can be added after upload)",
             required=False,
         )
 
@@ -134,40 +130,46 @@ class ReviewCreateView(ItemSlugMixin, CreateView):
 
             # save any attachments
             if form.is_multipart():
-                save_form_attachments(
-                    form=form,
-                    fieldname="attachments",
-                    review=review,
-                )
+                save_form_attachments(form=form, fieldname="attachments", review=review)
 
         # all done
         messages.success(
             self.request,
-            "Saved review %s (%s votes, %s attachments)" % (
-                review.pk,
-                review.votes.count(),
-                review.attachments.count(),
-            )
+            "Saved review %s (%s votes, %s attachments)"
+            % (review.pk, review.votes.count(), review.attachments.count()),
         )
 
         # redirect to the saved review
-        return redirect(reverse(
-            'team:category:item:review:detail',
-            kwargs={
-                'team_slug': self.team.slug,
-                'category_slug': self.item.category.slug,
-                'item_slug': self.item.slug,
-                'review_uuid': review.pk
-            }
-        ))
+        return redirect(
+            reverse(
+                "team:category:item:review:detail",
+                kwargs={
+                    "team_slug": self.team.slug,
+                    "category_slug": self.item.category.slug,
+                    "item_slug": self.item.slug,
+                    "review_uuid": review.pk,
+                },
+            )
+        )
 
 
-class ReviewUpdateView(ItemSlugMixin, PermissionRequiredOr403Mixin, UpdateView):
+class ReviewDetailView(
+    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
     model = Review
-    template_name = 'review_form.html'
-    pk_url_kwarg = 'review_uuid'
-    fields = ['headline', 'body', 'context']
-    permission_required = 'review.change_review'
+    template_name = "review_detail.html"
+    pk_url_kwarg = "review_uuid"
+    permission_required = "review.view_review"
+
+
+class ReviewUpdateView(
+    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
+):
+    model = Review
+    template_name = "review_form.html"
+    pk_url_kwarg = "review_uuid"
+    fields = ["headline", "body", "context"]
+    permission_required = "review.change_review"
 
     def get_form(self, form_class=None):
         """
@@ -180,14 +182,11 @@ class ReviewUpdateView(ItemSlugMixin, PermissionRequiredOr403Mixin, UpdateView):
         for rating in self.item.category.ratings.all():
             # make a list of choices
             choices = []
-            for choice in range(1, rating.max_rating+1):
+            for choice in range(1, rating.max_rating + 1):
                 choices.append((choice, choice))
 
             try:
-                vote = Vote.objects.get(
-                    review=self.get_object(),
-                    rating=rating,
-                )
+                vote = Vote.objects.get(review=self.get_object(), rating=rating)
             except Vote.DoesNotExist:
                 vote = None
 
@@ -198,18 +197,18 @@ class ReviewUpdateView(ItemSlugMixin, PermissionRequiredOr403Mixin, UpdateView):
                 widget=forms.widgets.RadioSelect,
                 required=False,
                 initial=vote.vote if vote else None,
-                label='%s: Please vote between 1-%s' % (rating.name, rating.max_rating),
+                label="%s: Please vote between 1-%s" % (rating.name, rating.max_rating),
             )
 
             # add the comment CharField
             form.fields["%s_comment" % rating.slug] = forms.CharField(
                 required=False,
-                initial=vote.comment if vote else '',
-                label='%s: A short comment for the Vote above' % rating.name,
+                initial=vote.comment if vote else "",
+                label="%s: A short comment for the Vote above" % rating.name,
             )
 
             # set the list of Contexts for this team
-            form.fields['context'].queryset = Context.objects.filter(team=self.team)
+            form.fields["context"].queryset = Context.objects.filter(team=self.team)
 
         return form
 
@@ -218,7 +217,7 @@ class ReviewUpdateView(ItemSlugMixin, PermissionRequiredOr403Mixin, UpdateView):
         Add Item to the context
         """
         context = super().get_context_data(**kwargs)
-        context['item'] = self.item
+        context["item"] = self.item
         return context
 
     def form_valid(self, form):
@@ -240,7 +239,9 @@ class ReviewUpdateView(ItemSlugMixin, PermissionRequiredOr403Mixin, UpdateView):
                         review=review,
                         rating=rating,
                         vote=form.cleaned_data[votefield],
-                        comment=form.cleaned_data[commentfield] if commentfield in form.cleaned_data else '',
+                        comment=form.cleaned_data[commentfield]
+                        if commentfield in form.cleaned_data
+                        else "",
                     ).exists():
                         # this vote already exists in the database, no need to save it again
                         # TODO: when does this happen?
@@ -251,46 +252,54 @@ class ReviewUpdateView(ItemSlugMixin, PermissionRequiredOr403Mixin, UpdateView):
                         review=review,
                         rating=rating,
                         defaults={
-                            'vote': form.cleaned_data[votefield],
-                            'comment': form.cleaned_data[commentfield] if commentfield in form.cleaned_data else '',
-                        }
+                            "vote": form.cleaned_data[votefield],
+                            "comment": form.cleaned_data[commentfield]
+                            if commentfield in form.cleaned_data
+                            else "",
+                        },
                     )
 
         # all done
         messages.success(
             self.request,
-            "Updated review %s (%s votes, %s attachments)" % (
-                review.pk,
-                review.votes.count(),
-                review.attachments.count(),
+            "Updated review %s (%s votes, %s attachments)"
+            % (review.pk, review.votes.count(), review.attachments.count()),
+        )
+
+        return redirect(
+            reverse(
+                "team:category:item:review:detail",
+                kwargs={
+                    "team_slug": self.team.slug,
+                    "category_slug": self.item.category.slug,
+                    "item_slug": self.item.slug,
+                    "review_uuid": self.get_object().pk,
+                },
             )
         )
 
-        return redirect(reverse(
-            'team:category:item:review:detail',
-            kwargs={
-                'team_slug': self.team.slug,
-                'category_slug': self.item.category.slug,
-                'item_slug': self.item.slug,
-                'review_uuid': self.get_object().pk
-            }
-        ))
 
-
-class ReviewDeleteView(ItemSlugMixin, PermissionRequiredOr403Mixin, DeleteView):
+class ReviewDeleteView(
+    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
+):
     model = Review
-    template_name = 'review_delete.html'
-    pk_url_kwarg = 'review_uuid'
-    permission_required = 'review.delete_review'
+    template_name = "review_delete.html"
+    pk_url_kwarg = "review_uuid"
+    permission_required = "review.delete_review"
 
     def delete(self, request, *args, **kwargs):
-        messages.success(self.request, "Review has been deleted, along with all Votes, Attachments and Tags that related to it.")
+        messages.success(
+            self.request,
+            "Review has been deleted, along with all Votes, Attachments and Tags that related to it.",
+        )
         return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
-        return(reverse('team:category:item:review:list', kwargs={
-            'team_slug': self.team.slug,
-            'category_slug': self.category.slug,
-            'item_slug': self.item.slug,
-        }))
-
+        return reverse(
+            "team:category:item:review:list",
+            kwargs={
+                "team_slug": self.team.slug,
+                "category_slug": self.category.slug,
+                "item_slug": self.item.slug,
+            },
+        )

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block team_content %}
+<p class="lead">Team Settings for {{ team.name }}</p>
+{% if 'team.change_team' in perms %}
+    <a href="{% url 'team:update' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update Team</a>
+{% endif %}
+{% if 'team.delete_team' in perms %}
+    <a href="{% url 'team:delete' team_slug=team.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete Team</a>
+{% endif %}
+<hr>
+<a class="btn btn-primary" href="{% url 'team:category:list' team_slug=team.slug %}"><i class="fas fa-list"></i> Categories</a>
+<a class="btn btn-primary" href="{% url 'team:context:list' team_slug=team.slug %}"><i class="fas fa-list"></i> Contexts</a>
+<a class="btn btn-primary" href="{% url 'team:members' team_slug=team.slug %}"><i class="fas fa-list"></i> Members</a>
+{% endblock team_content %}
+

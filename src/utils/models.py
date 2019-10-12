@@ -18,18 +18,18 @@ class BaseModel(models.Model):
     It adds created and updated datetime fields. It also sets it so
     no default permissions are created for new model instances.
     """
+
     class Meta:
         abstract = True
         default_permissions = ()
 
     created = models.DateTimeField(
-        auto_now_add=True,
-        help_text='The date and time when this object was created.'
+        auto_now_add=True, help_text="The date and time when this object was created."
     )
 
     updated = models.DateTimeField(
         auto_now_add=True,
-        help_text='The date and time when this object was last updated.'
+        help_text="The date and time when this object was last updated.",
     )
 
     events = GenericRelation(Event)
@@ -43,7 +43,7 @@ class BaseModel(models.Model):
         .validate_unique()
         """
         # create a slug if we don't already have one. Max 50 chars.
-        if hasattr(self, 'slug') and not self.slug:
+        if hasattr(self, "slug") and not self.slug:
             self.slug = slugify(self.name[0:50])
             if not self.slug:
                 raise Exception("Unable to slugify, cannot save")
@@ -53,14 +53,14 @@ class BaseModel(models.Model):
             self.full_clean()
         except ValidationError as e:
             message = "Got ValidationError while saving: %s" % e
-            if hasattr(self, 'request'):
+            if hasattr(self, "request"):
                 messages.error(self.request, message)
             logger.error(message)
             # dont save, re-raise the exception
             raise
 
         # update the timstamp before saving
-        self.updated=timezone.now()
+        self.updated = timezone.now()
 
         super().save(**kwargs)
 
@@ -69,12 +69,8 @@ class UUIDBaseModel(BaseModel):
     """
     A BaseModel to make models use an uuid as PK
     """
+
     class Meta:
         abstract = True
 
-    uuid = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
-
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

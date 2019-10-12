@@ -1,2 +1,1 @@
-default_app_config = 'item.apps.ItemConfig'
-
+default_app_config = "item.apps.ItemConfig"

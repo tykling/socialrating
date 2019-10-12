@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password
 
 
 def generate_username(*args):
-    return factory.Faker("user_name").generate() + str(random.randint(1,99999))
+    return factory.Faker("user_name").generate() + str(random.randint(1, 99999))
 
 
 def generate_password(*args):
@@ -23,7 +23,6 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     username = factory.LazyAttribute(generate_username)
     password = make_password("testuser")
-    email = factory.Faker('email')
-    first_name = factory.Faker('first_name')
-    last_name = factory.Faker('last_name')
-
+    email = factory.Faker("email")
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")

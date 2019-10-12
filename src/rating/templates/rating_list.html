@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block team_content %}
+<p class="lead">Ratings for Category {{ category.name }}</p>
+{% include 'includes/rating_list_table.html' %}
+<div class="button-group">
+    <a href="{% url 'team:category:detail' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-search"></i> {{ category.name }} Category Details</a>
+</div>
+{% endblock team_content %}
+

@@ -8,47 +8,51 @@ from team.models import TeamRelatedModel, TeamRelatedUUIDModel
 
 class Rating(TeamRelatedModel):
     """
-    A Rating is some voteable aspect of a Category - peoples opinions rather than facts.
-    Every Rating describes something which can be numerically rated/voted on by users.
-    For example, a Rating for a "Concert Venue" might be "Sound Quality".
+    A Rating is some voteable aspect of a Category - peoples opinions
+    rather than facts. Every Rating describes something which can be
+    numerically rated/voted on by users. For example, a Rating for a
+    "Concert Venue" might be "Sound Quality".
     """
+
     class Meta:
-        ordering = ['name']
-        unique_together = [['name', 'category'], ['slug', 'category']]
+        ordering = ["name"]
+        unique_together = [["name", "category"], ["slug", "category"]]
 
     category = models.ForeignKey(
-        'category.Category',
+        "category.Category",
         on_delete=models.CASCADE,
-        related_name='ratings',
-        help_text='The Category on which this Item is based',
+        related_name="ratings",
+        help_text="The Category on which this Item is based",
     )
 
     name = models.CharField(
         max_length=100,
-        help_text='The name of this Rating. Must be unique within this Category.'
+        help_text="The name of this Rating. Must be unique within this Category.",
     )
 
     slug = models.SlugField(
-        help_text='The slug for this Rating. Must be unique within this Category.',
+        max_length=100,
+        help_text="The slug for this Rating. Must be unique within this Category.",
     )
 
     description = models.CharField(
         max_length=255,
-        help_text='Describe what users should consider when voting for this Rating. Please keep it to 255 characters or less.',
+        help_text="Describe what users should consider when voting for this Rating. Please keep it to 255 characters or less.",
     )
 
     max_rating = models.PositiveIntegerField(
-        help_text='The highest possible vote for this rating. Minimum 2, defaults to 5, maximum 100.',
+        help_text="The highest possible vote for this rating. Minimum 2, defaults to 5, maximum 100.",
         default=5,
     )
 
     icon = models.CharField(
         max_length=50,
-        default='fas fa-star',
-        help_text='The icon to use when visually displaying the votes for this rating.',
+        default="fas fa-star",
+        help_text="The icon to use when visually displaying the votes for this rating.",
     )
 
-    team_filter = 'category__team'
+    team_filter = "category__team"
+    breadcrumb_list_name = "Ratings"
 
     @property
     def team(self):
@@ -58,27 +62,30 @@ class Rating(TeamRelatedModel):
         return "Rating %s (Category: %s)" % (self.name, self.category)
 
     def get_absolute_url(self):
-        return reverse_lazy('team:category:rating:detail', kwargs={
-            'team_slug': self.category.team.slug,
-            'category_slug': self.category.slug,
-            'rating_slug': self.slug,
-        })
+        return reverse_lazy(
+            "team:category:rating:detail",
+            kwargs={
+                "team_slug": self.category.team.slug,
+                "category_slug": self.category.slug,
+                "rating_slug": self.slug,
+            },
+        )
 
     def save(self, **kwargs):
         self.slug = slugify(self.name)
         super().save(**kwargs)
 
-        # fix rating.view_rating permission if needed 
-        if not 'rating.view_rating' in get_perms(self.team.group, self):
-            assign_perm('rating.view_rating', self.team.group, self)
+        # fix rating.view_rating permission if needed
+        if not "rating.view_rating" in get_perms(self.team.group, self):
+            assign_perm("rating.view_rating", self.team.group, self)
 
-        # fix rating.change_rating permission if needed 
-        if not 'rating.change_rating' in get_perms(self.team.admingroup, self):
-            assign_perm('rating.change_rating', self.team.admingroup, self)
+        # fix rating.change_rating permission if needed
+        if not "rating.change_rating" in get_perms(self.team.admingroup, self):
+            assign_perm("rating.change_rating", self.team.admingroup, self)
 
-        # fix rating.delete_rating permission if needed 
-        if not 'rating.delete_rating' in get_perms(self.team.admingroup, self):
-            assign_perm('rating.delete_rating', self.team.admingroup, self)
+        # fix rating.delete_rating permission if needed
+        if not "rating.delete_rating" in get_perms(self.team.admingroup, self):
+            assign_perm("rating.delete_rating", self.team.admingroup, self)
 
     def clean(self):
         if self.max_rating < 2 or self.max_rating > 100:
@@ -91,36 +98,38 @@ class Vote(TeamRelatedUUIDModel):
     as well as the actual Vote (a PositiveIntegerField).
     It may also optionally contain a short comment related to this specific vote.
     """
+
     class Meta:
-        ordering = ['pk']
-        unique_together = [['review', 'rating']]
+        ordering = ["pk"]
+        unique_together = [["review", "rating"]]
 
     review = models.ForeignKey(
-        'review.Review',
+        "review.Review",
         on_delete=models.CASCADE,
-        related_name='votes',
-        help_text='The Review this Vote belongs to.',
+        related_name="votes",
+        help_text="The Review this Vote belongs to.",
     )
 
     rating = models.ForeignKey(
-        'rating.Rating',
+        "rating.Rating",
         on_delete=models.CASCADE,
-        related_name='votes',
-        help_text='The Rating this Vote applies to.',
+        related_name="votes",
+        help_text="The Rating this Vote applies to.",
     )
 
     vote = models.PositiveIntegerField(
-        help_text='The actual numerical vote for this Rating.'
+        help_text="The actual numerical vote for this Rating."
     )
 
     comment = models.CharField(
         max_length=255,
-        help_text='An optional short comment related to this specific vote. 255 character limit.',
+        help_text="An optional short comment related to this specific vote. 255 character limit.",
         blank=True,
         null=True,
     )
 
-    team_filter = 'review__item__category__team'
+    team_filter = "review__item__category__team"
+    breadcrumb_list_name = "Votes"
 
     @property
     def team(self):
@@ -130,21 +139,20 @@ class Vote(TeamRelatedUUIDModel):
         super().save(**kwargs)
 
         # fix rating.view_vote permission if needed
-        if not 'rating.view_vote' in get_perms(self.team.group, self):
-            assign_perm('rating.view_vote', self.team.group, self)
+        if not "rating.view_vote" in get_perms(self.team.group, self):
+            assign_perm("rating.view_vote", self.team.group, self)
 
         # fix rating.add_vote permission if needed
-        if not 'rating.add_vote' in get_perms(self.team.group, self):
-            assign_perm('rating.add_vote', self.team.group)
+        if not "rating.add_vote" in get_perms(self.team.group, self):
+            assign_perm("rating.add_vote", self.team.group)
 
         # fix rating.change_vote permission if needed
-        if not 'rating.change_vote' in get_perms(self.review.actor.user, self):
-            assign_perm('rating.change_vote', self.review.actor.user, self)
+        if not "rating.change_vote" in get_perms(self.review.actor.user, self):
+            assign_perm("rating.change_vote", self.review.actor.user, self)
 
         # fix rating.delete_vote permission if needed
-        if not 'rating.delete_vote' in get_perms(self.review.actor.user, self):
-            assign_perm('rating.delete_vote', self.review.actor.user, self)
-
+        if not "rating.delete_vote" in get_perms(self.review.actor.user, self):
+            assign_perm("rating.delete_vote", self.review.actor.user, self)
 
     def clean(self):
         """
@@ -153,13 +161,15 @@ class Vote(TeamRelatedUUIDModel):
         - Make sure the vote falls inside the limits of the Rating
         """
         if self.rating not in self.review.item.category.ratings.all():
-            raise ValidationError("The rating %s belongs to a different Category than the Item %s" % (
-                self.rating,
-                self.review.item
-            ))
+            raise ValidationError(
+                "The rating %s belongs to a different Category than the Item %s"
+                % (self.rating, self.review.item)
+            )
 
         if self.vote > self.rating.max_rating:
-            raise ValidationError("The Rating must be between 0 and %s" % self.property.max_rating)
+            raise ValidationError(
+                "The Rating must be between 0 and %s" % self.property.max_rating
+            )
 
     def __str__(self):
         return "Vote %s for Rating %s from Review %s for Item %s by Actor %s" % (
@@ -169,4 +179,3 @@ class Vote(TeamRelatedUUIDModel):
             self.review.item,
             self.review.actor,
         )
-

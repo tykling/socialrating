@@ -1,2 +1,1 @@
-default_app_config = 'fact.apps.FactConfig'
-
+default_app_config = "fact.apps.FactConfig"

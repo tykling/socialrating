@@ -7,22 +7,55 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Context',
+            name="Context",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, help_text='The date and time when this object was created.')),
-                ('updated', models.DateTimeField(auto_now_add=True, help_text='The date and time when this object was last updated.')),
-                ('name', models.CharField(help_text='The name of this Context. Must be unique within the Team.', max_length=100)),
-                ('slug', models.SlugField(help_text='The slug for this Context. Must be unique within the Team.')),
-                ('description', models.TextField(help_text='The description of this context. Markdown is supported.')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The date and time when this object was created.",
+                    ),
+                ),
+                (
+                    "updated",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The date and time when this object was last updated.",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="The name of this Context. Must be unique within the Team.",
+                        max_length=100,
+                    ),
+                ),
+                (
+                    "slug",
+                    models.SlugField(
+                        help_text="The slug for this Context. Must be unique within the Team."
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        help_text="The description of this context. Markdown is supported."
+                    ),
+                ),
             ],
-            options={
-                'ordering': ['name'],
-            },
-        ),
+            options={"ordering": ["name"]},
+        )
     ]

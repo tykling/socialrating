@@ -1,4 +1,4 @@
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-1">
       <div class="container">
           <a class="navbar-brand" href="{% url 'frontpage' %}">social_rating</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,14 +10,43 @@
               <li class="nav-item active">
                 <a class="nav-link" href="#">Home</a>
               </li>
-              <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'team:list' %}">Teams</a>
-              </li>
 
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="accountdropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ user }}</a>
+                  <a class="nav-link dropdown-toggle" id="teamlistdropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      {% if team %}
+                        {{ team.name }}
+                      {% else %}
+                        Teams ({{ user.actor.teams.count }})
+                      {% endif %}
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="teamlistdropdown">
+                  {% for team in user.actor.teams.all %}
+                    <a class="dropdown-item" href="{% url 'team:detail' team_slug=team.slug %}">{{ team.name }}</a>
+                  {% endfor %}
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'team:list' %}">Team List</a>
+                  </div>
+              </li>
+
+              {% if team %}
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" id="teamdropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
+                  <div class="dropdown-menu" aria-labelledby="teamdropdown">
+                    {% if 'team.change_team' in perms %}
+                    <a class="dropdown-item" href="{% url 'team:settings' team_slug=team.slug %}">General</a>
+                    {% endif %}
+                    <a class="dropdown-item" href="{% url 'team:category:list' team_slug=team.slug %}">Category List</a>
+                    <a class="dropdown-item" href="{% url 'team:context:list' team_slug=team.slug %}">Context List</a>
+                    <a class="dropdown-item" href="{% url 'team:members' team_slug=team.slug %}">Members</a>
+                  </div>
+              </li>
+              {% endif %}
+            </ul>
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="accountdropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user"></i> {{ user }}</a>
                 <div class="dropdown-menu" aria-labelledby="accountdropdown">
-                  <a class="dropdown-item" href="#">Profile</a>
+                    <a class="dropdown-item" href="#">Profile</a>
                   <a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a>
                 </div>
               </li>
@@ -27,10 +56,6 @@
               </li>
               {% endif %}
             </ul>
-            <form class="form-inline mt-2 mt-md-0">
-              <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
           </div>
       </div>
     </nav>

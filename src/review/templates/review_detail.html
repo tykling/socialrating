@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load rating %}
 
-{% block category_content %}
+{% block team_content %}
 <p class="lead">Showing review {{ review.pk }} of {{ review.item }}</p>
   {% include 'includes/review_card.html' with cardtype="full" %}
-{% endblock category_content %}
+{% endblock team_content %}
 

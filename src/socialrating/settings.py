@@ -21,135 +21,112 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from .environment_settings import *
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.sites', # needed for allauth
-    'django.contrib.humanize',
-
-    'eav',
-    'bootstrap4',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.sites",  # needed for allauth
+    "django.contrib.humanize",
+    "eav",
+    "bootstrap4",
     #'django_extensions',
-
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-
-    'actor',
-    'team',
-    'category',
-    'context',
-    'fact',
-    'item',
-    'review',
-    'rating',
-    'utils',
-    'eventlog',
-    'attachment',
-
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "actor",
+    "team",
+    "category",
+    "context",
+    "fact",
+    "item",
+    "review",
+    "rating",
+    "utils",
+    "eventlog",
+    "attachment",
     # only needed for GIS functionality
-    'django.contrib.gis', # geodjango
-    'leaflet', # pretty maps
-    'guardian',
+    "django.contrib.gis",  # geodjango
+    "leaflet",  # pretty maps
+    "guardian",
 ]
 
 SITE_ID = 1
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'socialrating.urls'
+ROOT_URLCONF = "socialrating.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'team.context_processors.team',
-            ],
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "team.context_processors.team",
+            ]
         },
-    },
+    }
 ]
 
-WSGI_APPLICATION = 'socialrating.wsgi.application'
+WSGI_APPLICATION = "socialrating.wsgi.application"
 ASGI_APPLICATION = "socialrating.routing.application"
 
-AUTH_USER_MODEL = 'actor.User'
-LOGIN_REDIRECT_URL = '/'
+AUTH_USER_MODEL = "actor.User"
+LOGIN_REDIRECT_URL = "/"
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",
 )
-#ANONYMOUS_USER_NAME = "AnonymousUser"
+# ANONYMOUS_USER_NAME = "AnonymousUser"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
 # Internationalization
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
 USE_I18N = False
 USE_L10N = True
 USE_TZ = True
 
 # static files
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_src')] # find static files here
-STATIC_ROOT = os.path.join(BASE_DIR, "static") # collect static files here
-STATIC_URL = '/static/' # serve static files here
-MEDIA_ROOT = 'media/' # keep uploads here
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static_src")]  # find static files here
+STATIC_ROOT = os.path.join(BASE_DIR, "static")  # collect static files here
+STATIC_URL = "/static/"  # serve static files here
+MEDIA_ROOT = "media/"  # keep uploads here
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'syslog': {
-            'format': '%(levelname)s %(name)s.%(funcName)s(): %(message)s'
-        },
-        'console': {
-            'format': '[%(asctime)s] %(name)s.%(funcName)s() %(levelname)s %(message)s',
-            'datefmt': '%d/%b/%Y %H:%M:%S'
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "syslog": {"format": "%(levelname)s %(name)s.%(funcName)s(): %(message)s"},
+        "console": {
+            "format": "[%(asctime)s] %(name)s.%(funcName)s() %(levelname)s %(message)s",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
         },
     },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'console',
-        },
-    },
-    'loggers': {
-        'socialrating': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-    },
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "console"}},
+    "loggers": {"socialrating": {"handlers": ["console"], "level": "DEBUG"}},
 }
-

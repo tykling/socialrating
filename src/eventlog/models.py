@@ -12,49 +12,35 @@ class Event(models.Model):
     - a GenericForeignKey to the object the event relates to
     - an Actor FK to the Actor who triggered the event
     """
-    uuid = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
 
-    CREATE = 'CREATE'
-    UPDATE = 'UPDATE'
-    DELETE = 'DELETE'
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    EVENT_TYPES = (
-        (CREATE, 'Create'),
-        (UPDATE, 'Update'),
-        (DELETE, 'Delete'),
-    )
+    CREATE = "CREATE"
+    UPDATE = "UPDATE"
+    DELETE = "DELETE"
+
+    EVENT_TYPES = ((CREATE, "Create"), (UPDATE, "Update"), (DELETE, "Delete"))
 
     event_type = models.CharField(
-        max_length=6,
-        choices=EVENT_TYPES,
-        help_text='The type of event.'
+        max_length=6, choices=EVENT_TYPES, help_text="The type of event."
     )
 
     actor = models.ForeignKey(
-        'actor.Actor',
+        "actor.Actor",
         on_delete=models.PROTECT,
-        help_text='The Actor who caused this event.'
+        help_text="The Actor who caused this event.",
     )
 
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.PROTECT,
-        related_name='events',
-        help_text='The Django content_type of the model for the object this Event relates to.',
+        related_name="events",
+        help_text="The Django content_type of the model for the object this Event relates to.",
     )
 
     object_id = models.CharField(
-        max_length=32,
-        help_text='The PK/UUID of the object this Event relates to.',
+        max_length=32, help_text="The PK/UUID of the object this Event relates to."
     )
 
     # the GenericForeignKey ties this Event to the object
-    event_object = GenericForeignKey(
-        'content_type',
-        'object_id',
-    )
-
+    event_object = GenericForeignKey("content_type", "object_id")

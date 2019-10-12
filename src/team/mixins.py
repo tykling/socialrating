@@ -1,8 +1,8 @@
 import logging
 
 from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect, reverse
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
 from team.models import Team
@@ -17,6 +17,7 @@ class TeamSlugMixin:
     Then check if request.user has permissions to view the team,
     and return 403 if not.
     """
+
     def setup(self, *args, **kwargs):
         # super setup() so we have self.request available
         super().setup(*args, **kwargs)
@@ -25,15 +26,29 @@ class TeamSlugMixin:
         self.team = get_object_or_404(Team, slug=kwargs["team_slug"])
 
         # check permissions
-        if not self.request.user.has_perm('team.view_team', self.team):
+        if not self.request.user.has_perm("team.view_team", self.team):
             raise PermissionDenied
+
+        # add breadcrumb for team list
+        self.breadcrumbs = [((Team.breadcrumb_list_name, reverse("team:list")))]
+
+        # add current team to breadcrumbs
+        self.breadcrumbs.append((self.team.name, self.team.get_absolute_url()))
+
+        # only if this mixin is the leftmost
+        if self.__class__.__mro__[1].__module__ == "team.mixins":
+            # if this is a CreateView add a link to the ListView first
+            if self.request.resolver_match.url_name == "create":
+                self.add_listview_breadcrumb()
+            # add action breadcrumb
+            self.add_action_breadcrumb()
 
     def get_context_data(self, **kwargs):
         """
-        Add Team to context
+        Add Team and breadcrumbs to context
         """
         context = super().get_context_data(**kwargs)
-        context['team'] = self.team
+        context["team"] = self.team
         return context
 
 
@@ -44,6 +59,7 @@ class TeamFilterMixin:
     to have a team_filter property, a string (or list of strings) like 
     "category__team" to be used in .filter()
     """
+
     def get_queryset(self):
         """
         Filter queryset so it only includes objects related to the current team
@@ -67,14 +83,14 @@ class TeamFilterMixin:
             filter_dict = {_filter: self.team}
 
             # get pk from kwargs if we have it
-            if hasattr(self, 'pk_url_kwarg'):
+            if hasattr(self, "pk_url_kwarg"):
                 pk = self.kwargs.get(self.pk_url_kwarg)
                 if pk is not None:
                     # We should also filter for the pk of the object
-                    filter_dict['pk'] = pk
+                    filter_dict["pk"] = pk
 
             # get slug from kwargs if we have it
-            if hasattr(self, 'slug_url_kwarg'):
+            if hasattr(self, "slug_url_kwarg"):
                 slug = self.kwargs.get(self.slug_url_kwarg)
                 if slug is not None and (pk is None or self.query_pk_and_slug):
                     # we should also filter for the slug of the object
@@ -88,4 +104,3 @@ class TeamFilterMixin:
 
         # no team_filter returned any results, return an empty queryset
         return result
-

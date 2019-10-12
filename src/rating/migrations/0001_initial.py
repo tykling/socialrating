@@ -9,44 +9,145 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('category', '0001_initial'),
-        ('review', '0001_initial'),
-    ]
+    dependencies = [("category", "0001_initial"), ("review", "0001_initial")]
 
     operations = [
         migrations.CreateModel(
-            name='Rating',
+            name="Rating",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, help_text='The date and time when this object was created.')),
-                ('updated', models.DateTimeField(auto_now_add=True, help_text='The date and time when this object was last updated.')),
-                ('name', models.CharField(help_text='The name of this Rating. Must be unique within this Category.', max_length=100)),
-                ('slug', models.SlugField(help_text='The slug for this Rating. Must be unique within this Category.')),
-                ('description', models.CharField(help_text='Describe what users should consider when voting for this Rating. Please keep it to 255 characters or less.', max_length=255)),
-                ('max_rating', models.PositiveIntegerField(default=5, help_text='The highest possible vote for this rating. Minimum 2, defaults to 5, maximum 100.')),
-                ('icon', models.CharField(default='fas fa-star', help_text='The icon to use when visually displaying the votes for this rating.', max_length=50)),
-                ('category', models.ForeignKey(help_text='The Category on which this Item is based', on_delete=django.db.models.deletion.CASCADE, related_name='ratings', to='category.Category')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The date and time when this object was created.",
+                    ),
+                ),
+                (
+                    "updated",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The date and time when this object was last updated.",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="The name of this Rating. Must be unique within this Category.",
+                        max_length=100,
+                    ),
+                ),
+                (
+                    "slug",
+                    models.SlugField(
+                        help_text="The slug for this Rating. Must be unique within this Category."
+                    ),
+                ),
+                (
+                    "description",
+                    models.CharField(
+                        help_text="Describe what users should consider when voting for this Rating. Please keep it to 255 characters or less.",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "max_rating",
+                    models.PositiveIntegerField(
+                        default=5,
+                        help_text="The highest possible vote for this rating. Minimum 2, defaults to 5, maximum 100.",
+                    ),
+                ),
+                (
+                    "icon",
+                    models.CharField(
+                        default="fas fa-star",
+                        help_text="The icon to use when visually displaying the votes for this rating.",
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        help_text="The Category on which this Item is based",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ratings",
+                        to="category.Category",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('name', 'category'), ('slug', 'category')},
-                'ordering': ['name'],
+                "unique_together": {("name", "category"), ("slug", "category")},
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='Vote',
+            name="Vote",
             fields=[
-                ('created', models.DateTimeField(auto_now_add=True, help_text='The date and time when this object was created.')),
-                ('updated', models.DateTimeField(auto_now_add=True, help_text='The date and time when this object was last updated.')),
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('vote', models.PositiveIntegerField(help_text='The actual numerical vote for this Rating.')),
-                ('comment', models.CharField(blank=True, help_text='An optional short comment related to this specific vote. 255 character limit.', max_length=255, null=True)),
-                ('rating', models.ForeignKey(help_text='The Rating this Vote applies to.', on_delete=django.db.models.deletion.CASCADE, related_name='votes', to='rating.Rating')),
-                ('review', models.ForeignKey(help_text='The Review this Vote belongs to.', on_delete=django.db.models.deletion.CASCADE, related_name='votes', to='review.Review')),
+                (
+                    "created",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The date and time when this object was created.",
+                    ),
+                ),
+                (
+                    "updated",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The date and time when this object was last updated.",
+                    ),
+                ),
+                (
+                    "uuid",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "vote",
+                    models.PositiveIntegerField(
+                        help_text="The actual numerical vote for this Rating."
+                    ),
+                ),
+                (
+                    "comment",
+                    models.CharField(
+                        blank=True,
+                        help_text="An optional short comment related to this specific vote. 255 character limit.",
+                        max_length=255,
+                        null=True,
+                    ),
+                ),
+                (
+                    "rating",
+                    models.ForeignKey(
+                        help_text="The Rating this Vote applies to.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="votes",
+                        to="rating.Rating",
+                    ),
+                ),
+                (
+                    "review",
+                    models.ForeignKey(
+                        help_text="The Review this Vote belongs to.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="votes",
+                        to="review.Review",
+                    ),
+                ),
             ],
-            options={
-                'unique_together': {('review', 'rating')},
-                'ordering': ['pk'],
-            },
+            options={"unique_together": {("review", "rating")}, "ordering": ["pk"]},
         ),
     ]

@@ -11,6 +11,9 @@
         <th>Facts</th>
         <th>Ratings</th>
         <th>Items</th>
+        <th>Reviews</th>
+        <th>Votes</th>
+        <th>Attachments</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -25,20 +28,29 @@
             {% for fact in category.facts.all %}
               <li class="list-group-item">{{ fact }}</li>
             {% empty %}
-            N/A
+            No Facts Found
             {% endfor %}
             </ul>
-        </td>
+            <br>
+            <a href="{% url 'team:category:fact:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> List</a>
+            <a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Create New</a>
+         </td>
         <td>
             <ul class="list-group">
             {% for rating in category.ratings.all %}
             <li class="list-group-item">{{ rating.name }} (1-{{ rating.max_rating }} <i class="{{ rating.icon }} text-success"></i>)</li>
             {% empty %}
-            N/A
+            No Ratings Found
             {% endfor %}
             </ul>
+            <br>
+            <a href="{% url 'team:category:rating:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> List</a>
+            <a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Create New</a>
         </td>
         <td>{{ category.items.count }}</td>
+        <td>{{ category.review_count }}</td>
+        <td>{{ category.vote_count }}</td>
+        <td>{{ category.attachment_count }}</td>
         <td>
           {% if "view_category" in category_perms %}
             <a href="{% url 'team:category:detail' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Details</a>
@@ -59,7 +71,7 @@
 <p class="lead">No categories found. Go create one!</p>
 {% endif %}
 {% if perms.category.add_category %}
-  <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success">Create Category</a>
+  <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create Category</a>
 {% endif %}
 {% endblock team_content %}
 

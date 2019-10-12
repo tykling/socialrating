@@ -1,2 +1,1 @@
-default_app_config = 'team.apps.TeamConfig'
-
+default_app_config = "team.apps.TeamConfig"

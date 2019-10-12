@@ -7,32 +7,29 @@ from guardian.mixins import PermissionListMixin
 
 from team.mixins import *
 from utils.mixins import PermissionRequiredOr403Mixin
+from utils.mixins import BreadCrumbMixin as BCMixin
 
 from .models import Context
+from .mixins import ContextSlugMixin
 
 
-class ContextListView(TeamSlugMixin, PermissionListMixin, ListView):
+class ContextListView(TeamSlugMixin, PermissionListMixin, BCMixin, ListView):
     model = Context
     paginate_by = 100
-    template_name = 'context_list.html'
-    permission_required = 'context.view_context'
+    template_name = "context_list.html"
+    permission_required = "context.view_context"
 
     def get_queryset(self):
         return super().get_queryset().filter(team=self.team)
 
 
-class ContextDetailView(TeamSlugMixin, PermissionRequiredOr403Mixin, DetailView):
+class ContextCreateView(
+    TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
+):
     model = Context
-    template_name = 'context_detail.html'
-    slug_url_kwarg = 'context_slug'
-    permission_required = 'context.view_context'
-
-
-class ContextCreateView(TeamSlugMixin, PermissionRequiredOr403Mixin, CreateView):
-    model = Context
-    template_name = 'context_form.html'
-    fields = ['name', 'description']
-    permission_required = 'team.add_context'
+    template_name = "context_form.html"
+    fields = ["name", "description"]
+    permission_required = "team.add_context"
 
     def get_permission_object(self):
         """
@@ -52,34 +49,49 @@ class ContextCreateView(TeamSlugMixin, PermissionRequiredOr403Mixin, CreateView)
         return redirect(context.get_absolute_url())
 
 
-class ContextUpdateView(TeamSlugMixin, PermissionRequiredOr403Mixin, UpdateView):
+class ContextDetailView(
+    ContextSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
     model = Context
-    template_name = 'context_form.html'
-    fields = ['name', 'description']
-    slug_url_kwarg = 'context_slug'
-    permission_required = 'context.change_context'
+    template_name = "context_detail.html"
+    slug_url_kwarg = "context_slug"
+    permission_required = "context.view_context"
+
+
+class ContextUpdateView(
+    ContextSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
+):
+    model = Context
+    template_name = "context_form.html"
+    fields = ["name", "description"]
+    slug_url_kwarg = "context_slug"
+    permission_required = "context.change_context"
 
     def form_valid(self, form):
         context = form.save()
         messages.success(self.request, "Context updated!")
-        return redirect(reverse('team:context:detail', kwargs={
-            'team_slug': self.team.slug,
-            'context_slug': context.slug,
-        }))
+        return redirect(
+            reverse(
+                "team:context:detail",
+                kwargs={"team_slug": self.team.slug, "context_slug": context.slug},
+            )
+        )
 
 
-class ContextDeleteView(TeamSlugMixin, PermissionRequiredOr403Mixin, DeleteView):
+class ContextDeleteView(
+    ContextSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
+):
     model = Context
-    template_name = 'context_delete.html'
-    slug_url_kwarg = 'context_slug'
-    permission_required = 'context.delete_context'
+    template_name = "context_delete.html"
+    slug_url_kwarg = "context_slug"
+    permission_required = "context.delete_context"
 
     def delete(self, request, *args, **kwargs):
-        messages.success(self.request, "Context has been deleted, along with all Reviews, Votes, Tags and Content that related to it.")
+        messages.success(
+            self.request,
+            "Context has been deleted, along with all Reviews, Votes, Tags and Content that related to it.",
+        )
         return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
-        return(reverse('team:context:list', kwargs={
-            'team_slug': self.team.slug,
-        }))
-
+        return reverse("team:context:list", kwargs={"team_slug": self.team.slug})

@@ -10,7 +10,7 @@
   {% leaflet_css %}
 {% endblock extra_head %}
 
-{% block category_content %}
+{% block team_content %}
 <div class="card">
   <div class="card-header">
     <h4>{{ item.name }} ({{ item.category }})</h4>
@@ -114,18 +114,19 @@
       {% endfor %}
     </table>
     <h5 class="card-title">
-        Reviews ({{ item.reviews.count }})
+        Latest 10 Reviews (of total {{ item.reviews.count }})
+        <a href="{% url 'team:category:item:review:list' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-primary"><i class="fas fa-list"></i> Show All Reviews</a>
         <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Review</a>
     </h5>
-    {% for review in item.reviews.all %}
-    {% include 'includes/review_card.html' %}
+    {% for review in item.last10reviews.all %}
+      {% include 'includes/review_card.html' %}
     {% endfor %}
     {% else %}
-    <p class="lead">No reviews found!</p>
-    <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Review</a>
+      <p class="lead">No reviews found!</p>
+      <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Review</a>
     {% endif %}
   </div>
 </div>
 
-{% endblock category_content %}
+{% endblock team_content %}
 

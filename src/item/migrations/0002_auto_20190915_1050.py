@@ -5,14 +5,15 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('item', '0001_initial'),
-    ]
+    dependencies = [("item", "0001_initial")]
 
     operations = [
         migrations.AlterField(
-            model_name='item',
-            name='slug',
-            field=models.SlugField(help_text='The slug for this Item. Must be unique within the Category.', max_length=100),
-        ),
+            model_name="item",
+            name="slug",
+            field=models.SlugField(
+                help_text="The slug for this Item. Must be unique within the Category.",
+                max_length=100,
+            ),
+        )
     ]

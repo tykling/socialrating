@@ -8,15 +8,18 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('context', '0001_initial'),
-        ('category', '0001_initial'),
-    ]
+    dependencies = [("context", "0001_initial"), ("category", "0001_initial")]
 
     operations = [
         migrations.AddField(
-            model_name='category',
-            name='default_context',
-            field=models.ForeignKey(blank=True, help_text='The default Context for new Reviews for Items in this Category. Leave blank to have no default.', null=True, on_delete=django.db.models.deletion.PROTECT, to='context.Context'),
-        ),
+            model_name="category",
+            name="default_context",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="The default Context for new Reviews for Items in this Category. Leave blank to have no default.",
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="context.Context",
+            ),
+        )
     ]

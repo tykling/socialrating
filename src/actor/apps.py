@@ -7,7 +7,7 @@ logger = logging.getLogger("socialrating.%s" % __name__)
 
 
 class ActorConfig(AppConfig):
-    name = 'actor'
+    name = "actor"
 
     def ready(self):
         """
@@ -16,5 +16,5 @@ class ActorConfig(AppConfig):
         logger.debug("Connecting User post_save signal to create Actor objects...")
         from .models import User
         from .signals import create_actor
-        post_save.connect(create_actor, sender=User, dispatch_uid="create_actor")
 
+        post_save.connect(create_actor, sender=User, dispatch_uid="create_actor")

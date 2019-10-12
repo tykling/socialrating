@@ -13,5 +13,5 @@ class CategoryAdminForm(BaseDynamicEntityForm):
 class CategoryAdmin(GuardedModelAdmin, BaseEntityAdmin):
     form = CategoryAdminForm
 
-admin.site.register(Category, CategoryAdmin)
 
+admin.site.register(Category, CategoryAdmin)

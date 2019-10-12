@@ -8,5 +8,4 @@ class ItemFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Item
 
-    name = factory.Faker('sentence')
-
+    name = factory.Faker("sentence")

@@ -17,38 +17,41 @@ class Context(TeamRelatedModel):
     Team admins can create, modify, and delete contexts.
     A review must be associated with a context.
     """
+
     class Meta:
-        ordering = ['name']
-        unique_together = [['name', 'team'], ['slug', 'team']]
+        ordering = ["name"]
+        unique_together = [["name", "team"], ["slug", "team"]]
 
     team = models.ForeignKey(
-        'team.Team',
-        related_name='contexts',
+        "team.Team",
+        related_name="contexts",
         on_delete=models.PROTECT,
-        help_text='The Team to which this Context belongs',
+        help_text="The Team to which this Context belongs",
     )
 
     name = models.CharField(
         max_length=100,
-        help_text='The name of this Context. Must be unique within the Team.',
+        help_text="The name of this Context. Must be unique within the Team.",
     )
 
     slug = models.SlugField(
-        help_text='The slug for this Context. Must be unique within the Team.',
+        help_text="The slug for this Context. Must be unique within the Team."
     )
 
     description = models.TextField(
-        help_text='The description of this context. Markdown is supported.',
+        help_text="The description of this context. Markdown is supported."
     )
+
+    breadcrumb_list_name = "Contexts"
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse_lazy('team:context:detail', kwargs={
-            'team_slug': self.team.slug,
-            'context_slug': self.slug
-        })
+        return reverse_lazy(
+            "team:context:detail",
+            kwargs={"team_slug": self.team.slug, "context_slug": self.slug},
+        )
 
     def grant_permissions(self):
         """
@@ -56,13 +59,12 @@ class Context(TeamRelatedModel):
         - Admin members may change a Context
         - Admin members may delete a Context
         """
-        assign_perm('context.view_context', self.team.group, self)
-        assign_perm('context.change_context', self.team.admingroup, self)
-        assign_perm('context.delete_context', self.team.admingroup, self)
+        assign_perm("context.view_context", self.team.group, self)
+        assign_perm("context.change_context", self.team.admingroup, self)
+        assign_perm("context.delete_context", self.team.admingroup, self)
 
     def save(self, **kwargs):
         # save the Context
         super().save(**kwargs)
         # grant permissions for the context
         self.grant_permissions()
-

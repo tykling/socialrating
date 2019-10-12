@@ -13,6 +13,5 @@ class ReviewFactory(factory.django.DjangoModelFactory):
     actor = factory.Iterator(Actor.objects.all())
     item = factory.Iterator(Item.objects.all())
     context = factory.Iterator(Context.objects.all())
-    headline = factory.Faker('sentence')
-    body = factory.Faker('text')
-
+    headline = factory.Faker("sentence")
+    body = factory.Faker("text")

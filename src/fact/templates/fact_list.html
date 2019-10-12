@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load get_eav_value %}
+{% load guardian_tags %}
+{% load rating %}
+
+{% block team_content %}
+{% if category.facts.all %}
+<h4>Facts for Category {{ category.name }}</h4>
+  {% include 'includes/fact_list_table.html' with fact_list=category.facts.all %}
+{% else %}
+<p class="lead">No facts found. Go create one!</p>
+{% endif %}
+{% if perms.category.add_fact %}
+  <a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create Fact</a>
+{% endif %}
+{% endblock team_content %}
+

@@ -5,13 +5,14 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('category', '0004_auto_20190915_1530'),
-    ]
+    dependencies = [("category", "0004_auto_20190915_1530")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='category',
-            options={'ordering': ['weight', 'name'], 'permissions': (('add_item', 'Add Item belonging to this Category'),)},
-        ),
+            name="category",
+            options={
+                "ordering": ["weight", "name"],
+                "permissions": (("add_item", "Add Item belonging to this Category"),),
+            },
+        )
     ]

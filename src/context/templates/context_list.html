@@ -19,8 +19,16 @@
         <td>{{ context.description }}</td>
         <td>{{ context.reviews.count }}</td>
         <td>
-          <a href="{% url 'team:context:detail' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Details</a>
+          <a href="{% url 'team:context:detail' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+          {% if 'context.change_context' in perms %}
+          <a href="{% url 'team:context:settings' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
+          {% endif %}
+          {% if 'context.change_context' in perms %}
+          <a href="{% url 'team:context:update' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+          {% endif %}
+          {% if 'context.delete_context' in perms %}
           <a href="{% url 'team:context:delete' team_slug=team.slug context_slug=context.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}

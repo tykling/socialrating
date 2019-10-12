@@ -8,15 +8,17 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('review', '0001_initial'),
-        ('attachment', '0001_initial'),
-    ]
+    dependencies = [("review", "0001_initial"), ("attachment", "0001_initial")]
 
     operations = [
         migrations.AddField(
-            model_name='attachment',
-            name='review',
-            field=models.ForeignKey(help_text='The Review to which this Attachment belongs.', on_delete=django.db.models.deletion.CASCADE, related_name='attachments', to='review.Review'),
-        ),
+            model_name="attachment",
+            name="review",
+            field=models.ForeignKey(
+                help_text="The Review to which this Attachment belongs.",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="attachments",
+                to="review.Review",
+            ),
+        )
     ]

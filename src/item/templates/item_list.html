@@ -5,16 +5,16 @@
 
 {% block team_content %}
 {% if item_list %}
-<h2>Items in Category {{ category.name }}</h2>
+<h2>List of {{ category.name }}</h2>
  <table class="table table-bordered">
     <thead>
       <tr>
         <th>Item</th>
         {% for fact in item_list.0.facts.all %}
-        <th>{{ fact.name }}</th>
+        <th>{{ fact.name }} (fact)</th>
         {% endfor %}
         {% for rating in item_list.0.ratings.all %}
-        <th>{{ rating.name }}</th>
+        <th>{{ rating.name }} (rating)</th>
         {% endfor %}
         <th>Actions</th>
       </tr>

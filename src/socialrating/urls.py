@@ -6,30 +6,8 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path(
-        'admin/',
-        admin.site.urls
-    ),
-
-    path(
-        'accounts/',
-        include(
-            'allauth.urls',
-        )
-    ),
-
-    path(
-        '',
-        TemplateView.as_view(template_name='frontpage.html'),
-        name='frontpage',
-    ),
-
-    path(
-        'teams/',
-        include(
-            'team.urls',
-            namespace='team'
-        )
-    ),
+    path("admin/", admin.site.urls),
+    path("accounts/", include("allauth.urls")),
+    path("", TemplateView.as_view(template_name="frontpage.html"), name="frontpage"),
+    path("teams/", include("team.urls", namespace="team")),
 ]
-

@@ -1,5 +1,13 @@
-from django.db import models
+from eav.models import Attribute
 
-# facts are just another name for EAV Attributes,
-# no models here
 
+class Fact(Attribute):
+    """
+    Fact is just another name for eav Attributes.
+    We use this proxy model instead of using Attributes directly.
+    """
+
+    class Meta:
+        proxy = True
+
+    breadcrumb_list_name = "Facts"

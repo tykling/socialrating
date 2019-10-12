@@ -12,5 +12,5 @@ class ItemAdminForm(BaseDynamicEntityForm):
 class ItemAdmin(BaseEntityAdmin):
     form = ItemAdminForm
 
-admin.site.register(Item, ItemAdmin)
 
+admin.site.register(Item, ItemAdmin)

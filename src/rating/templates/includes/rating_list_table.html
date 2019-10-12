@@ -1,0 +1,33 @@
+{% load guardian_tags %}
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Rating Name</th>
+        <th>Rating Description</th>
+        <th>Max Rating</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for rating in category.ratings.all %}
+      {% get_obj_perms request.user for rating as "rating_perms" %}
+      {% if "view_rating" in rating_perms %}
+      <tr>
+        <td>{{ rating.name }}</td>
+        <td>{{ rating.description }}</td>
+        <td>{{ rating.max_rating }}</td>
+        <td>
+          <a href="{% url 'team:category:rating:detail' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Details</a>
+          {% if "change_rating" in rating_perms %}
+            <a href="{% url 'team:category:rating:update' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+          {% endif %}
+          {% if "delete_rating" in rating_perms %}
+            <a href="{% url 'team:category:rating:delete' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+

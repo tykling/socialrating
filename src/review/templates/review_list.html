@@ -5,7 +5,10 @@
 
 {% block team_content %}
 {% if review_list %}
-<h4>Reviews for {{ item.name }} ({{ review_list.count }} reviews)</h4>
+<h4>
+    Reviews for {{ item.name }} ({{ review_list.count }} reviews)
+    <a href="{% url 'team:category:item:detail' team_slug=item.team.slug category_slug=item.category.slug item_slug=item.slug %}" class="card-link btn btn-primary"><i class="fas fa-undo"></i> Back to {{ item.name }}</a>
+</h4>
   {% for review in review_list %}
     {% include 'includes/review_card.html' %}
   {% endfor %}

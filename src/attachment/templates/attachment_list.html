@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 {% load guardian_tags %}
 
-{% block category_content %}
+{% block team_content %}
 {% if attachment_list %}
  <table class="table table-bordered">
     <thead>
       <tr>
         <th>uuid</th>
         <th>Filename</th>
+        <th>Description</th>
         <th>Mimetype</th>
         <th>Size</th>
         <th>Thumbnail</th>
@@ -21,6 +22,7 @@
       <tr>
         <td>{{ attachment.uuid }}</td>
         <td>{{ attachment.attachment.name }}</td>
+        <td>{{ attachment.description }}</td>
         <td>{{ attachment.mimetype }}</td>
         <td>{{ attachment.size }} bytes</td>
         <td>
@@ -46,5 +48,5 @@
 {% if "change_review" in review_perms %}
 <a href="{% url 'team:category:item:review:attachment:create' team_slug=review.team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-success">Create Attachment</a>
 {% endif %}
-{% endblock category_content %}
+{% endblock team_content %}
 
