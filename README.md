@@ -9,15 +9,15 @@ The following views are missing functionality or templates
 | ---------- | ---- | ------ | ------ | -------- | ------ | ------ |
 | User       |   ☐  |    ☑   |    ☐   |     ☐    |    ☐   |    ☐   |
 | Team       |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☐   |
-| Membership |   ?  |    ?   |    ?   |     ?    |    ?   |    ?   |
-| Team       |   ?  |    ?   |    ?   |     ?    |    ?   |    ?   |
-| Category   |   ?  |    ?   |    ?   |     ?    |    ?   |    ?   |
-| Context    |   ?  |    ?   |    ?   |     ?    |    ?   |    ?   |
-| Fact       |   ?  |    ?   |    ?   |     ?    |    ?   |    ?   |
-| Rating     |   ?  |    ?   |    ?   |     ?    |    ?   |    ?   |
-| Review     |   ?  |    ?   |    ?   |     ?    |    ?   |    ?   |
-| Vote       |   ?  |    ?   |    ?   |     ?    |    ?   |    ?   |
-| Attachment |   ?  |    ?   |    ?   |     ?    |    ?   |    ?   |
+| Membership |   ☑  |    ☐   |    ☐   |     ☐    |    ☐   |    ☐   |
+| Category   |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
+| Context    |   ☑  |    ☑   |    ☑   |     ☐    |    ☑   |    ☑   |
+| Fact       |   ☑  |    ☑   |    ☐   |     ☐    |    ☐   |    ☐   |
+| Rating     |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
+| Item       |   ☑  |    ☑   |    ☑   |     ☐    |    ☑   |    ☑   |
+| Review     |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☐   |
+| Vote       |   ☐  |    ☐   |    ☐   |     ☐    |    ☐   |    ☐   |
+| Attachment |   ☑  |    ☐   |    ☑   |     ☐    |    ☑   |    ☑   |
 
 
 
