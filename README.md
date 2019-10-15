@@ -7,17 +7,16 @@ The following views are missing functionality or templates
 
 | Model      | List | Create | Detail | Settings | Update | Delete |
 | ---------- | ---- | ------ | ------ | -------- | ------ | ------ |
-| User       |   ☐  |    ☑   |    ☐   |     ☐    |    ☐   |    ☐   |
 | Team       |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☐   |
 | Membership |   ☑  |    ☐   |    ☐   |     ☐    |    ☐   |    ☐   |
 | Category   |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
-| Context    |   ☑  |    ☑   |    ☑   |     ☐    |    ☑   |    ☑   |
-| Fact       |   ☑  |    ☑   |    ☐   |     ☐    |    ☐   |    ☐   |
+| Context    |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
+| Fact       |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
 | Rating     |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
-| Item       |   ☑  |    ☑   |    ☑   |     ☐    |    ☑   |    ☑   |
-| Review     |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☐   |
-| Vote       |   ☐  |    ☐   |    ☐   |     ☐    |    ☐   |    ☐   |
-| Attachment |   ☑  |    ☐   |    ☑   |     ☐    |    ☑   |    ☑   |
+| Item       |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
+| Review     |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
+| Vote       |   ☑  |    ☐   |    ☐   |     ☐    |    ☐   |    ☐   |
+| Attachment |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
 
 
 
