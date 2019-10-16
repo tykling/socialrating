@@ -7,7 +7,7 @@ The following views are missing functionality or templates
 
 | Model      | List | Create | Detail | Settings | Update | Delete |
 | ---------- | ---- | ------ | ------ | -------- | ------ | ------ |
-| Team       |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☐   |
+| Team       |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
 | Membership |   ☑  |    ☐   |    ☐   |     ☐    |    ☐   |    ☐   |
 | Category   |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
 | Context    |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
@@ -15,7 +15,7 @@ The following views are missing functionality or templates
 | Rating     |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
 | Item       |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
 | Review     |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
-| Vote       |   ☑  |    ☐   |    ☐   |     ☐    |    ☐   |    ☐   |
+| Vote       |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
 | Attachment |   ☑  |    ☑   |    ☑   |     ☑    |    ☑   |    ☑   |
 
 
