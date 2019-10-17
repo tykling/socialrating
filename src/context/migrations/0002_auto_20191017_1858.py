@@ -8,19 +8,20 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('context', '0001_initial'),
-        ('team', '0001_initial'),
-    ]
+    dependencies = [("context", "0001_initial"), ("team", "0001_initial")]
 
     operations = [
         migrations.AddField(
-            model_name='context',
-            name='team',
-            field=models.ForeignKey(help_text='The Team to which this Context belongs', on_delete=django.db.models.deletion.CASCADE, related_name='contexts', to='team.Team'),
+            model_name="context",
+            name="team",
+            field=models.ForeignKey(
+                help_text="The Team to which this Context belongs",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="contexts",
+                to="team.Team",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='context',
-            unique_together={('slug', 'team'), ('name', 'team')},
+            name="context", unique_together={("slug", "team"), ("name", "team")}
         ),
     ]

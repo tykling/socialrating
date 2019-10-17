@@ -9,18 +9,22 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('category', '0002_category_default_context'),
-        ('team', '0001_initial'),
+        ("category", "0002_category_default_context"),
+        ("team", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='category',
-            name='team',
-            field=models.ForeignKey(help_text='The Team to which this Category belongs', on_delete=django.db.models.deletion.CASCADE, related_name='categories', to='team.Team'),
+            model_name="category",
+            name="team",
+            field=models.ForeignKey(
+                help_text="The Team to which this Category belongs",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="categories",
+                to="team.Team",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='category',
-            unique_together={('slug', 'team'), ('name', 'team')},
+            name="category", unique_together={("slug", "team"), ("name", "team")}
         ),
     ]

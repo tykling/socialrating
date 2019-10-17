@@ -1,5 +1,6 @@
 import eav.registry
 
+
 class CategoryEavConfig(eav.registry.EavConfig):
     @classmethod
     def get_attributes(cls, entity):
@@ -7,4 +8,3 @@ class CategoryEavConfig(eav.registry.EavConfig):
         Return just the Facts / EAV attributes which apply to this Category
         """
         return entity.facts.all()
-

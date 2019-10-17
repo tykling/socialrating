@@ -1,5 +1,6 @@
 import eav.registry
 
+
 class ItemEavConfig(eav.registry.EavConfig):
     @classmethod
     def get_attributes(cls, entity):
@@ -8,4 +9,3 @@ class ItemEavConfig(eav.registry.EavConfig):
         Facts which apply to the Category of this Item.
         """
         return entity.category.facts.all()
-

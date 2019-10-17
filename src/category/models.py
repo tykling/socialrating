@@ -119,4 +119,3 @@ class Category(TeamRelatedModel):
 
 # register Category model with django-eav2
 eav.register(Category, CategoryEavConfig)
-

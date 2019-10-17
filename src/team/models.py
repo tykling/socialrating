@@ -184,10 +184,7 @@ class Team(BaseModel):
         """
         from fact.models import Fact
 
-        return Fact.objects.filter(
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id__in=self.categories.all().values_list("id", flat=True),
-        )
+        return Fact.objects.filter(category__team=self)
 
     @property
     def ratings(self):

@@ -13,10 +13,10 @@
   <div class="card-body">
     <div class="button-group">
     <a href="{% url 'team:category:fact:detail' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show Fact</a>
-    {% if "change_attribute" in fact_perms %}
+    {% if "change_fact" in fact_perms %}
       <a href="{% url 'team:category:fact:update' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update Fact</a>
     {% endif %}
-    {% if "delete_attribute" in fact_perms %}
+    {% if "delete_fact" in fact_perms %}
       <a href="{% url 'team:category:fact:delete' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete Fact</a>
     {% endif %}
     </div>

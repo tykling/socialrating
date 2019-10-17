@@ -21,10 +21,7 @@ class FactSlugMixin(CategorySlugMixin):
         # call super() now so CategorySlugMixin runs first
         super().setup(*args, **kwargs)
         self.fact = get_object_or_404(
-            Fact,
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id=self.category.id,
-            slug=self.kwargs["fact_slug"],
+            Fact, category=self.category, slug=self.kwargs["fact_slug"]
         )
         # check permissions
         if not self.request.user.has_perm("fact.view_fact", self.fact):

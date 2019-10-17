@@ -158,5 +158,6 @@ class Item(TeamRelatedModel):
     def last10reviews(self):
         return self.reviews.all()[:10]
 
+
 # register Item model with django-eav2
 eav.register(Item, ItemEavConfig)

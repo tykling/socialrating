@@ -99,12 +99,12 @@ class CategoryUpdateView(
         So we temporarily set required to False for all the EAV fields
         for the category, save, and then set required back True.
         """
-        # get all attributes
-        attributes = self.get_object().eav.get_all_attributes()
+        # get all facts
+        facts = self.get_object().facts.all()
         required_eav_ids = []
 
         # loop over the required ones and set required=False
-        for eav in attributes.filter(required=True):
+        for eav in facts.filter(required=True):
             required_eav_ids.append(eav.pk)
             eav.required = False
             eav.save()
@@ -113,9 +113,7 @@ class CategoryUpdateView(
         category = form.save()
 
         # set required to True again
-        category.eav.get_all_attributes().filter(id__in=required_eav_ids).update(
-            required=True
-        )
+        category.facts.filter(id__in=required_eav_ids).update(required=True)
 
         # all done
         messages.success(self.request, "Category updated!")

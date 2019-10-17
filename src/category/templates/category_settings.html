@@ -45,7 +45,7 @@
   <p class="lead">No Facts found for this Category.</p>
   {% endif %}
     <a href="{% url 'team:category:fact:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> Fact List</a>
-    {% if perms.eav.add_attribute %}
+    {% if 'add_fact' in category_perms %}
       <a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create new Fact</a>
     {% endif %}
   </div>

@@ -9,18 +9,46 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('eav', '0007_auto_20191012_2239'),
-        ('category', '0002_category_default_context'),
+        ("eav", "0007_auto_20191012_2239"),
+        ("category", "0002_category_default_context"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Fact',
+            name="Fact",
             fields=[
-                ('attribute_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='eav.Attribute')),
-                ('category', models.ForeignKey(help_text='The Category to which this Fact belongs', on_delete=django.db.models.deletion.CASCADE, related_name='facts', to='category.Category')),
-                ('object_category', models.ForeignKey(blank=True, help_text="Related Category for Facts of type 'object'", null=True, on_delete=django.db.models.deletion.CASCADE, related_name='object_facts', to='category.Category')),
+                (
+                    "attribute_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="eav.Attribute",
+                    ),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        help_text="The Category to which this Fact belongs",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="facts",
+                        to="category.Category",
+                    ),
+                ),
+                (
+                    "object_category",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Related Category for Facts of type 'object'",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="object_facts",
+                        to="category.Category",
+                    ),
+                ),
             ],
-            bases=('eav.attribute',),
-        ),
+            bases=("eav.attribute",),
+        )
     ]
