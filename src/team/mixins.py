@@ -10,7 +10,7 @@ from team.models import Team
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class TeamSlugMixin:
+class TeamMixin:
     """
     A mixin to set self.team based on team_slug from the URL,
     or return 404 if the slug was not found.

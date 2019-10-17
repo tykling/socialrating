@@ -10,17 +10,17 @@ from django.http import HttpResponse
 from django.contrib import messages
 from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
-from review.mixins import ReviewSlugMixin
+from review.mixins import ReviewMixin
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 
 from .models import Vote
-from .mixins import VoteSlugMixin
+from .mixins import VoteMixin
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class VoteListView(ReviewSlugMixin, PermissionListMixin, BCMixin, ListView):
+class VoteListView(ReviewMixin, PermissionListMixin, BCMixin, ListView):
     """
     List all votes belonging to a specific review
     """
@@ -34,9 +34,7 @@ class VoteListView(ReviewSlugMixin, PermissionListMixin, BCMixin, ListView):
         return super().get_queryset().filter(review=self.review)
 
 
-class VoteCreateView(
-    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
-):
+class VoteCreateView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
     """
     This view allows the user to add new votes to an existing review.
     """
@@ -84,23 +82,21 @@ class VoteCreateView(
         )
 
 
-class VoteDetailView(VoteSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class VoteDetailView(VoteMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
     model = Vote
     template_name = "vote_detail.html"
     pk_url_kwarg = "vote_uuid"
     permission_required = "vote.view_vote"
 
 
-class VoteSettingsView(
-    VoteSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class VoteSettingsView(VoteMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
     model = Vote
     template_name = "vote_settings.html"
     pk_url_kwarg = "vote_uuid"
     permission_required = "vote.change_vote"
 
 
-class VoteUpdateView(VoteSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
+class VoteUpdateView(VoteMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
     model = Vote
     template_name = "vote_form.html"
     fields = ["vote", "comment"]
@@ -120,7 +116,7 @@ class VoteUpdateView(VoteSlugMixin, PermissionRequiredOr403Mixin, BCMixin, Updat
         )
 
 
-class VoteDeleteView(VoteSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
+class VoteDeleteView(VoteMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
     model = Vote
     template_name = "vote_delete.html"
     pk_url_kwarg = "vote_uuid"

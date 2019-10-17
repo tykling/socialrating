@@ -3,22 +3,22 @@ import logging
 from django.shortcuts import get_object_or_404, reverse
 from django.contrib.contenttypes.models import ContentType
 
-from category.mixins import CategorySlugMixin
+from category.mixins import CategoryMixin
 from fact.models import Fact
 from .models import Item
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class ItemSlugMixin(CategorySlugMixin):
+class ItemMixin(CategoryMixin):
     """
-    The ItemSlugMixin sets self.item based on item_slug from the URL,
+    The ItemMixin sets self.item based on item_slug from the URL,
     checks permission to view the item and also sets breadcrumbs.
     Inherits from CategoryMixin so we also have self.category available
     """
 
     def setup(self, *args, **kwargs):
-        # call super() now so CategorySlugMixin runs first
+        # call super() now so CategoryMixin runs first
         super().setup(*args, **kwargs)
         self.item = get_object_or_404(
             Item, category=self.category, slug=self.kwargs["item_slug"]

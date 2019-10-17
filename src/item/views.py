@@ -7,16 +7,16 @@ from django.http import Http404
 from django.shortcuts import redirect, reverse
 from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
-from category.mixins import CategorySlugMixin
+from category.mixins import CategoryMixin
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 
 from .models import Item
 from .forms import ItemForm
-from .mixins import ItemFormMixin, ItemSlugMixin
+from .mixins import ItemFormMixin, ItemMixin
 
 
-class ItemListView(CategorySlugMixin, PermissionListMixin, BCMixin, ListView):
+class ItemListView(CategoryMixin, PermissionListMixin, BCMixin, ListView):
     model = Item
     paginate_by = 100
     template_name = "item_list.html"
@@ -38,7 +38,7 @@ class ItemListView(CategorySlugMixin, PermissionListMixin, BCMixin, ListView):
 
 
 class ItemCreateView(
-    CategorySlugMixin, PermissionRequiredOr403Mixin, ItemFormMixin, BCMixin, CreateView
+    CategoryMixin, PermissionRequiredOr403Mixin, ItemFormMixin, BCMixin, CreateView
 ):
     """
     ItemCreateView uses ItemForm which subclasses
@@ -91,16 +91,14 @@ class ItemCreateView(
         )
 
 
-class ItemDetailView(ItemSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class ItemDetailView(ItemMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
     model = Item
     template_name = "item_detail.html"
     slug_url_kwarg = "item_slug"
     permission_required = "item.view_item"
 
 
-class ItemSettingsView(
-    ItemSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class ItemSettingsView(ItemMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
     model = Item
     template_name = "item_settings.html"
     slug_url_kwarg = "item_slug"
@@ -108,7 +106,7 @@ class ItemSettingsView(
 
 
 class ItemUpdateView(
-    ItemSlugMixin, PermissionRequiredOr403Mixin, ItemFormMixin, BCMixin, UpdateView
+    ItemMixin, PermissionRequiredOr403Mixin, ItemFormMixin, BCMixin, UpdateView
 ):
     model = Item
     template_name = "item_form.html"
@@ -122,7 +120,7 @@ class ItemUpdateView(
         return redirect(item.get_absolute_url())
 
 
-class ItemDeleteView(ItemSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
+class ItemDeleteView(ItemMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
     model = Item
     template_name = "item_delete.html"
     slug_url_kwarg = "item_slug"

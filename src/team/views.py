@@ -65,7 +65,7 @@ class TeamCreateView(LoginRequiredMixin, BCMixin, CreateView):
         return redirect(reverse("team:detail", kwargs={"team_slug": team.slug}))
 
 
-class TeamDetailView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class TeamDetailView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
     model = Team
     slug_url_kwarg = "team_slug"
     permission_required = "team.view_team"
@@ -84,16 +84,14 @@ class TeamDetailView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, Detai
         return context
 
 
-class TeamSettingsView(
-    TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class TeamSettingsView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
     model = Team
     slug_url_kwarg = "team_slug"
     permission_required = "team.change_team"
     template_name = "team_settings.html"
 
 
-class TeamMemberView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class TeamMemberView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
     model = Team
     template_name = "team_members.html"
     slug_url_kwarg = "team_slug"
@@ -101,7 +99,7 @@ class TeamMemberView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, Detai
     breadcrumb_title = "Members"
 
 
-class TeamUpdateView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
+class TeamUpdateView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
     model = Team
     template_name = "team_form.html"
     fields = ["description"]
@@ -114,7 +112,7 @@ class TeamUpdateView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, Updat
         return redirect(reverse("team:detail", kwargs={"team_slug": team.slug}))
 
 
-class TeamDeleteView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
+class TeamDeleteView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
     model = Team
     template_name = "team_delete.html"
     slug_url_kwarg = "team_slug"

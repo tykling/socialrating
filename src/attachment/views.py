@@ -9,17 +9,17 @@ from django.http import HttpResponse
 from django.contrib import messages
 from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
-from review.mixins import ReviewSlugMixin
+from review.mixins import ReviewMixin
 from utils.svgthumbnail import svgthumbnail
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 
 from .models import Attachment
-from .mixins import AttachmentSlugMixin
+from .mixins import AttachmentMixin
 from .utils import save_form_attachments
 
 
-class AttachmentListView(ReviewSlugMixin, PermissionListMixin, BCMixin, ListView):
+class AttachmentListView(ReviewMixin, PermissionListMixin, BCMixin, ListView):
     """
     List all attachments belonging to a specific review
     """
@@ -34,7 +34,7 @@ class AttachmentListView(ReviewSlugMixin, PermissionListMixin, BCMixin, ListView
 
 
 class AttachmentCreateView(
-    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
+    ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
 ):
     """
     This view allows the user to add new attachments to an existing
@@ -77,7 +77,7 @@ class AttachmentCreateView(
 
 
 class AttachmentDetailView(
-    AttachmentSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     model = Attachment
     template_name = "attachment_detail.html"
@@ -86,7 +86,7 @@ class AttachmentDetailView(
 
 
 class AttachmentSettingsView(
-    AttachmentSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     model = Attachment
     template_name = "attachment_settings.html"
@@ -95,7 +95,7 @@ class AttachmentSettingsView(
 
 
 class AttachmentFileView(
-    AttachmentSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     """
     This view returns a http response with the contents of the file
@@ -123,7 +123,7 @@ class AttachmentFileView(
 
 
 class AttachmentUpdateView(
-    AttachmentSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
+    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
 ):
     """
     View to update the description of an existing Attachment
@@ -149,7 +149,7 @@ class AttachmentUpdateView(
 
 
 class AttachmentDeleteView(
-    AttachmentSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
+    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
 ):
     model = Attachment
     template_name = "attachment_delete.html"

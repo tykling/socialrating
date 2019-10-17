@@ -2,20 +2,20 @@ import logging
 
 from django.shortcuts import get_object_or_404, reverse
 
-from team.mixins import TeamSlugMixin
+from team.mixins import TeamMixin
 from .models import Context
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class ContextSlugMixin(TeamSlugMixin):
+class ContextMixin(TeamMixin):
     """
-    The ContextSlugMixin sets self.context based on context_slug,
+    The ContextMixin sets self.context based on context_slug,
     and adds breadcrumbs
     """
 
     def setup(self, *args, **kwargs):
-        # call super() now so TeamSlugMixin runs first
+        # call super() now so TeamMixin runs first
         super().setup(*args, **kwargs)
         self.context = get_object_or_404(
             Context, team=self.team, slug=self.kwargs["context_slug"]

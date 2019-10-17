@@ -15,12 +15,12 @@ from team.mixins import *
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 from .models import Category
-from .mixins import CategorySlugMixin
+from .mixins import CategoryMixin
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class CategoryListView(TeamSlugMixin, PermissionListMixin, BCMixin, ListView):
+class CategoryListView(TeamMixin, PermissionListMixin, BCMixin, ListView):
     model = Category
     paginate_by = 100
     template_name = "category_list.html"
@@ -30,9 +30,7 @@ class CategoryListView(TeamSlugMixin, PermissionListMixin, BCMixin, ListView):
         return super().get_queryset().filter(team=self.team)
 
 
-class CategoryCreateView(
-    TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
-):
+class CategoryCreateView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
     model = Category
     template_name = "category_form.html"
     fields = ["name", "description"]
@@ -62,7 +60,7 @@ class CategoryCreateView(
 
 
 class CategoryDetailView(
-    CategorySlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     model = Category
     slug_url_kwarg = "category_slug"
@@ -71,7 +69,7 @@ class CategoryDetailView(
 
 
 class CategorySettingsView(
-    CategorySlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     model = Category
     slug_url_kwarg = "category_slug"
@@ -81,7 +79,7 @@ class CategorySettingsView(
 
 
 class CategoryUpdateView(
-    CategorySlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
+    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
 ):
     model = Category
     template_name = "category_form.html"
@@ -126,7 +124,7 @@ class CategoryUpdateView(
 
 
 class CategoryDeleteView(
-    CategorySlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
+    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
 ):
     model = Category
     template_name = "category_delete.html"

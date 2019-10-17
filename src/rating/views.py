@@ -5,15 +5,15 @@ from django.shortcuts import redirect, reverse
 from django.contrib import messages
 from guardian.mixins import PermissionListMixin
 
-from category.mixins import CategorySlugMixin
+from category.mixins import CategoryMixin
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 
 from .models import Rating
-from .mixins import RatingSlugMixin
+from .mixins import RatingMixin
 
 
-class RatingListView(CategorySlugMixin, PermissionListMixin, BCMixin, ListView):
+class RatingListView(CategoryMixin, PermissionListMixin, BCMixin, ListView):
     model = Rating
     paginate_by = 100
     template_name = "rating_list.html"
@@ -27,7 +27,7 @@ class RatingListView(CategorySlugMixin, PermissionListMixin, BCMixin, ListView):
 
 
 class RatingCreateView(
-    CategorySlugMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
+    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
 ):
     model = Rating
     template_name = "rating_form.html"
@@ -60,9 +60,7 @@ class RatingCreateView(
         )
 
 
-class RatingDetailView(
-    RatingSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class RatingDetailView(RatingMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
     model = Rating
     template_name = "rating_detail.html"
     slug_url_kwarg = "rating_slug"
@@ -70,7 +68,7 @@ class RatingDetailView(
 
 
 class RatingSettingsView(
-    RatingSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+    RatingMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     model = Rating
     template_name = "rating_settings.html"
@@ -78,9 +76,7 @@ class RatingSettingsView(
     permission_required = "rating.change_rating"
 
 
-class RatingUpdateView(
-    RatingSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
-):
+class RatingUpdateView(RatingMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
     model = Rating
     template_name = "rating_form.html"
     slug_url_kwarg = "rating_slug"
@@ -88,9 +84,7 @@ class RatingUpdateView(
     fields = ["name", "description", "icon"]
 
 
-class RatingDeleteView(
-    RatingSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
-):
+class RatingDeleteView(RatingMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
     model = Rating
     template_name = "rating_delete.html"
     slug_url_kwarg = "rating_slug"

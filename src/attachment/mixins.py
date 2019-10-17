@@ -2,13 +2,13 @@ import logging
 
 from django.shortcuts import get_object_or_404, reverse
 
-from review.mixins import ReviewSlugMixin
+from review.mixins import ReviewMixin
 from .models import Attachment
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class AttachmentSlugMixin(ReviewSlugMixin):
+class AttachmentMixin(ReviewMixin):
     """
     The AttachmentSlugMixin sets self.attachment based on attachment_uuid from the URL,
     also checks permissions and sets breadcrumbs.

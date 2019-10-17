@@ -2,21 +2,21 @@ import logging
 
 from django.shortcuts import get_object_or_404, reverse
 
-from review.mixins import ReviewSlugMixin
+from review.mixins import ReviewMixin
 from .models import Vote
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class VoteSlugMixin(ReviewSlugMixin):
+class VoteMixin(ReviewMixin):
     """
-    The VoteSlugMixin sets self.vote based on vote_uuid from the URL,
+    The VoteMixin sets self.vote based on vote_uuid from the URL,
     also checks permissions and sets breadcrumbs.
-    Inherits from ReviewSlugMixin so we have self.review available
+    Inherits from ReviewMixin so we have self.review available
     """
 
     def setup(self, *args, **kwargs):
-        # call super() now so ReviewSlugMixin runs first
+        # call super() now so ReviewMixin runs first
         super().setup(*args, **kwargs)
 
         # get the vote

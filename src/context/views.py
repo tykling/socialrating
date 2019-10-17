@@ -10,10 +10,10 @@ from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 
 from .models import Context
-from .mixins import ContextSlugMixin
+from .mixins import ContextMixin
 
 
-class ContextListView(TeamSlugMixin, PermissionListMixin, BCMixin, ListView):
+class ContextListView(TeamMixin, PermissionListMixin, BCMixin, ListView):
     model = Context
     paginate_by = 100
     template_name = "context_list.html"
@@ -23,9 +23,7 @@ class ContextListView(TeamSlugMixin, PermissionListMixin, BCMixin, ListView):
         return super().get_queryset().filter(team=self.team)
 
 
-class ContextCreateView(
-    TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
-):
+class ContextCreateView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
     model = Context
     template_name = "context_form.html"
     fields = ["name", "description"]
@@ -50,7 +48,7 @@ class ContextCreateView(
 
 
 class ContextDetailView(
-    ContextSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+    ContextMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     model = Context
     template_name = "context_detail.html"
@@ -59,7 +57,7 @@ class ContextDetailView(
 
 
 class ContextSettingsView(
-    ContextSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+    ContextMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     model = Context
     template_name = "context_settings.html"
@@ -68,7 +66,7 @@ class ContextSettingsView(
 
 
 class ContextUpdateView(
-    ContextSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
+    ContextMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
 ):
     model = Context
     template_name = "context_form.html"
@@ -88,7 +86,7 @@ class ContextUpdateView(
 
 
 class ContextDeleteView(
-    ContextSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
+    ContextMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
 ):
     model = Context
     template_name = "context_delete.html"

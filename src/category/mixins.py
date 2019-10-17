@@ -2,22 +2,22 @@ import logging
 
 from django.shortcuts import get_object_or_404, reverse
 
-from team.mixins import TeamSlugMixin
+from team.mixins import TeamMixin
 
 from .models import Category
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class CategorySlugMixin(TeamSlugMixin):
+class CategoryMixin(TeamMixin):
     """
-    The CategorySlugMixin sets self.category based on category_slug,
+    The CategoryMixin sets self.category based on category_slug,
     checks if the user has permissions to view the category,
     and adds breadcrumbs
     """
 
     def setup(self, *args, **kwargs):
-        # call super() now so TeamSlugMixin runs first
+        # call super() now so TeamMixin runs first
         super().setup(*args, **kwargs)
         self.category = get_object_or_404(
             Category, team=self.team, slug=self.kwargs["category_slug"]

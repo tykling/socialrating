@@ -4,21 +4,21 @@ import logging
 from django.shortcuts import get_object_or_404, reverse
 from django.contrib.contenttypes.models import ContentType
 
-from category.mixins import CategorySlugMixin
+from category.mixins import CategoryMixin
 from .models import Fact
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class FactSlugMixin(CategorySlugMixin):
+class FactMixin(CategoryMixin):
     """
-    The FactSlugMixin sets self.fact based on fact_slug from the URL,
+    The FactMixin sets self.fact based on fact_slug from the URL,
     and also sets breadcrumbs.
     Inherits from CategoryMixin so we also have self.category available
     """
 
     def setup(self, *args, **kwargs):
-        # call super() now so CategorySlugMixin runs first
+        # call super() now so CategoryMixin runs first
         super().setup(*args, **kwargs)
         self.fact = get_object_or_404(
             Fact, category=self.category, slug=self.kwargs["fact_slug"]

@@ -2,21 +2,21 @@ import logging
 
 from django.shortcuts import get_object_or_404, reverse
 
-from item.mixins import ItemSlugMixin
+from item.mixins import ItemMixin
 from .models import Review
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class ReviewSlugMixin(ItemSlugMixin):
+class ReviewMixin(ItemMixin):
     """
-    The ReviewSlugMixin sets self.review based on review_uuid from the URL,
+    The ReviewMixin sets self.review based on review_uuid from the URL,
     also sets breadcrumbs and checks permissions.
-    Inherits from ItemSlugMixin so we also have self.item available
+    Inherits from ItemMixin so we also have self.item available
     """
 
     def setup(self, *args, **kwargs):
-        # call super() now so ItemSlugMixin runs first
+        # call super() now so ItemMixin runs first
         super().setup(*args, **kwargs)
         self.review = get_object_or_404(
             Review, item=self.item, uuid=self.kwargs["review_uuid"]

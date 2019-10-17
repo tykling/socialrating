@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.http import Http404
 from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
-from item.mixins import ItemSlugMixin
+from item.mixins import ItemMixin
 
 from context.models import Context
 from attachment.models import Attachment
@@ -22,12 +22,12 @@ from utils.mixins import BreadCrumbMixin as BCMixin
 from vote.models import Vote
 
 from .models import Review
-from .mixins import ReviewSlugMixin
+from .mixins import ReviewMixin
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class ReviewListView(ItemSlugMixin, PermissionListMixin, BCMixin, ListView):
+class ReviewListView(ItemMixin, PermissionListMixin, BCMixin, ListView):
     model = Review
     paginate_by = 100
     template_name = "review_list.html"
@@ -40,9 +40,7 @@ class ReviewListView(ItemSlugMixin, PermissionListMixin, BCMixin, ListView):
         return super().get_queryset().filter(item=self.item)
 
 
-class ReviewCreateView(
-    ItemSlugMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
-):
+class ReviewCreateView(ItemMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
     model = Review
     template_name = "review_form.html"
     fields = ["headline", "body", "context"]
@@ -164,9 +162,7 @@ class ReviewCreateView(
         )
 
 
-class ReviewDetailView(
-    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class ReviewDetailView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
     model = Review
     template_name = "review_detail.html"
     pk_url_kwarg = "review_uuid"
@@ -174,7 +170,7 @@ class ReviewDetailView(
 
 
 class ReviewSettingsView(
-    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+    ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     model = Review
     template_name = "review_settings.html"
@@ -182,9 +178,7 @@ class ReviewSettingsView(
     permission_required = "review.change_review"
 
 
-class ReviewUpdateView(
-    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
-):
+class ReviewUpdateView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
     model = Review
     template_name = "review_form.html"
     pk_url_kwarg = "review_uuid"
@@ -299,9 +293,7 @@ class ReviewUpdateView(
         )
 
 
-class ReviewDeleteView(
-    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
-):
+class ReviewDeleteView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
     model = Review
     template_name = "review_delete.html"
     pk_url_kwarg = "review_uuid"
