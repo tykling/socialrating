@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "item",
     "review",
     "rating",
+    "vote",
     "utils",
     "eventlog",
     "attachment",

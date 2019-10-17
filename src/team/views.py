@@ -69,15 +69,7 @@ class TeamDetailView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, Detai
     model = Team
     slug_url_kwarg = "team_slug"
     permission_required = "team.view_team"
-
-    def get_template_names(self):
-        """
-        The team detail view uses a different template based on the url name
-        """
-        if self.request.resolver_match.url_name == "settings":
-            return ["team_settings.html"]
-        else:
-            return ["team_detail.html"]
+    template_name = "team_detail.html"
 
     def get_context_data(self, **kwargs):
         """
@@ -85,7 +77,20 @@ class TeamDetailView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, Detai
         """
         context = super().get_context_data(**kwargs)
         context["team"] = self.team
+        if self.team.reviews.exists():
+            context["review"] = self.team.reviews.latest("created")
+        if self.team.items.exists():
+            context["item"] = self.team.items.latest("created")
         return context
+
+
+class TeamSettingsView(
+    TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
+    model = Team
+    slug_url_kwarg = "team_slug"
+    permission_required = "team.change_team"
+    template_name = "team_settings.html"
 
 
 class TeamMemberView(TeamSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):

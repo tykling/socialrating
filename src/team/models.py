@@ -4,6 +4,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
 from guardian.shortcuts import get_perms, assign_perm
 
 from utils.models import BaseModel, UUIDBaseModel
@@ -149,6 +150,63 @@ class Team(BaseModel):
     def adminmembers(self):
         return Actor.objects.filter(memberships__team=self, memberships__admin=True)
 
+    @property
+    def items(self):
+        """
+        Return a queryset of all Items belonging to this Team
+        """
+        from item.models import Item
+
+        return Item.objects.filter(category__team=self)
+
+    @property
+    def reviews(self):
+        """
+        Return a queryset of all Reviews belonging to this Team
+        """
+        from review.models import Review
+
+        return Review.objects.filter(item__category__team=self)
+
+    @property
+    def attachments(self):
+        """
+        Return a queryset of all Attachments belonging to this Team
+        """
+        from attachment.models import Attachment
+
+        return Attachment.objects.filter(review__item__category__team=self)
+
+    @property
+    def facts(self):
+        """
+        Return a queryset of all Facts belonging to this team.
+        """
+        from fact.models import Fact
+
+        return Fact.objects.filter(
+            entity_ct=ContentType.objects.get(app_label="category", model="category"),
+            entity_id__in=self.categories.all().values_list("id", flat=True),
+        )
+
+    @property
+    def ratings(self):
+        """
+        Return a queryset of all Ratings belonging to this team.
+        """
+        from rating.models import Rating
+
+        return Rating.objects.filter(category__team=self)
+
+    @property
+    def votes(self):
+        """
+        Return a queryset of all Votes belonging to this team.
+        """
+        from vote.models import Vote
+
+        return Vote.objects.filter(rating__category__team=self)
+
 
 class Membership(BaseModel):
     """
@@ -167,7 +225,7 @@ class Membership(BaseModel):
 
     team = models.ForeignKey(
         "team.Team",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         help_text="The Group to which this Membership belongs",
         related_name="memberships",
     )

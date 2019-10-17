@@ -1,0 +1,24 @@
+{% load rating %}
+    <table class="table table-bordered">
+      <tr>
+        <td><b>Item</b><br>The Item this Vote belongs to</td>
+        <td><a href="{% url 'team:category:item:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}">{{ vote.review.item.name }}</a></td>
+      </tr>
+      <tr>
+        <td><b>Review</b><br>The Review this Vote belongs to</td>
+        <td><a href="{% url 'team:category:item:review:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug review_uuid=review.uuid %}">{{ vote.review.headline }}</a></td>
+      </tr>
+      <tr>
+        <td><b>Vote</b><br>The actual numeric Vote</td>
+        <td>
+            {{ vote | stars }} ({{ vote.vote }} of {{ vote.rating.max_rating }})<br>
+        </td>
+      </tr>
+      <tr>
+        <td><b>Comment</b><br>The comment for this Vote (if any)</td>
+        <td>
+            {{ vote.comment }}
+        </td>
+      </tr>
+    </table>
+

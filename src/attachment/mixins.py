@@ -61,8 +61,8 @@ class AttachmentSlugMixin(ReviewSlugMixin):
 
     def get_context_data(self, **kwargs):
         """
-        Add Review to context
+        Add Attachment to context
         """
         context = super().get_context_data(**kwargs)
-        context["review"] = self.review
+        context["attachment"] = self.attachment
         return context

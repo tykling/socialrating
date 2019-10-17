@@ -14,6 +14,10 @@ class Review(TeamRelatedUUIDModel):
 
     class Meta:
         ordering = ["-created"]
+        permissions = (
+            ("add_attachment", "Add Attachment to this Review"),
+            ("add_vote", "Add Vote for this Review"),
+        )
 
     actor = models.ForeignKey(
         "actor.Actor",
@@ -81,7 +85,14 @@ class Review(TeamRelatedUUIDModel):
         assign_perm("review.change_review", self.actor.user, self)
         assign_perm("review.delete_review", self.actor.user, self)
         assign_perm("review.delete_review", self.team.admingroup, self)
+        assign_perm("review.add_attachment", self.actor.user, self)
+        assign_perm("review.add_vote", self.actor.user, self)
 
     def save(self, **kwargs):
         super().save(**kwargs)
         self.grant_permissions()
+
+    def ratings_missing_votes(self):
+        return self.category.ratings.all().exclude(
+            id__in=self.votes.all().values_list("rating_id", flat=True)
+        )

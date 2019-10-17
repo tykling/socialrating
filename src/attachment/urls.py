@@ -17,7 +17,7 @@ urlpatterns = [
                     "settings/",
                     include(
                         [
-                            path("", AttachmentDetailView.as_view(), name="settings"),
+                            path("", AttachmentSettingsView.as_view(), name="settings"),
                             path(
                                 "update/", AttachmentUpdateView.as_view(), name="update"
                             ),
@@ -26,6 +26,7 @@ urlpatterns = [
                             ),
                         ]
                     ),
+                    kwargs={"settings_view": True},
                 ),
             ]
         ),

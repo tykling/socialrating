@@ -1,11 +1,11 @@
 import logging
 
-from fact.models import Fact
 
-# from eav.models import Attribute as Fact
 from django.shortcuts import get_object_or_404, reverse
+from django.contrib.contenttypes.models import ContentType
 
 from category.mixins import CategorySlugMixin
+from .models import Fact
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
@@ -22,10 +22,10 @@ class FactSlugMixin(CategorySlugMixin):
         super().setup(*args, **kwargs)
         self.fact = get_object_or_404(
             Fact,
-            extra_data__category_id=self.category.id,
+            entity_ct=ContentType.objects.get(app_label="category", model="category"),
+            entity_id=self.category.id,
             slug=self.kwargs["fact_slug"],
         )
-
         # check permissions
         if not self.request.user.has_perm("fact.view_fact", self.fact):
             raise PermissionDenied

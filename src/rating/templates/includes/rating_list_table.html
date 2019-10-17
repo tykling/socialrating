@@ -1,4 +1,5 @@
 {% load guardian_tags %}
+{% if category.ratings.all %}
 <table class="table table-bordered">
     <thead>
       <tr>
@@ -17,17 +18,28 @@
         <td>{{ rating.description }}</td>
         <td>{{ rating.max_rating }}</td>
         <td>
+          <div style="white-space: nowrap;" class="btn-group-vertical">
           <a href="{% url 'team:category:rating:detail' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Details</a>
+          {% if "change_rating" in rating_perms %}
+            <a href="{% url 'team:category:rating:settings' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
+          {% endif %}
           {% if "change_rating" in rating_perms %}
             <a href="{% url 'team:category:rating:update' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
           {% endif %}
           {% if "delete_rating" in rating_perms %}
             <a href="{% url 'team:category:rating:delete' team_slug=team.slug category_slug=category.slug rating_slug=rating.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
           {% endif %}
+          </div>
         </td>
       </tr>
       {% endif %}
     {% endfor %}
     </tbody>
 </table>
+{% else %}
+<p class="lead">No ratings found!</p>
+{% endif %}
+{% if "category.add_rating" in perms %}
+<a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create Rating</a>
+{% endif %}
 

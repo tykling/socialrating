@@ -58,6 +58,15 @@ class ContextDetailView(
     permission_required = "context.view_context"
 
 
+class ContextSettingsView(
+    ContextSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
+    model = Context
+    template_name = "context_settings.html"
+    slug_url_kwarg = "context_slug"
+    permission_required = "context.change_context"
+
+
 class ContextUpdateView(
     ContextSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
 ):

@@ -28,13 +28,13 @@ class Category(TeamRelatedModel):
     team = models.ForeignKey(
         "team.Team",
         related_name="categories",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         help_text="The Team to which this Category belongs",
     )
 
     name = models.CharField(
         max_length=100,
-        help_text="The name of this Category. Must be unique within the Team. Changing the name also changes the URL slug, which means old links will stop working.",
+        help_text="The plural name of this Category. Must be unique within the Team. Changing the name also changes the URL slug, which means old links will stop working.",
     )
 
     slug = models.SlugField(
@@ -83,11 +83,11 @@ class Category(TeamRelatedModel):
         assign_perm("category.add_item", self.team.group, self)
 
     def save(self, **kwargs):
-        # create/update slug
+        """
+        Create/update slug and save the Fact and finally grant permissions.
+        """
         self.slug = slugify(self.name)
-        # save the category
         super().save(**kwargs)
-        # grant permissions for the category
         self.grant_permissions()
 
     def create_fact_slug(self, fact_name):
@@ -112,7 +112,7 @@ class Category(TeamRelatedModel):
 
     @property
     def vote_count(self):
-        from rating.models import Vote
+        from vote.models import Vote
 
         return Vote.objects.filter(review__item__category=self).count()
 

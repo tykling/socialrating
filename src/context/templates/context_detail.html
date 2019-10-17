@@ -1,15 +1,27 @@
 {% extends 'base.html' %}
+{% load guardian_tags %}
 
 {% block team_content %}
-<p class="lead">Details for Context {{ context.name }}</p>
+{% get_obj_perms request.user for context as "context_perms" %}
+<div class="card">
+  <div class="card-header">
+      <h4>
+          Details for Context: {{ context.name }}
+          {% if 'change_context' in context_perms %}
+            <a href="{% url 'team:context:settings' team_slug=team.slug context_slug=context.slug %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+          {% endif %}
+      </h4>
+  </div>
+  <div class="card-body">
+    <p>{{ context.description }}</p>
 
-<p>{{ context.description }}</p>
-
-<h3>Reviews in this Context:</h3>
-{% for review in context.reviews.all %}
-{% include 'includes/review_card.html' %}
-{% empty %}
-<p>No reviews found!</p>
-{% endfor %}
+    <h3>Reviews in this Context:</h3>
+    {% for review in context.reviews.all %}
+    {% include 'includes/review_card.html' %}
+    {% empty %}
+    <p>No reviews found!</p>
+    {% endfor %}
+  </div>
+</div>
 {% endblock team_content %}
 

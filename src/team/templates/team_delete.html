@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block team_content %}
+<h2>Delete Team <i>{{ object.name }}</i> ?</h2>
+<p class="lead">Deleting this Team will also delete all <i>{{ object.name }}</i> Categories, Contexts, Items, and their Reviews, Votes and Attachments!
+<form method="post" class="form">
+  {% csrf_token %}
+  {% buttons %}
+    <a href="{% url 'team:settings' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-undo"></i> No, Go Back</button></a>
+    <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Yes, Delete Team</button>
+  {% endbuttons %}
+</form>
+{% endblock team_content %}
+

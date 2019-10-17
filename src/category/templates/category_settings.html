@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+{% get_obj_perms request.user for category as "category_perms" %}
+<div class="card">
+  <div class="card-header">
+      <h4>Settings for Category: {{ category.name }}</h4>
+  </div>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <tr>
+        <th>Name</th>
+        <td>{{ category.name }}</td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td>{{ category.description }}</td>
+      </tr>
+      <tr>
+        <th>Default Context</th>
+        <td>{{ category.default_context }}</td>
+      </tr>
+    </table>
+    <a href="{% url 'team:category:detail' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show Category</a>
+    {% if "change_category" in category_perms %}
+      <a href="{% url 'team:category:update' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update Category</a>
+    {% endif %}
+    {% if "delete_category" in category_perms %}
+      <a href="{% url 'team:category:delete' team_slug=team.slug category_slug=category.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete Category</a>
+    {% endif %}
+  </div>
+</div>
+
+<br>
+
+<div class="card">
+  <div class="card-header">
+    <h4>Facts for {{ category.name }}</h4>
+  </div>
+  <div class="card-body">
+  {% if category.facts.all %}
+    {% include 'includes/fact_list_table.html' with fact_list=category.facts.all %}
+  {% else %}
+  <p class="lead">No Facts found for this Category.</p>
+  {% endif %}
+    <a href="{% url 'team:category:fact:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> Fact List</a>
+    {% if perms.eav.add_attribute %}
+      <a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create new Fact</a>
+    {% endif %}
+  </div>
+</div>
+
+<br>
+
+<div class="card">
+  <div class="card-header">
+    <h4>Ratings for {{ category.name }}</h4>
+  </div>
+  <div class="card-body">
+  {% if category.ratings.all %}
+    {% include 'includes/rating_list_table.html' with rating_list=category.ratings.all %}
+  {% else %}
+  <p class="lead">No ratings found for this category.</p>
+  {% endif %}
+  <a href="{% url 'team:category:rating:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> Rating List</a>
+  {% if perms.rating.add_rating %}
+    <a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create new Rating</a>
+  {% endif %}
+  </div>
+</div>
+{% endblock team_content %}
+

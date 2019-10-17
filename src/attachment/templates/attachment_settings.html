@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+{% get_obj_perms request.user for attachment as "attachment_perms" %}
+<div class="card border-success">
+  <div class="card-header">
+      <h4>Settings for Attachment: {{ attachment.uuid }}</h4>
+  </div>
+  <div class="card-body">
+    {% include "includes/attachment_detail_table.html" %}
+    <a href="{% url 'team:category:item:review:attachment:detail' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+  {% if "change_attachment" in attachment_perms %}
+    <a href="{% url 'team:category:item:review:attachment:update' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+  {% endif %}
+  {% if "delete_attachment" in attachment_perms %}
+    <a href="{% url 'team:category:item:review:attachment:delete' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+  {% endif %}
+  </div>
+</div>
+{% endblock team_content %}
+

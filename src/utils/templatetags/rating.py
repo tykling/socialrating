@@ -4,15 +4,16 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 from rating.models import Rating
+from vote.models import Vote
+from item.models import Item
 
 
-@register.simple_tag
-def get_average_vote(item, rating):
+@register.simple_tag(takes_context=True)
+def get_latest_review(context, item):
     """
-    Template tag to return the average vote across all actors.
-    Only includes the latest vote by each user.
+    Template tag to return latest Review by the current user for the Item
     """
-    return item.get_average_vote(rating=rating)
+    return item.reviews.filter(actor=context.request.user.actor).latest("created")
 
 
 @register.simple_tag(takes_context=True)
@@ -28,30 +29,54 @@ def get_actor_vote(context, item, rating):
 
 
 @register.filter
-def stars(rating, max_rating):
+def stars(obj, rating=None):
     """
-    This template filter returns HTML showing "stars" based on
-    rating and max_rating.
+    This template filter returns HTML showing "stars" based on the object.
+    If obj is a Vote return stars based on that vote alone.
+    If obj is an Item return average vote for the Item for the Rating.
+    If obj is an int use that for the vote and get max_rating from Rating
     """
-    if not rating or not max_rating:
+    if not obj:
         return None
 
     output = ""
     stars = 0
+    if isinstance(obj, Vote):
+        vote = obj.vote
+        max_rating = obj.rating.max_rating
+        icon = obj.rating.icon
+    elif isinstance(obj, Item):
+        vote = obj.get_average_vote(rating=rating)[0]
+        max_rating = rating.max_rating
+        icon = rating.icon
+    elif isinstance(obj, int):
+        vote = obj
+        max_rating = rating.max_rating
+        icon = rating.icon
+    else:
+        return False
 
     # add full stars
-    for i in range(1, int(rating) + 1):
-        output += "<i class='fas fa-star text-success'></i>"
+    for i in range(1, int(vote) + 1):
+        output += "<i class='%s text-success'></i>" % icon
         stars += 1
 
     # add a half star?
-    if round(rating - i) == 1:
-        output += "<i class='fas fa-star-half-alt text-success'></i>"
+    if round(vote - i) == 1:
+        output += "<i class='%s-half-alt text-success'></i>" % icon
         stars += 1
 
     # add missing stars?
     if stars < max_rating:
         for j in range(1, (max_rating + 1) - stars):
-            output += "<i class='fas fa-star text-muted'></i>"
+            output += "<i class='%s text-muted'></i>" % icon
 
     return mark_safe(output)
+
+
+@register.filter
+def votes(item, rating):
+    """
+    Return the number of Votes for the Rating for that Item
+    """
+    return Vote.objects.filter(review__item=item, rating=rating).count()

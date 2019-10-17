@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+{% get_obj_perms request.user for vote as "vote_perms" %}
+<div class="card">
+  <div class="card-header">
+      <h4>Settings for Vote {{ vote.uuid }}</h4>
+  </div>
+  <div class="card-body">
+    {% include "includes/vote_detail_table.html" %}
+    <a href="{% url 'team:category:item:review:vote:list' team_slug=vote.team.slug category_slug=vote.category.slug item_slug=vote.item.slug review_uuid=vote.review.uuid %}" class="btn btn-primary"><i class="fas fa-list"></i> Vote List</a>
+    <a href="{% url 'team:category:item:review:vote:detail' team_slug=vote.team.slug category_slug=vote.category.slug item_slug=vote.item.slug review_uuid=vote.review.uuid vote_uuid=vote.uuid %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+    {% if 'change_vote' in vote_perms %}
+    <a href="{% url 'team:category:item:review:vote:update' team_slug=vote.team.slug category_slug=vote.category.slug item_slug=vote.item.slug review_uuid=vote.review.uuid vote_uuid=vote.uuid %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+    {% endif %}
+    {% if 'delete_vote' in vote_perms %}
+    <a href="{% url 'team:category:item:review:vote:delete' team_slug=vote.team.slug category_slug=vote.category.slug item_slug=vote.item.slug review_uuid=vote.review.uuid vote_uuid=vote.uuid %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock team_content %}
+

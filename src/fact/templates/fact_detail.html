@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+{% get_obj_perms request.user for fact as "fact_perms" %}
+
+<div class="card">
+  <div class="card-header">
+    <h2>
+        Details for Fact {{ fact.name }}
+        {% if "change_attribute" in fact_perms %}
+          <a href="{% url 'team:category:fact:settings' team_slug=team.slug category_slug=category.slug fact_slug=fact.slug %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+        {% endif %}
+    </h2>
+  </div>
+  <div class="card-body">
+    <p class="lead">Nothing to see here.. just a fact of type <b>{{ fact.datatype }}</b></p>
+    <div class="button-group">
+    <a href="{% url 'team:category:fact:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-list"></i> Fact List</a>
+    </div>
+  </div>
+</div>
+
+{% endblock team_content %}
+

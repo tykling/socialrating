@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+{% load humanize %}
+
+{% block team_content %}
+{% get_obj_perms request.user for attachment as "attachment_perms" %}
+<div class="card border-success">
+  <div class="card-header">
+      Details for Attachment: {{ attachment.uuid }}
+      <a href="{% url 'team:category:item:review:attachment:settings' team_slug=team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid attachment_uuid=attachment.uuid %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+  </div>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <tr>
+        <th>Attachment</th>
+        <td>{{ attachment.uuid }}</td>
+      </tr>
+      <tr>
+        <th>Review</th>
+        <td><a href="{% url 'team:category:item:review:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug review_uuid=review.uuid %}">{{ attachment.review }}</a> by {{ attachment.review.actor.user }} on {{ attachment.review.created }}</td>
+      </tr>
+      <tr>
+        <th>Mimetype</th>
+        <td>{{ attachment.mimetype }}</td>
+      </tr>
+      <tr>
+        <th>Size</th>
+        <td>{{ attachment.size }}</td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td>{{ attachment.description }}</td>
+      </tr>
+      <tr>
+        <th>Thumbnail</th>
+        <td>
+          <a href="{% url 'team:category:item:review:attachment:attachment' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.uuid attachment_uuid=attachment.uuid %}">
+            <img src="{% url 'team:category:item:review:attachment:attachment' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.uuid attachment_uuid=attachment.uuid %}?thumbnail" width="100%" heigth="225">
+          </a>
+        </td>
+      </tr>
+    </table>
+    <a href="{% url 'team:category:item:review:attachment:list' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-list"></i> Attachments</a>
+    <a href="{% url 'team:category:item:review:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug review_uuid=review.uuid %}" class="btn btn-primary"><i class="fas fa-search"></i> Review</a>
+  </div>
+</div>
+{% endblock team_content %}
+

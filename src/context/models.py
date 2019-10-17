@@ -25,7 +25,7 @@ class Context(TeamRelatedModel):
     team = models.ForeignKey(
         "team.Team",
         related_name="contexts",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         help_text="The Team to which this Context belongs",
     )
 

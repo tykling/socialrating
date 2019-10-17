@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+{% if vote_list %}
+ <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>uuid</th>
+        <th>Rating</th>
+        <th>Vote</th>
+        <th>Comment</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for vote in vote_list %}
+      {% get_obj_perms request.user for vote as "vote_perms" %}
+      {% if "view_vote" in vote_perms %}
+      <tr>
+        <td>{{ vote.uuid }}</td>
+        <td>{{ vote.rating.name }}</td>
+        <td>{{ vote.vote }} of {{ vote.rating.max_rating }}</td>
+        <td>{{ vote.comment }}</td>
+        <td>
+          <div style="white-space: nowrap;" class="btn-group-vertical">
+          <a href="{% url 'team:category:item:review:vote:detail' team_slug=vote.team.slug category_slug=vote.category.slug item_slug=vote.item.slug review_uuid=vote.review.uuid vote_uuid=vote.uuid %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+          {% if "change_vote" in vote_perms %}
+          <a href="{% url 'team:category:item:review:vote:settings' team_slug=vote.team.slug category_slug=vote.category.slug item_slug=vote.item.slug review_uuid=vote.review.uuid vote_uuid=vote.uuid %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
+          <a href="{% url 'team:category:item:review:vote:update' team_slug=vote.team.slug category_slug=vote.category.slug item_slug=vote.item.slug review_uuid=vote.review.uuid vote_uuid=vote.uuid %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+          {% endif %}
+          {% if "delete_vote" in vote_perms %}
+            <a href="{% url 'team:category:item:review:vote:delete' team_slug=vote.team.slug category_slug=vote.category.slug item_slug=vote.item.slug review_uuid=vote.review.uuid vote_uuid=vote.uuid %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+          {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="lead">No votes found.</p>
+{% endif %}
+<a href="{% url 'team:category:item:review:detail' team_slug=review.team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-success"><i class="fas fa-search"></i> Show Review</a>
+{% get_obj_perms request.user for review as "review_perms" %}
+{% if review.ratings_missing_votes.exists and "change_review" in review_perms %}
+<a href="{% url 'team:category:item:review:vote:create' team_slug=review.team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-success"><i class="fas fa-plus"></i> Create Vote</a>
+{% endif %}
+{% endblock team_content %}
+

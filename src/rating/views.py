@@ -69,6 +69,15 @@ class RatingDetailView(
     permission_required = "rating.view_rating"
 
 
+class RatingSettingsView(
+    RatingSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
+    model = Rating
+    template_name = "rating_settings.html"
+    slug_url_kwarg = "rating_slug"
+    permission_required = "rating.change_rating"
+
+
 class RatingUpdateView(
     RatingSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
 ):

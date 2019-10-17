@@ -8,16 +8,12 @@ from eav.models import EnumValue, EnumGroup, Attribute
 
 from actor.models import Actor, User
 from actor.factories import UserFactory
-
 from team.models import Team, Membership
 from team.factories import TeamFactory, MembershipFactory
-
 from category.models import Category
-
-from rating.models import Rating, Vote
-
+from rating.models import Rating
+from vote.models import Vote
 from review.models import Review
-
 from context.models import Context
 
 
@@ -71,9 +67,11 @@ class Command(BaseCommand):
 
         # add categories for carteam
         makecat = Category.objects.create(
-            team=carteam, name="Car Maker", description="A car maker."
+            team=carteam, name="Car Makers", description="A car maker."
         )
-        carcat = Category.objects.create(team=carteam, name="Car", description="A car.")
+        carcat = Category.objects.create(
+            team=carteam, name="Cars", description="A car."
+        )
 
         # add Contexts for carteam
         classic_car_context = Context.objects.create(

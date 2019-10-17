@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+{% get_obj_perms request.user for context as "category_perms" %}
+<div class="card">
+  <div class="card-header">
+      <h4>Settings for Context: {{ context.name }}</h4>
+  </div>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <tr>
+        <th>Name</th>
+        <td>{{ context.name }}</td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td>{{ context.description }}</td>
+      </tr>
+    </table>
+
+    <a href="{% url 'team:context:detail' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+    {% if 'context.change_context' in perms %}
+    <a href="{% url 'team:context:update' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+    {% endif %}
+    {% if 'context.delete_context' in perms %}
+    <a href="{% url 'team:context:delete' team_slug=team.slug context_slug=context.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock team_content %}
+

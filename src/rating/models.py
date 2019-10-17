@@ -71,111 +71,21 @@ class Rating(TeamRelatedModel):
             },
         )
 
+    def grant_permissions(self):
+        """
+        - All team members may see a vote
+        - Only the Review author may change the Vote
+        - Only team admins and the Review author may delete a Vote
+        """
+        assign_perm("rating.view_rating", self.team.group, self)
+        assign_perm("rating.change_rating", self.team.admingroup, self)
+        assign_perm("rating.delete_rating", self.team.admingroup, self)
+
     def save(self, **kwargs):
         self.slug = slugify(self.name)
         super().save(**kwargs)
-
-        # fix rating.view_rating permission if needed
-        if not "rating.view_rating" in get_perms(self.team.group, self):
-            assign_perm("rating.view_rating", self.team.group, self)
-
-        # fix rating.change_rating permission if needed
-        if not "rating.change_rating" in get_perms(self.team.admingroup, self):
-            assign_perm("rating.change_rating", self.team.admingroup, self)
-
-        # fix rating.delete_rating permission if needed
-        if not "rating.delete_rating" in get_perms(self.team.admingroup, self):
-            assign_perm("rating.delete_rating", self.team.admingroup, self)
+        self.grant_permissions()
 
     def clean(self):
         if self.max_rating < 2 or self.max_rating > 100:
             raise ValidationError("Max. rating must be between 2 and 100")
-
-
-class Vote(TeamRelatedUUIDModel):
-    """
-    A Vote contains a reference to a Rating and a Review,
-    as well as the actual Vote (a PositiveIntegerField).
-    It may also optionally contain a short comment related to this specific vote.
-    """
-
-    class Meta:
-        ordering = ["pk"]
-        unique_together = [["review", "rating"]]
-
-    review = models.ForeignKey(
-        "review.Review",
-        on_delete=models.CASCADE,
-        related_name="votes",
-        help_text="The Review this Vote belongs to.",
-    )
-
-    rating = models.ForeignKey(
-        "rating.Rating",
-        on_delete=models.CASCADE,
-        related_name="votes",
-        help_text="The Rating this Vote applies to.",
-    )
-
-    vote = models.PositiveIntegerField(
-        help_text="The actual numerical vote for this Rating."
-    )
-
-    comment = models.CharField(
-        max_length=255,
-        help_text="An optional short comment related to this specific vote. 255 character limit.",
-        blank=True,
-        null=True,
-    )
-
-    team_filter = "review__item__category__team"
-    breadcrumb_list_name = "Votes"
-
-    @property
-    def team(self):
-        return self.review.item.category.team
-
-    def save(self, **kwargs):
-        super().save(**kwargs)
-
-        # fix rating.view_vote permission if needed
-        if not "rating.view_vote" in get_perms(self.team.group, self):
-            assign_perm("rating.view_vote", self.team.group, self)
-
-        # fix rating.add_vote permission if needed
-        if not "rating.add_vote" in get_perms(self.team.group, self):
-            assign_perm("rating.add_vote", self.team.group)
-
-        # fix rating.change_vote permission if needed
-        if not "rating.change_vote" in get_perms(self.review.actor.user, self):
-            assign_perm("rating.change_vote", self.review.actor.user, self)
-
-        # fix rating.delete_vote permission if needed
-        if not "rating.delete_vote" in get_perms(self.review.actor.user, self):
-            assign_perm("rating.delete_vote", self.review.actor.user, self)
-
-    def clean(self):
-        """
-        Add some basic sanity checks:
-        - Make sure there is no conflict before saving
-        - Make sure the vote falls inside the limits of the Rating
-        """
-        if self.rating not in self.review.item.category.ratings.all():
-            raise ValidationError(
-                "The rating %s belongs to a different Category than the Item %s"
-                % (self.rating, self.review.item)
-            )
-
-        if self.vote > self.rating.max_rating:
-            raise ValidationError(
-                "The Rating must be between 0 and %s" % self.property.max_rating
-            )
-
-    def __str__(self):
-        return "Vote %s for Rating %s from Review %s for Item %s by Actor %s" % (
-            self.vote,
-            self.rating,
-            self.review,
-            self.review.item,
-            self.review.actor,
-        )

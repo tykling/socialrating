@@ -18,11 +18,6 @@ from .mixins import FactSlugMixin
 
 
 class FactListView(CategorySlugMixin, PermissionListMixin, BCMixin, ListView):
-    """
-    Facts are just another name for django-eav2 attributes,
-    so we use the eav.models.Attribute model.
-    """
-
     model = Fact
     template_name = "fact_list.html"
     permission_required = "fact.view_fact"
@@ -32,11 +27,6 @@ class FactListView(CategorySlugMixin, PermissionListMixin, BCMixin, ListView):
 class FactCreateView(
     CategorySlugMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
 ):
-    """
-    Facts are just another name for django-eav2 attributes,
-    so we use the eav.models.Attribute model.
-    """
-
     model = Fact
     template_name = "fact_form.html"
     fields = ["name", "datatype", "description", "required"]
@@ -96,23 +86,22 @@ class FactCreateView(
 
 
 class FactDetailView(FactSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
-    """
-    Facts are just another name for django-eav2 attributes,
-    so we use the eav.models.Attribute model.
-    """
-
     model = Fact
     template_name = "fact_detail.html"
     slug_url_kwarg = "fact_slug"
     permission_required = "fact.view_fact"
 
 
-class FactUpdateView(FactSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
-    """
-    Facts are just another name for django-eav2 attributes,
-    so we use the eav.models.Attribute model.
-    """
+class FactSettingsView(
+    FactSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
+    model = Fact
+    template_name = "fact_settings.html"
+    slug_url_kwarg = "fact_slug"
+    permission_required = "fact.change_fact"
 
+
+class FactUpdateView(FactSlugMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
     model = Fact
     template_name = "fact_form.html"
     slug_url_kwarg = "fact_slug"
@@ -127,11 +116,6 @@ class FactUpdateView(FactSlugMixin, PermissionRequiredOr403Mixin, BCMixin, Updat
 
 
 class FactDeleteView(FactSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
-    """
-    Facts are just another name for django-eav2 attributes,
-    so we use the eav.models.Attribute model.
-    """
-
     model = Fact
     template_name = "fact_delete.html"
     slug_url_kwarg = "fact_slug"

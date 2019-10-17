@@ -98,6 +98,15 @@ class ItemDetailView(ItemSlugMixin, PermissionRequiredOr403Mixin, BCMixin, Detai
     permission_required = "item.view_item"
 
 
+class ItemSettingsView(
+    ItemSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
+    model = Item
+    template_name = "item_settings.html"
+    slug_url_kwarg = "item_slug"
+    permission_required = "item.change_item"
+
+
 class ItemUpdateView(
     ItemSlugMixin, PermissionRequiredOr403Mixin, ItemFormMixin, BCMixin, UpdateView
 ):

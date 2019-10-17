@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group
 
 from item.tests import ItemViewTestCase
 from category.models import Category
-from rating.models import Vote
+from vote.models import Vote
 from item.models import Item
 from .factories import ReviewFactory
 from .models import Review

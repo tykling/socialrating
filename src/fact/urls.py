@@ -16,7 +16,7 @@ urlpatterns = [
                     "settings/",
                     include(
                         [
-                            path("", FactDetailView.as_view(), name="settings"),
+                            path("", FactSettingsView.as_view(), name="settings"),
                             path("update/", FactUpdateView.as_view(), name="update"),
                             path("delete/", FactDeleteView.as_view(), name="delete"),
                         ]

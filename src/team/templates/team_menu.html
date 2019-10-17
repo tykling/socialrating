@@ -1,4 +1,5 @@
     {% load guardian_tags %}
+    {% if team.categories.exists %}
     <nav class="nav flex-column">
       {% for menucategory in team.categories.all %}
         {% get_obj_perms request.user for menucategory as "category_perms" %}
@@ -13,4 +14,9 @@
         {% endif %}
       {% endfor %}
     </nav>
-
+    {% else %}
+    <p class="lead">No categories found.</p>
+        {% if perms.category.add_category %}
+          <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create Category</a>
+        {% endif %}
+    {% endif %}

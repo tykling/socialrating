@@ -85,6 +85,15 @@ class AttachmentDetailView(
     permission_required = "attachment.view_attachment"
 
 
+class AttachmentSettingsView(
+    AttachmentSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
+    model = Attachment
+    template_name = "attachment_settings.html"
+    pk_url_kwarg = "attachment_uuid"
+    permission_required = "attachment.change_attachment"
+
+
 class AttachmentFileView(
     AttachmentSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):

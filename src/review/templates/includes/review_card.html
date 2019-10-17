@@ -4,6 +4,7 @@
 <div class="card border-success">
   <div class="card-header">
       Review of <b>{{ review.item.name }}</b> by <b>{{ review.actor.user.username }}</b> created {{ review.created | timesince }} ago
+      <a href="{% url 'team:category:item:review:settings' team_slug=team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
   </div>
   <div class="card-body">
     <h5 class="card-title">{{ review.headline }}</h5>
@@ -23,7 +24,7 @@
           {{ vote.rating.description }}
         </td>
         <td class="{% if cardtype == "full" %}w-33{% else %}w-50{% endif %}">
-          {{ vote.vote | stars:vote.rating.max_rating }}<br>
+          {{ vote | stars }}<br>
           {{ vote.comment | default:"N/A" }}
         </td>
         {% if cardtype == "full" %}
@@ -46,14 +47,12 @@
       {% if cardtype == "full" %}
         <a href="{% url 'team:category:item:detail' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug %}" class="card-link btn btn-primary"><i class="fas fa-undo"></i> Back to {{ review.item.name }}</a>
       {% else %}
-        <a href="{% url 'team:category:item:review:detail' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-search"></i> Details</a>
+        <a href="{% url 'team:category:item:review:detail' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-search"></i> Show</a>
       {% endif %}
 
-      <a href="{% url 'team:category:item:review:update' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-edit"></i> Update Review</a>
-
       <a href="{% url 'team:category:item:review:attachment:list' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-list"></i> Attachments</a>
+      <a href="{% url 'team:category:item:review:vote:list' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-list"></i> Votes</a>
 
-      <a href="{% url 'team:category:item:review:delete' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-danger"><i class="fas fa-times"></i> Delete Review</a>
   </div>
   <div class="card-footer text-muted">
       Review in <b>{{ review.context.name }}</b> last updated at {{ review.created }} - {{ review.created | timesince }} ago

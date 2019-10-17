@@ -13,13 +13,13 @@ from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
 
 from item.mixins import ItemSlugMixin
 
-from rating.models import Vote
 from context.models import Context
 from attachment.models import Attachment
 from attachment.utils import save_form_attachments
 from team.mixins import TeamFilterMixin
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
+from vote.models import Vote
 
 from .models import Review
 from .mixins import ReviewSlugMixin
@@ -86,7 +86,9 @@ class ReviewCreateView(
 
         # set queryset for context, only show Contexts for this Team
         form.fields["context"].queryset = Context.objects.filter(team=self.team)
-        form.fields["context"].empty_label = None
+        if self.category.default_context:
+            # no need for an empty item in the context picker when we have a default
+            form.fields["context"].empty_label = None
 
         # add attachments field (support multiple files)
         form.fields["attachments"] = forms.FileField(
@@ -96,6 +98,15 @@ class ReviewCreateView(
         )
 
         return form
+
+    def get_initial(self):
+        """
+        Set initial Context if this category has a default_context
+        """
+        initial = super().get_initial()
+        if self.category.default_context:
+            initial["context"] = self.category.default_context
+        return initial
 
     def form_valid(self, form):
         """
@@ -160,6 +171,15 @@ class ReviewDetailView(
     template_name = "review_detail.html"
     pk_url_kwarg = "review_uuid"
     permission_required = "review.view_review"
+
+
+class ReviewSettingsView(
+    ReviewSlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
+    model = Review
+    template_name = "review_settings.html"
+    pk_url_kwarg = "review_uuid"
+    permission_required = "review.change_review"
 
 
 class ReviewUpdateView(

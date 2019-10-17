@@ -19,12 +19,13 @@ urlpatterns = [
                     "settings/",
                     include(
                         [
-                            path("", TeamDetailView.as_view(), name="settings"),
+                            path("", TeamSettingsView.as_view(), name="settings"),
                             path("update/", TeamUpdateView.as_view(), name="update"),
                             path("delete/", TeamDeleteView.as_view(), name="delete"),
                             path("members/", TeamMemberView.as_view(), name="members"),
                         ]
                     ),
+                    kwargs={"settings_view": True},
                 ),
                 path("categories/", include("category.urls", namespace="category")),
                 path("contexts/", include("context.urls", namespace="context")),

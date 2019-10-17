@@ -3,33 +3,46 @@
 
 {% block team_content %}
 {% get_obj_perms request.user for category as "category_perms" %}
-<p class="lead">Details for Category {{ category.name }}
-{% if "change_category" in category_perms %}
-  <a href="{% url 'team:category:update' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i> Update</a>
-{% endif %}
-</p>
-
-<p>{{ category.description }}</p>
-
-{% if category.facts.all %}
-{% include 'includes/fact_list_table.html' with fact_list=category.facts.all %}
-{% else %}
-<p class="lead">No Facts found for this Category.</p>
-{% endif %}
-{% if perms.eav.add_attribute %}
-  <a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create new Fact</a>
-{% endif %}
-
-<hr>
-
-{% if category.ratings.all %}
-<p>
-{% include 'includes/rating_list_table.html' with rating_list=category.ratings.all %}
-{% else %}
-<p class="lead">No ratings found for this category.</p>
-{% endif %}
-{% if perms.rating.add_rating %}
-  <a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create new Rating</a>
-{% endif %}
+<div class="card">
+  <div class="card-header">
+      <h4>{{ category.name }}
+        {% if 'change_category' in category_perms %}
+        <a href="{% url 'team:category:settings' team_slug=team.slug category_slug=category.slug %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+        {% endif %}
+      </h4>
+  </div>
+  <div class="card-body">
+    <p class="lead">{{ category.description }}</p>
+    <table class="table table-bordered">
+      <tr>
+        <th>Items</th>
+        <td>Items are the central objects in the system. All Items belong to a Category, and an Items Facts and Ratings are defined by the Category the Item belongs to.</td>
+        <td>
+          <div style="white-space: nowrap;" class="btn-group-vertical">
+            <a href="{% url 'team:category:item:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-list"></i> {{ category.items.count }} Items</a></td>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>Facts</th>
+        <td>Facts are used to represent some indisputable thing about an Item. Facts can be required or optional when creating an Item.</td>
+        <td>
+          <div style="white-space: nowrap;" class="btn-group-vertical">
+            <a href="{% url 'team:category:fact:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-list"></i> {{ category.facts.count }} Facts</a></td>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>Ratings</th>
+        <td>Ratings are the voteable aspects of the Items, opinions rather than Facts. When rating an Item each Vote can be accompanied by a comment.</td>
+        <td>
+          <div style="white-space: nowrap;" class="btn-group-vertical">
+            <a href="{% url 'team:category:rating:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-list"></i> {{ category.ratings.count }} Ratings</a>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
 {% endblock team_content %}
 

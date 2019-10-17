@@ -7,7 +7,15 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th>Description</th>
         <th>Members</th>
+        <th>Categories</th>
+        <th>Items</th>
+        <th>Contexts</th>
+        <th>Facts</th>
+        <th>Ratings</th>
+        <th>Reviews</th>
+        <th>Attachments</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -15,15 +23,28 @@
     {% for team in team_list %}
       <tr>
         <td>{{ team.name }}</td>
+        <td>{{ team.description }}</td>
         <td>{{ team.members.count }}</td>
+        <td>{{ team.categories.count }}</td>
+        <td>{{ team.items.count }}</td>
+        <td>{{ team.contexts.count }}</td>
+        <td>{{ team.facts.count }}</td>
+        <td>{{ team.ratings.count }}</td>
+        <td>{{ team.reviews.count }}</td>
+        <td>{{ team.attachments.count }}</td>
         <td>
-          <a href="{% url 'team:detail' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Open Team</a>
+          <div style="white-space: nowrap;" class="btn-group-vertical">
+          <a href="{% url 'team:detail' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
           {% if 'team.change_team' in perms %}
-          <a href="{% url 'team:update' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update Team</a>
+            <a href="{% url 'team:settings' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
+          {% endif %}
+          {% if 'team.change_team' in perms %}
+            <a href="{% url 'team:update' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update Team</a>
           {% endif %}
           {% if 'team.delete_team' in perms %}
-          <a href="{% url 'team:delete' team_slug=team.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete Team</a>
+            <a href="{% url 'team:delete' team_slug=team.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete Team</a>
           {% endif %}
+          </div>
         </td>
       </tr>
     {% endfor %}
@@ -32,6 +53,6 @@
 {% else %}
 <p class="lead">You are not a member of any teams.</p>
 {% endif %}
-<a href="{% url 'team:create' %}" class="btn btn-success">Create new Team</a>
+<a href="{% url 'team:create' %}" class="btn btn-success"><i class="fas fa-plus"></i> Create new Team</a>
 {% endblock content %}
 

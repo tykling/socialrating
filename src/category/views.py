@@ -65,9 +65,19 @@ class CategoryDetailView(
     CategorySlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
 ):
     model = Category
-    template_name = "category_detail.html"
     slug_url_kwarg = "category_slug"
     permission_required = "category.view_category"
+    template_name = "category_detail.html"
+
+
+class CategorySettingsView(
+    CategorySlugMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
+):
+    model = Category
+    slug_url_kwarg = "category_slug"
+    permission_required = "category.change_category"
+    template_name = "category_settings.html"
+    breadcrumb_title = "Settings"
 
 
 class CategoryUpdateView(
@@ -75,7 +85,7 @@ class CategoryUpdateView(
 ):
     model = Category
     template_name = "category_form.html"
-    fields = ["name", "description"]
+    fields = ["name", "description", "default_context"]
     slug_url_kwarg = "category_slug"
     permission_required = "category.change_category"
 
@@ -111,7 +121,7 @@ class CategoryUpdateView(
         messages.success(self.request, "Category updated!")
         return redirect(
             reverse(
-                "team:category:detail",
+                "team:category:settings",
                 kwargs={"team_slug": self.team.slug, "category_slug": category.slug},
             )
         )

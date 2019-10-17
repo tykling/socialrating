@@ -23,7 +23,7 @@
       {% if "view_category" in category_perms %}
       <tr>
         <td>{{ category.name }}</td>
-        <td>
+        <td style="white-space: nowrap;" class="text-center">
             <ul class="list-group">
             {% for fact in category.facts.all %}
               <li class="list-group-item">{{ fact }}</li>
@@ -32,10 +32,12 @@
             {% endfor %}
             </ul>
             <br>
-            <a href="{% url 'team:category:fact:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> List</a>
-            <a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Create New</a>
+            <div class="btn-group-vertical">
+              <a href="{% url 'team:category:fact:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> List</a>
+              <a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Create New</a>
+             </div>
          </td>
-        <td>
+        <td style="white-space: nowrap;" class="text-center">
             <ul class="list-group">
             {% for rating in category.ratings.all %}
             <li class="list-group-item">{{ rating.name }} (1-{{ rating.max_rating }} <i class="{{ rating.icon }} text-success"></i>)</li>
@@ -44,16 +46,24 @@
             {% endfor %}
             </ul>
             <br>
-            <a href="{% url 'team:category:rating:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> List</a>
-            <a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Create New</a>
+            <div class="btn-group-vertical">
+              <a href="{% url 'team:category:rating:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> List</a>
+              {% if perms.rating.add_rating %}
+                <a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Create New</a>
+              {% endif %}
+            </div>
         </td>
         <td>{{ category.items.count }}</td>
         <td>{{ category.review_count }}</td>
         <td>{{ category.vote_count }}</td>
         <td>{{ category.attachment_count }}</td>
         <td>
+          <div style="white-space: nowrap;" class="btn-group-vertical">
           {% if "view_category" in category_perms %}
-            <a href="{% url 'team:category:detail' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Details</a>
+            <a href="{% url 'team:category:detail' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+          {% endif %}
+          {% if "change_category" in category_perms %}
+            <a href="{% url 'team:category:settings' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
           {% endif %}
           {% if "change_category" in category_perms %}
             <a href="{% url 'team:category:update' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i> Update</a>
@@ -61,6 +71,7 @@
           {% if "delete_category" in category_perms %}
             <a href="{% url 'team:category:delete' team_slug=team.slug category_slug=category.slug %}" class="btn btn-danger btn-xs"><i class="fas fa-times"></i> Delete</a>
           {% endif %}
+          </div>
         </td>
       </tr>
       {% endif %}

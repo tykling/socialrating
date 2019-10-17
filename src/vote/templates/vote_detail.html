@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+{% get_obj_perms request.user for vote as "vote_perms" %}
+<div class="card">
+  <div class="card-header">
+      <h4>Vote {{ vote.uuid }} Details
+        {% if 'change_vote' in vote_perms %}
+          <a href="{% url 'team:category:item:review:vote:settings' team_slug=team.slug category_slug=category.slug item_slug=item.slug review_uuid=review.uuid vote_uuid=vote.uuid %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+        {% endif %}
+    </h4>
+  </div>
+  <div class="card-body">
+    {% include "includes/vote_detail_table.html" %}
+    <a href="{% url 'team:category:item:review:vote:list' team_slug=vote.team.slug category_slug=vote.category.slug item_slug=vote.item.slug review_uuid=vote.review.uuid %}" class="btn btn-primary"><i class="fas fa-list"></i> Vote List</a>
+  </div>
+</div>
+{% endblock team_content %}
+

@@ -1,4 +1,4 @@
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-1">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-2">
       <div class="container">
           <a class="navbar-brand" href="{% url 'frontpage' %}">social_rating</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,13 +30,13 @@
 
               {% if team %}
               <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" id="teamdropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
+                  <a class="nav-link dropdown-toggle" id="teamdropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Show</a>
                   <div class="dropdown-menu" aria-labelledby="teamdropdown">
                     {% if 'team.change_team' in perms %}
-                    <a class="dropdown-item" href="{% url 'team:settings' team_slug=team.slug %}">General</a>
+                    <a class="dropdown-item" href="{% url 'team:settings' team_slug=team.slug %}">Team Settings</a>
                     {% endif %}
-                    <a class="dropdown-item" href="{% url 'team:category:list' team_slug=team.slug %}">Category List</a>
-                    <a class="dropdown-item" href="{% url 'team:context:list' team_slug=team.slug %}">Context List</a>
+                    <a class="dropdown-item" href="{% url 'team:category:list' team_slug=team.slug %}">Categories</a>
+                    <a class="dropdown-item" href="{% url 'team:context:list' team_slug=team.slug %}">Contexts</a>
                     <a class="dropdown-item" href="{% url 'team:members' team_slug=team.slug %}">Members</a>
                   </div>
               </li>

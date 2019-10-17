@@ -1,9 +1,5 @@
 {% extends 'base.html' %}
-{% load bootstrap4 %}
-{% load get_eav_value %}
-{% load rating %}
 {% load leaflet_tags %}
-{% load humanize %}
 
 {% block extra_head %}
   {% leaflet_js %}
@@ -11,122 +7,7 @@
 {% endblock extra_head %}
 
 {% block team_content %}
-<div class="card">
-  <div class="card-header">
-    <h4>{{ item.name }} ({{ item.category }})</h4>
-  </div>
-  <div class="card-body">
-    <p class="lead">{{ item.name }} is an Item in the Category {{ item.category }}. It was created on {{ item.created }} and last updated on {{ item.updated }}.</p>
-    <div class="row">
-      <div class="col">
-        <h5 class="card-title">Facts</h5>
-      </div>
-      <div class="col">
-          <a href="{% url 'team:category:item:update' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}"><i class="fas fa-edit"></i> Update {{ item.name }} Facts</a>
-      </div>
-    </div>
-    <table class="table table-bordered">
-      <tr>
-        <td><b>Name</b><br>The name of this {{ item.category.name }}</td>
-        <td>{{ item.name }}</td>
-      </tr>
-      {% for fact in item.facts.all %}
-      <tr>
-          <td><b>{{ fact.name }} ({{ fact.datatype }})</b><br>{{ fact.description }}</td>
-          {% if fact.datatype == "point" %}
-          <td>
-            {% with item|get_eav_value:fact.slug as point %}
-                <script type="text/javascript">
-                    // add a listener to add the marker on the map after it initialises
-                    window.addEventListener("map:init", function (e) {
-                       var detail = e.detail;
-                       // we might have multiple maps, make sure we have the right one
-                       if (detail.id == '{{ fact.slug }}') {
-                            L.marker([{{ point.y }}, {{ point.x }}]).addTo(detail.map);
-                            detail.map.setView([{{ point.y }}, {{ point.x }}], 15);
-                        };
-                    }, false);
-                </script>
-                {% leaflet_map fact.slug %}
-                <p>Lat: {{ point.y }} Lon: {{ point.x }}</p>
-            {% endwith %}
-          </td>
-          {% elif fact.datatype == "area" %}
-          <td>
-            {% with item|get_eav_value:fact.slug as area %}
-                <script type="text/javascript">
-                    // add a listener to add the area on the map after it initialises
-                    window.addEventListener("map:init", function (e) {
-                       var detail = e.detail;
-                       // we might have multiple maps, make sure we have the right one
-                       if (detail.id == '{{ fact.slug }}') {
-                            // Creating multi polygon options
-                            var multiPolygonOptions = {color:'red'};
-
-                            // Creating multi polygon
-                            var multipolygon = L.geoJSON({{ area.geojson|safe }}, multiPolygonOptions);
-
-                            // Adding multi polygon to map
-                            multipolygon.addTo(detail.map);
-
-                            // zoom and center map
-                            detail.map.setView([{{ area.point_on_surface.y }}, {{ area.point_on_surface.x }}], 15);
-                        };
-                    }, false);
-                </script>
-                {% leaflet_map fact.slug %}
-                <p>{{ area.num_points }} points</p>
-                <p>{{ area.area|floatformat:20 }} m2</p>
-            {% endwith %}
-          </td>
-          {% elif fact.datatype == "object" %}
-            {% with item|get_eav_value:fact.slug as myfact %}
-              <td><a href="{{ myfact.get_absolute_url }}">{{ myfact }}</a></td>
-            {% endwith %}
-          {% else %}
-          <td>{{ item|get_eav_value:fact.slug }}</td>
-          {% endif %}
-      </tr>
-      {% endfor %}
-    </table>
-
-    <h5 class="card-title">Average Votes</h5>
-    {% if item.reviews.all %}
-    <table class="table table-bordered">
-      {% for rating in item.category.ratings.all %}
-      {% get_average_vote item rating as avg_vote %}
-      {% get_actor_vote item rating as actor_vote %}
-      <tr>
-        <td>
-          <b>{{ rating.name }}</b><br>{{ rating.description }}
-        </td>
-        <td class="text-right">
-          Average Vote: {{ avg_vote.0 }} ({{ avg_vote.1 }})<br>
-          Your Latest: {{ actor_vote|default:"N/A" }}
-        </td>
-        <td>
-          {{ avg_vote.0 | stars:rating.max_rating }}
-          {% if actor_vote %}
-          <br>{{ actor_vote | stars:rating.max_rating }}
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-    <h5 class="card-title">
-        Latest 10 Reviews (of total {{ item.reviews.count }})
-        <a href="{% url 'team:category:item:review:list' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-primary"><i class="fas fa-list"></i> Show All Reviews</a>
-        <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Review</a>
-    </h5>
-    {% for review in item.last10reviews.all %}
-      {% include 'includes/review_card.html' %}
-    {% endfor %}
-    {% else %}
-      <p class="lead">No reviews found!</p>
-      <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Review</a>
-    {% endif %}
-  </div>
-</div>
+{% include 'includes/item_card.html' %}
 
 {% endblock team_content %}
 

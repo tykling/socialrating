@@ -16,11 +16,12 @@ urlpatterns = [
                     "settings/",
                     include(
                         [
-                            path("", RatingDetailView.as_view(), name="settings"),
+                            path("", RatingSettingsView.as_view(), name="settings"),
                             path("update/", RatingUpdateView.as_view(), name="update"),
                             path("delete/", RatingDeleteView.as_view(), name="delete"),
                         ]
                     ),
+                    kwargs={"settings_view": True},
                 ),
             ]
         ),

@@ -9,7 +9,7 @@ from guardian.shortcuts import get_perms, assign_perm
 
 from team.models import TeamRelatedModel
 from eventlog.models import Event
-from rating.models import Vote
+from vote.models import Vote
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
@@ -35,6 +35,10 @@ class Item(TeamRelatedModel):
     name = models.CharField(
         max_length=100,
         help_text="The name of this Item. Must be unique within the Category.",
+    )
+
+    description = models.TextField(
+        null=True, blank=True, help_text="A description for this Item (optional)."
     )
 
     slug = models.SlugField(

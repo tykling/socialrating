@@ -1,0 +1,31 @@
+    <table class="table table-bordered">
+      <tr>
+        <th>Attachment</th>
+        <td>{{ attachment.uuid }}</td>
+      </tr>
+      <tr>
+        <th>Review</th>
+        <td><a href="{% url 'team:category:item:review:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug review_uuid=review.uuid %}">{{ attachment.review }}</a> by {{ attachment.review.actor.user }} on {{ attachment.review.created }}</td>
+      </tr>
+      <tr>
+        <th>Mimetype</th>
+        <td>{{ attachment.mimetype }}</td>
+      </tr>
+      <tr>
+        <th>Size</th>
+        <td>{{ attachment.size }}</td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td>{{ attachment.description }}</td>
+      </tr>
+      <tr>
+        <th>Thumbnail</th>
+        <td>
+          <a href="{% url 'team:category:item:review:attachment:attachment' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.uuid attachment_uuid=attachment.uuid %}">
+            <img src="{% url 'team:category:item:review:attachment:attachment' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.uuid attachment_uuid=attachment.uuid %}?thumbnail" width="100%" heigth="225">
+          </a>
+        </td>
+      </tr>
+    </table>
+

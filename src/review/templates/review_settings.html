@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load rating %}
+{% load guardian_tags %}
+
+{% block team_content %}
+<div class="card">
+  <div class="card-header">
+    Review Settings for {{ review.uuid }}
+  </div>
+  <div class="card-body">
+    <p class="lead">This Review of <b><a href="{% url 'team:category:item:settings' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}">{{ review.item.name }}</a></b> was created by <b>{{ review.actor.user.username }}</b> {{ review.created | timesince }} ago on {{ review.created }}</p>
+
+    <p class="lead">Headline: {{ review.headline }}</p>
+
+    {% get_obj_perms request.user for review as "review_perms" %}
+    <a href="{% url 'team:category:item:review:detail' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-search"></i> Show</a>
+
+    {% if 'change_review' in review_perms %}
+      <a href="{% url 'team:category:item:review:update' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+    {% endif %}
+
+    {% if 'delete_review' in review_perms %}
+      <a href="{% url 'team:category:item:review:delete' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock team_content %}
+

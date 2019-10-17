@@ -1,7 +1,31 @@
 {% extends 'base.html' %}
+{% load get_eav_value %}
+{% load guardian_tags %}
 
 {% block team_content %}
-<p class="lead">This is the team area for {{ team.name }}</p>
-<p class="lead">{{ team.description }}</p>
+{% get_obj_perms request.user for team as "team_perms" %}
+<div class="card">
+  <div class="card-header">
+    <h2>{{ team.name }}
+        {% if 'change_team' in team_perms %}
+          <a href="{% url 'team:settings' team_slug=team.slug %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+        {% endif %}
+    </h2>
+  </div>
+  <div class="card-body">
+    <p class="lead">{{ team.description }}</p>
+    <p class="lead">{{ team.name }} has {{ team.items.count }} Items across {{ team.categories.count }} Categories with a total of {{ team.reviews.count }} Reviews in {{ team.contexts.count }} Contexts. The {{ team.categories.count }} Categories has {{ team.facts.count }} Facts and {{ team.ratings.count }} Ratings with a total of {{ team.votes.count }} Votes.</p>
+
+    {% if review %}
+    <h2>Latest Review</h2>
+    {% include 'includes/review_card.html' with category=review.item.category item=review.item %}
+    {% endif %}
+
+    {% if item %}
+    <h2>Newest Item</h2>
+    {% include 'includes/item_card.html' with category=item.category compact=True %}
+    {% endif %}
+  </div>
+</div>
 {% endblock team_content %}
 

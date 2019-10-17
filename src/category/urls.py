@@ -16,7 +16,7 @@ urlpatterns = [
                     "settings/",
                     include(
                         [
-                            path("", CategoryDetailView.as_view(), name="settings"),
+                            path("", CategorySettingsView.as_view(), name="settings"),
                             path(
                                 "update/", CategoryUpdateView.as_view(), name="update"
                             ),
@@ -25,6 +25,7 @@ urlpatterns = [
                             ),
                         ]
                     ),
+                    kwargs={"settings_view": True},
                 ),
                 path("items/", include("item.urls", namespace="item")),
                 path("facts/", include("fact.urls", namespace="fact")),

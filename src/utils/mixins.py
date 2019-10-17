@@ -57,6 +57,18 @@ class BreadCrumbMixin:
         Return a breadcrumb for the current views action, like "Create" or "Delete"
         Override the defaults set in BreadCrumbMixin by setting breadcrumb_title on the view.
         """
-        # add self.breadcrumb_title too (if we have one)
+        if "settings_view" in self.kwargs:
+            # first include a breadcrumb for settings
+            self.breadcrumbs.append(
+                (
+                    "Settings",
+                    reverse(
+                        viewname=":".join(self.request.resolver_match.namespaces)
+                        + ":settings",
+                        kwargs=self.request.resolver_match.kwargs,
+                    ),
+                )
+            )
+
         if hasattr(self, "breadcrumb_title") and self.breadcrumb_title:
             self.breadcrumbs.append((self.breadcrumb_title, self.request.path))
