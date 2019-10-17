@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block team_content %}
-<p class="lead">Team Settings for {{ team.name }}</p>
+<p class="lead">Settings for Team: {{ team.name }}</p>
 {% if 'team.change_team' in perms %}
     <a href="{% url 'team:update' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update Team</a>
 {% endif %}

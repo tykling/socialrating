@@ -75,7 +75,6 @@ class CategorySettingsView(
     slug_url_kwarg = "category_slug"
     permission_required = "category.change_category"
     template_name = "category_settings.html"
-    breadcrumb_title = "Settings"
 
 
 class CategoryUpdateView(
