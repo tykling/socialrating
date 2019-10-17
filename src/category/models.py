@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from guardian.shortcuts import get_perms, assign_perm
 
 from team.models import TeamRelatedModel
+from .eavconfig import CategoryEavConfig
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
@@ -98,13 +99,6 @@ class Category(TeamRelatedModel):
         return eav.fields.EavSlugField.create_slug_from_name(fact_name)
 
     @property
-    def facts(self):
-        """
-        We use the term "fact" as another word for EAV attributes.
-        """
-        return self.eav.get_all_attributes()
-
-    @property
     def review_count(self):
         from review.models import Review
 
@@ -123,5 +117,6 @@ class Category(TeamRelatedModel):
         return Attachment.objects.filter(review__item__category=self).count()
 
 
-# register model with eav
-eav.register(Category)
+# register Category model with django-eav2
+eav.register(Category, CategoryEavConfig)
+

@@ -62,15 +62,13 @@ class FactCreateView(
         """
         Set the entity_ct and entity_id based on self.category.
         Also set the slug for this Fact.
-        Also set extra_data based on the Category picker in the form,
-        but only if this Fact is of type "Django Object"
+        Also set object_category but only if this Fact is of type "Django Object"
         """
         fact = form.save(commit=False)
         fact.slug = self.category.create_fact_slug(fact_name=fact.name)
-        fact.entity_ct = ContentType.objects.get(app_label="category", model="category")
-        fact.entity_id = self.category.id
+        face.category = self.category
         if fact.datatype == "object":
-            fact.extra_data = {"category_id": form.cleaned_data["category"].pk}
+            fact.object_category=form.cleaned_data["category"].pk
         fact.save()
         messages.success(self.request, "New Fact created!")
 

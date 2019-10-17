@@ -1,10 +1,10 @@
 import logging
 
-from eav.models import Attribute
 from django.shortcuts import get_object_or_404, reverse
 from django.contrib.contenttypes.models import ContentType
 
 from category.mixins import CategorySlugMixin
+from fact.models import Fact
 from .models import Item
 
 logger = logging.getLogger("socialrating.%s" % __name__)
@@ -73,28 +73,22 @@ class ItemFormMixin:
         """
         form = super().get_form(form_class)
         for field in form.fields.items():
-            # see if we can find an EAV object attribute matching this field
+            # see if we can find an EAV object attribute matching this form field
             try:
-                a = Attribute.objects.get(
-                    # the field name is the slug
+                fact = Fact.objects.get(
+                    # the field name is the fact slug
                     slug=field[0],
-                    # the content type id is for Category (because that is where we define Facts)
-                    entity_ct_id=ContentType.objects.get(
-                        app_label="category", model="category"
-                    ).id,
-                    # and the entity_id is the current items categorys id
-                    entity_id=self.category.id,
-                    # and the datatype should be object, we dont care about the rest
+                    # and category is the current one
+                    category=self.category,
+                    # and the datatype is 'object', we dont care about the rest
                     datatype="object",
                 )
-            except Attribute.DoesNotExist:
+            except Fact.DoesNotExist:
                 # this is not an EAV field, or not type object, nothing to do here
                 continue
 
             # filter the dropdown to show only the relevant Items
-            field[1].queryset = Item.objects.filter(
-                category_id=a.extra_data["category_id"]
-            )
+            field[1].queryset = Item.objects.filter(category=fact.object_category)
 
         # we're done fixing all fields, return the form
         return form

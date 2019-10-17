@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import slugify
-from eav.models import EnumValue, EnumGroup, Attribute
+from eav.models import EnumValue, EnumGroup
 
 from actor.models import Actor, User
 from actor.factories import UserFactory
@@ -15,6 +15,7 @@ from rating.models import Rating
 from vote.models import Vote
 from review.models import Review
 from context.models import Context
+from fact.models import Fact
 
 
 logger = logging.getLogger("socialrating.%s" % __name__)
@@ -86,41 +87,37 @@ class Command(BaseCommand):
         )
 
         # add attributes for Maker category
-        Attribute.objects.create(
+        Fact.objects.create(
             name="Country",
-            datatype=Attribute.TYPE_TEXT,
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id=makecat.id,
+            datatype=Fact.TYPE_TEXT,
+            category=makecat,
             required=True,
             slug=makecat.create_fact_slug("Country"),
             description="The country this car maker is from",
         )
 
-        # add django-eav2 Attributes for the "Car" Category
-        Attribute.objects.create(
+        # add django-eav2 Facts for the "Car" Category
+        Fact.objects.create(
             name="Make",
-            datatype=Attribute.TYPE_OBJECT,
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id=carcat.id,
+            datatype=Fact.TYPE_OBJECT,
+            category=carcat,
             required=True,
             slug=carcat.create_fact_slug("Make"),
             description="The make of this car",
-            extra_data={"category_id": makecat.id},
+            object_category=makecat,
         )
-        Attribute.objects.create(
+        Fact.objects.create(
             name="Colour",
-            datatype=Attribute.TYPE_TEXT,
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id=carcat.id,
+            datatype=Fact.TYPE_TEXT,
+            category=carcat,
             required=True,
             slug=carcat.create_fact_slug("Colour"),
             description="The colour of this car",
         )
-        Attribute.objects.create(
+        Fact.objects.create(
             name="BHP",
-            datatype=Attribute.TYPE_INT,
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id=carcat.id,
+            datatype=Fact.TYPE_INT,
+            category=carcat,
             required=True,
             slug=carcat.create_fact_slug("BHP"),
             description="The BHP of this car",
@@ -207,45 +204,42 @@ class Command(BaseCommand):
         )
 
         # add attributes for "Restaurant" category
-        Attribute.objects.create(
+        Fact.objects.create(
             name="Location",
-            datatype=Attribute.TYPE_POINT,
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id=restaurant.id,
+            datatype=Fact.TYPE_POINT,
             required=True,
+            category=restaurant,
             slug=restaurant.create_fact_slug("Location"),
             description="The location (coordinates) of this restaurant",
         )
-        Attribute.objects.create(
+        Fact.objects.create(
             name="Description",
-            datatype=Attribute.TYPE_TEXT,
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id=restaurant.id,
+            datatype=Fact.TYPE_TEXT,
             required=True,
+            category=restaurant,
             slug=restaurant.create_fact_slug("Description"),
             description="A short description of this restaurant. Markdown should be supported.",
         )
 
         # add attributes for "Dish" category
-        Attribute.objects.create(
+        Fact.objects.create(
             name="Price",
-            datatype=Attribute.TYPE_INT,
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id=dish.id,
+            datatype=Fact.TYPE_INT,
             required=True,
+            category=dish,
             slug=restaurant.create_fact_slug("Price"),
             description="The price in EUR of this dish",
         )
-        Attribute.objects.create(
+        Fact.objects.create(
             name="Date Eaten",
-            datatype=Attribute.TYPE_DATE,
-            entity_ct=ContentType.objects.get(app_label="category", model="category"),
-            entity_id=dish.id,
+            datatype=Fact.TYPE_DATE,
+            required=True,
+            category=dish,
             slug=restaurant.create_fact_slug("Date Eaten"),
             description="The date and time this Dish was eaten",
         )
 
-        # add restaurants
+        # TODO: add restaurants and dishes
 
         logger.info(
             "Done. A superuser was added, username admin password admin. Django admin access and member of all teams. Enjoy!"

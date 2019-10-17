@@ -10,6 +10,7 @@ from guardian.shortcuts import get_perms, assign_perm
 from team.models import TeamRelatedModel
 from eventlog.models import Event
 from vote.models import Vote
+from .eavconfig import ItemEavConfig
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
@@ -147,7 +148,7 @@ class Item(TeamRelatedModel):
         We use the term "fact" to describe some aspect of an Item which
         is indisputable. Fact is just another word for EAV attributes.
         """
-        return self.eav.get_all_attributes()
+        return self.category.facts.all()
 
     @property
     def ratings(self):
@@ -156,17 +157,6 @@ class Item(TeamRelatedModel):
     @property
     def last10reviews(self):
         return self.reviews.all()[:10]
-
-
-class ItemEavConfig(eav.registry.EavConfig):
-    @classmethod
-    def get_attributes(cls, entity):
-        """
-         Items have no EAV attributes directly, so we return the 
-         Attributes which apply to the Category of this Item.
-         """
-        return entity.category.eav.get_all_attributes()
-
 
 # register Item model with django-eav2
 eav.register(Item, ItemEavConfig)

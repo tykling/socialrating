@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse_lazy
+from django.db import models
 from eav.models import Attribute
 from guardian.shortcuts import get_perms, assign_perm
 
@@ -9,18 +10,26 @@ from category.models import Category
 class Fact(Attribute):
     """
     Fact is just another name for eav Attributes.
-    We use this proxy model instead of using Attributes directly.
+    We use this model with inheritance from Attribute so we can add some stuff.
     """
 
-    class Meta:
-        proxy = True
+    category = models.ForeignKey(
+        "category.Category",
+        on_delete=models.CASCADE,
+        related_name="facts",
+        help_text="The Category to which this Fact belongs",
+    )
+
+    object_category = models.ForeignKey(
+        "category.Category",
+        on_delete=models.CASCADE,
+        related_name="object_facts",
+        null=True,
+        blank=True,
+        help_text="Related Category for Facts of type 'object'",
+    )
 
     breadcrumb_list_name = "Facts"
-
-    @property
-    def category(self):
-        # return self.entity_fk
-        return Category.objects.get(id=self.entity_id)
 
     @property
     def team(self):
@@ -42,10 +51,10 @@ class Fact(Attribute):
         - Admins may update a Fact
         - Admins may delete a Fact
         """
-        assign_perm("attribute.view_attribute", self.team.group, self)
-        assign_perm("attribute.change_attribute", self.team.admingroup, self)
-        assign_perm("attribute.delete_attribute", self.team.admingroup, self)
-        print("done assigning facts for %s" % self)
+        assign_perm("fact.view_fact", self.team.group, self)
+        assign_perm("fact.change_fact", self.team.admingroup, self)
+        assign_perm("fact.delete_fact", self.team.admingroup, self)
+        print("done assigning permissions for fact %s" % self)
 
     def save(self, **kwargs):
         """

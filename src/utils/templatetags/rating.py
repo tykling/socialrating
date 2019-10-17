@@ -13,7 +13,10 @@ def get_latest_review(context, item):
     """
     Template tag to return latest Review by the current user for the Item
     """
-    return item.reviews.filter(actor=context.request.user.actor).latest("created")
+    if item.reviews.filter(actor=context.request.user.actor).exists():
+        return item.reviews.filter(actor=context.request.user.actor).latest("created")
+    else:
+        return None
 
 
 @register.simple_tag(takes_context=True)
