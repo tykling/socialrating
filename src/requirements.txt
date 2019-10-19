@@ -1,7 +1,7 @@
 Django>=2.2.6
 django-allauth>=0.39.1
 django-bootstrap4>=0.0.8
--e git+git@github.com:tykling/django-eav2.git@50dcc66d42e42357d5ba63605a1eec2edec9c823#egg=django_eav2
+-e git+https://github.com/tykling/django-eav2@50dcc66d42e42357d5ba63605a1eec2edec9c823#egg=django_eav2
 django-guardian>=1.5.1
 django-leaflet>=0.24.0
 factory-boy>=2.12.0
