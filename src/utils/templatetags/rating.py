@@ -1,3 +1,5 @@
+import logging
+
 from django import template
 from django.utils.safestring import mark_safe
 
@@ -6,6 +8,15 @@ register = template.Library()
 from rating.models import Rating
 from vote.models import Vote
 from item.models import Item
+
+logger = logging.getLogger("socialrating.%s" % __name__)
+
+@register.simple_tag(takes_context=True)
+def get_average_vote(context, item, rating):
+    """
+    Template tag to return the averate Vote for the specified Rating
+    """
+    return item.get_average_vote(rating)
 
 
 @register.simple_tag(takes_context=True)
@@ -52,11 +63,12 @@ def stars(obj, rating=None):
         vote = obj.get_average_vote(rating=rating)[0]
         max_rating = rating.max_rating
         icon = rating.icon
-    elif isinstance(obj, int):
+    elif isinstance(obj, (int, float)):
         vote = obj
         max_rating = rating.max_rating
         icon = rating.icon
     else:
+        logger.error("Unsupported datatype for templatetag stars: %s" % type(obj))
         return False
 
     # add full stars
