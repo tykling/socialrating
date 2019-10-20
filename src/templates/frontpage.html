@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<p class="lead">SocialRating is a system to help groups of people register and rate things. Log in to begin!</p>
+<p class="lead">SocialRating is a system to help groups of people register and rate things.
+{% if request.user.is_authenticated %}Select or create a Team to begin!{% else %}Log in to begin!{% endif %}</p>
 {% endblock content %}
 
