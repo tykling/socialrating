@@ -66,16 +66,6 @@ class ItemCreateView(
         """
         self.object = Item(category=self.category)
 
-    def get_form(self):
-        form = super().get_form()
-        # include the category in help_text for the name field
-        form.fields["name"].help_text = "The name of this %s" % self.category.name
-
-        # include the category in the label for all fields
-        for name, field in form.fields.items():
-            field.label = "%s %s" % (self.category.name, field.label)
-        return form
-
     def form_valid(self, form):
         item = form.save()
         messages.success(self.request, "New Item created!")
