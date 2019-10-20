@@ -62,7 +62,7 @@ class FactCreateView(CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, Creat
         """
         fact = form.save(commit=False)
         fact.slug = self.category.create_fact_slug(fact_name=fact.name)
-        face.category = self.category
+        fact.category = self.category
         if fact.datatype == "object":
             fact.object_category = form.cleaned_data["category"].pk
         fact.save()
@@ -70,7 +70,7 @@ class FactCreateView(CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, Creat
 
         return redirect(
             reverse(
-                "team:category:detail",
+                "team:category:fact:list",
                 kwargs={
                     "team_slug": self.team.slug,
                     "category_slug": self.category.slug,
