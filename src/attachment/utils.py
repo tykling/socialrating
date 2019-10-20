@@ -2,6 +2,7 @@ import magic
 
 from .models import Attachment
 
+
 def save_form_attachments(form, fieldname, review):
     """
     Loop over any uploaded files and create an Attachment object for each

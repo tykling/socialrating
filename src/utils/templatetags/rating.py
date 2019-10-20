@@ -11,6 +11,7 @@ from item.models import Item
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
+
 @register.simple_tag(takes_context=True)
 def get_average_vote(context, item, rating):
     """
