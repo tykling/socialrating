@@ -1,5 +1,6 @@
 import magic
 
+from .models import Attachment
 
 def save_form_attachments(form, fieldname, review):
     """
