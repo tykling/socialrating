@@ -29,9 +29,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",  # needed for allauth
     "django.contrib.humanize",
-    "eav",
-    "bootstrap4",
-    # auth
+    "django.contrib.gis",  # geodjango
+    "leaflet",  # pretty maps
+    "guardian",  # object level permissions
+    "eav",  # used for all the dynamic data storage
+    "bootstrap4",  # for templates of niceness
+    # auth apps
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -49,9 +52,6 @@ INSTALLED_APPS = [
     "utils",
     "eventlog",
     "attachment",
-    "django.contrib.gis",  # geodjango
-    "leaflet",  # pretty maps
-    "guardian",  # object level permissions
 ]
 
 SITE_ID = 1
@@ -105,6 +105,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# secure cookies
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Internationalization
 LANGUAGE_CODE = "en-us"
