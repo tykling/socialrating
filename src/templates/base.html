@@ -21,7 +21,9 @@
     {% include 'navbar.html' %}
     <main role="main" class="container">
       {% bootstrap_messages %}
+      {% if view.breadcrumbs or view.kwargs.breadcrumb_title %} 
       {% include 'breadcrumb.html' %}
+      {% endif %}
       {% block content %}
       {% if team %}
           <div class="row">

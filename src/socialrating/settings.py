@@ -31,10 +31,12 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "eav",
     "bootstrap4",
-    #'django_extensions',
+    # auth
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
+    # socialraitng models
     "actor",
     "team",
     "category",
@@ -47,10 +49,9 @@ INSTALLED_APPS = [
     "utils",
     "eventlog",
     "attachment",
-    # only needed for GIS functionality
     "django.contrib.gis",  # geodjango
     "leaflet",  # pretty maps
-    "guardian",
+    "guardian",  # object level permissions
 ]
 
 SITE_ID = 1

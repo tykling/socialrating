@@ -1,5 +1,8 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb"{% if view.kwargs.settings_view %} style="background-color: orange;"{% endif %}>
+    {% if view.kwargs.breadcrumb_title %}
+      <li class="breadcrumb-item"><a href="">{{ view.kwargs.breadcrumb_title }}</a></li>
+    {% endif %}
     {% for text, url in view.breadcrumbs %} 
     <li class="breadcrumb-item"><a href="{{ url }}">{{ text }}</a></li>
     {% endfor %}
