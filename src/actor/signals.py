@@ -21,12 +21,12 @@ def create_actor(sender, instance, created, **kwargs):
         return
 
     # bail out if we already have an actor
-    if hasattr(instance, "actor"):
+    if hasattr(instance, "actor") and instance.actor:
         logger.error(
             "we already have an Actor for this User object, might be a duplicate signal?"
         )
         return
 
     # create Actor object
-    _ = Actor.objects.create(user=instance)
+    Actor.objects.create(user=instance)
     # logger.debug("Created Actor %s for new User %s" % (actor.pk, instance.username))
