@@ -5,7 +5,6 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-from rating.models import Rating
 from vote.models import Vote
 from item.models import Item
 

@@ -3,9 +3,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
-from django.contrib.contenttypes.models import ContentType
 from django import forms
-from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
+from guardian.mixins import PermissionListMixin
 
 from fact.models import Fact
 

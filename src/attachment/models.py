@@ -2,7 +2,7 @@ from django.db import models
 from guardian.shortcuts import get_perms, assign_perm
 from django.shortcuts import reverse
 
-from team.models import TeamRelatedModel, TeamRelatedUUIDModel
+from team.models import TeamRelatedUUIDModel
 from utils.uploads import get_attachment_path
 
 

@@ -1,6 +1,3 @@
-from django.contrib import admin
-
-
 class PermissionsAdminMixin:
     """
     A mixin to add an admin action to run the grant_permissions() method on

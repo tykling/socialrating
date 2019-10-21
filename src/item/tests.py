@@ -1,8 +1,6 @@
 import factory, random
 
-from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import Group
 
 from category.tests import CategoryViewTestCase
 from category.models import Category
@@ -22,7 +20,7 @@ class ItemViewTestCase(CategoryViewTestCase):
         # create 3-5 items per category
         for category in Category.objects.all():
             for i in range(1, random.randint(3, 5)):
-                item = ItemFactory(category=category)
+                _ = ItemFactory(category=category)
 
         # remember an item for later
         self.item = self.team2_category3.items.first()

@@ -3,7 +3,6 @@ from django.urls import reverse
 from django.contrib.auth.models import Group
 
 from actor.factories import UserFactory
-from team.factories import TeamFactory, MembershipFactory
 from team.models import Team, Membership
 
 
@@ -31,10 +30,10 @@ class TeamViewTestCase(TestCase):
 
         # create team 1
         self.team1_data = {"name": "TestTeam 1", "description": "A test team 1"}
-        response = self.client.post(path=self.create_url, data=self.team1_data)
+        _ = self.client.post(path=self.create_url, data=self.team1_data)
         self.team1 = Team.objects.get(name=self.team1_data["name"])
         for actor in [self.team1_member.actor, self.common_member.actor]:
-            membership = Membership.objects.create(actor=actor, team=self.team1)
+            _ = Membership.objects.create(actor=actor, team=self.team1)
 
         # define the dynamic urls
         self.detail_url = reverse("team:detail", kwargs={"team_slug": self.team1.slug})
@@ -48,10 +47,10 @@ class TeamViewTestCase(TestCase):
 
         # create team 2
         self.team2_data = {"name": "TestTeam 2", "description": "A test team 2"}
-        response = self.client.post(path=self.create_url, data=self.team2_data)
+        _ = self.client.post(path=self.create_url, data=self.team2_data)
         self.team2 = Team.objects.get(name=self.team2_data["name"])
         for actor in [self.team2_member.actor, self.common_member.actor]:
-            membership = Membership.objects.create(actor=actor, team=self.team2)
+            _ = Membership.objects.create(actor=actor, team=self.team2)
 
         self.team3_data = {"name": "TestTeam 3", "description": "A test team 3"}
 
@@ -133,9 +132,7 @@ class TeamCreateViewTest(TeamViewTestCase):
 
         self.client.force_login(self.team3_admin)
 
-        response = self.client.post(
-            path=self.create_url, data=self.team3_data, follow=True
-        )
+        _ = self.client.post(path=self.create_url, data=self.team3_data, follow=True)
         self.team3 = Team.objects.get(name=self.team3_data["name"])
 
         self.assertTrue(self.team3_admin.actor in self.team3.members.all())
@@ -145,7 +142,7 @@ class TeamCreateViewTest(TeamViewTestCase):
         """ Assert that the two Django groups are created when a Team is created, and that the team creator is a member of both groups. """
         self.client.force_login(self.team3_admin)
 
-        response = self.client.post(path=self.create_url, data=self.team3_data)
+        _ = self.client.post(path=self.create_url, data=self.team3_data)
         self.team3 = Team.objects.get(name=self.team3_data["name"])
 
         group = Group.objects.get(name=self.team3.name)

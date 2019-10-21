@@ -1,7 +1,5 @@
 import os
 
-from django.conf import settings
-
 
 def get_attachment_path(instance, filename):
     """

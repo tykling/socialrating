@@ -3,11 +3,11 @@ import magic
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.http import HttpResponse
 from django.contrib import messages
-from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
+from guardian.mixins import PermissionListMixin
 
 from review.mixins import ReviewMixin
 from utils.svgthumbnail import svgthumbnail
@@ -16,7 +16,6 @@ from utils.mixins import BreadCrumbMixin as BCMixin
 
 from .models import Attachment
 from .mixins import AttachmentMixin
-from .utils import save_form_attachments
 
 
 class AttachmentListView(ReviewMixin, PermissionListMixin, BCMixin, ListView):

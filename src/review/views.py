@@ -1,4 +1,3 @@
-import magic
 import logging
 
 from django.views.generic.list import ListView
@@ -8,15 +7,11 @@ from django import forms
 from django.shortcuts import redirect, reverse
 from django.db import transaction
 from django.contrib import messages
-from django.http import Http404
-from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
+from guardian.mixins import PermissionListMixin
 
 from item.mixins import ItemMixin
-
 from context.models import Context
-from attachment.models import Attachment
 from attachment.utils import save_form_attachments
-from team.mixins import TeamFilterMixin
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 from vote.models import Vote

@@ -1,6 +1,13 @@
 from django.urls import path, include
 
-from .views import *
+from .views import (
+    CategoryListView,
+    CategoryCreateView,
+    CategoryDetailView,
+    CategorySettingsView,
+    CategoryUpdateView,
+    CategoryDeleteView,
+)
 
 app_name = "category"
 

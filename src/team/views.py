@@ -3,19 +3,16 @@ import logging
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
-from django.shortcuts import render
-from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
-from django.contrib.contenttypes.models import ContentType
 
 from guardian.mixins import PermissionListMixin
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 
-from .models import Team, Membership
-from .mixins import *
+from .models import Team
+from .mixins import TeamMixin
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 

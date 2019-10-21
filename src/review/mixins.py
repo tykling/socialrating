@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404, reverse
+from django.core.exceptions import PermissionDenied
 from guardian.core import ObjectPermissionChecker
 
 from item.mixins import ItemMixin

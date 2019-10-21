@@ -1,15 +1,11 @@
 import logging, random, factory
 
 from django.core.management.base import BaseCommand
-from django.utils import timezone
-from django.contrib.contenttypes.models import ContentType
-from django.template.defaultfilters import slugify
 from eav.models import EnumValue, EnumGroup
 
 from actor.models import Actor, User
 from actor.factories import UserFactory
 from team.models import Team, Membership
-from team.factories import TeamFactory, MembershipFactory
 from category.models import Category
 from rating.models import Rating
 from vote.models import Vote

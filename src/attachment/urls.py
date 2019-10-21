@@ -1,6 +1,14 @@
 from django.urls import path, include
 
-from .views import *
+from .views import (
+    AttachmentListView,
+    AttachmentCreateView,
+    AttachmentDetailView,
+    AttachmentFileView,
+    AttachmentSettingsView,
+    AttachmentUpdateView,
+    AttachmentDeleteView,
+)
 
 app_name = "attachment"
 

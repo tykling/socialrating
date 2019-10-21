@@ -9,3 +9,4 @@ class ItemFactory(factory.django.DjangoModelFactory):
         model = Item
 
     name = factory.Faker("sentence")
+    category = factory.Iterator(Category.objects.all())

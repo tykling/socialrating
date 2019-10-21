@@ -1,6 +1,13 @@
 from django.urls import path, include
 
-from .views import *
+from .views import (
+    RatingListView,
+    RatingCreateView,
+    RatingDetailView,
+    RatingSettingsView,
+    RatingUpdateView,
+    RatingDeleteView,
+)
 
 app_name = "rating"
 

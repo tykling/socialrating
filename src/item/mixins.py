@@ -1,7 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404, reverse
-from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import PermissionDenied
 from guardian.core import ObjectPermissionChecker
 
 from category.mixins import CategoryMixin

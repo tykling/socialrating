@@ -2,10 +2,10 @@ import uuid, logging
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils import timezone
 from django.template.defaultfilters import slugify
+from django.contrib import messages
 
 from eventlog.models import Event
 

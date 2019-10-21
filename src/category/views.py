@@ -5,13 +5,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
-from django.contrib.contenttypes.models import ContentType
-from django.db import connection
-from django.http import Http404
-from django.core.exceptions import PermissionDenied
-from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
+from guardian.mixins import PermissionListMixin
 
-from team.mixins import *
+from team.mixins import TeamMixin
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 from .models import Category

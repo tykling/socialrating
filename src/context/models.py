@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 from django.urls import reverse_lazy
-from guardian.shortcuts import get_perms, assign_perm
+from guardian.shortcuts import assign_perm
 
 from team.models import TeamRelatedModel
 

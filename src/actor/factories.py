@@ -1,7 +1,7 @@
 import factory
 import random
 
-from .models import Actor, User
+from .models import User
 from django.contrib.auth.hashers import make_password
 
 

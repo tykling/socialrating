@@ -1,15 +1,10 @@
 import factory, random
 
-from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import Group
 
 from item.tests import ItemViewTestCase
-from category.models import Category
-from vote.models import Vote
 from item.models import Item
 from .factories import ReviewFactory
-from .models import Review
 
 
 class ReviewViewTestCase(ItemViewTestCase):
@@ -24,7 +19,7 @@ class ReviewViewTestCase(ItemViewTestCase):
         # create 3-5 reviews per item
         for item in Item.objects.all():
             for i in range(1, random.randint(3, 5)):
-                review = ReviewFactory(
+                _ = ReviewFactory(
                     item=item,
                     actor=item.team.members.all().order_by("?").first(),
                     context=item.team.contexts.all().order_by("?").first(),

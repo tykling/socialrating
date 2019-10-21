@@ -1,6 +1,13 @@
 from django.urls import path, include
 
-from .views import *
+from .views import (
+    FactListView,
+    FactCreateView,
+    FactDetailView,
+    FactSettingsView,
+    FactUpdateView,
+    FactDeleteView,
+)
 
 app_name = "fact"
 

@@ -4,11 +4,9 @@ import logging
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
-from django.core.exceptions import ObjectDoesNotExist
-from guardian.shortcuts import get_perms, assign_perm
+from guardian.shortcuts import assign_perm
 
 from team.models import TeamRelatedModel
-from eventlog.models import Event
 from vote.models import Vote
 from .eavconfig import ItemEavConfig
 

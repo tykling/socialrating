@@ -1,6 +1,13 @@
 from django.urls import path, include
 
-from .views import *
+from .views import (
+    ContextListView,
+    ContextCreateView,
+    ContextDetailView,
+    ContextSettingsView,
+    ContextUpdateView,
+    ContextDeleteView,
+)
 
 app_name = "context"
 

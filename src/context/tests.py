@@ -1,8 +1,5 @@
-from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import Group
 
-from actor.factories import UserFactory
 from team.tests import TeamViewTestCase
 from .factories import ContextFactory
 

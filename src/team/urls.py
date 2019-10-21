@@ -1,9 +1,14 @@
 from django.urls import path, include
-from django.views.generic import TemplateView
 
-from category.views import CategoryListView
-from context.views import ContextListView
-from .views import *
+from .views import (
+    TeamListView,
+    TeamCreateView,
+    TeamDetailView,
+    TeamSettingsView,
+    TeamUpdateView,
+    TeamDeleteView,
+    TeamMemberView,
+)
 
 app_name = "team"
 

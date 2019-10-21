@@ -1,6 +1,13 @@
 from django.urls import path, include
 
-from .views import *
+from .views import (
+    ItemListView,
+    ItemCreateView,
+    ItemDetailView,
+    ItemSettingsView,
+    ItemUpdateView,
+    ItemDeleteView,
+)
 
 app_name = "item"
 

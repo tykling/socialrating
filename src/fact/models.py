@@ -1,10 +1,7 @@
-from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse_lazy
 from django.db import models
 from eav.models import Attribute
-from guardian.shortcuts import get_perms, assign_perm
-
-from category.models import Category
+from guardian.shortcuts import assign_perm
 
 
 class Fact(Attribute):

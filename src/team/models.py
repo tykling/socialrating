@@ -4,8 +4,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from django.contrib.auth.models import Group
-from django.contrib.contenttypes.models import ContentType
-from guardian.shortcuts import get_perms, assign_perm
+from guardian.shortcuts import assign_perm
 
 from utils.models import BaseModel, UUIDBaseModel
 from actor.models import Actor
@@ -124,9 +123,7 @@ class Team(BaseModel):
 
     def add_founder_membership(self):
         # add founder as an admin team member
-        membership = Membership.objects.create(
-            actor=self.founder, team=self, admin=True
-        )
+        _ = Membership.objects.create(actor=self.founder, team=self, admin=True)
 
     def save(self, **kwargs):
         # save pk for later

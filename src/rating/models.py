@@ -1,9 +1,10 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
-from guardian.shortcuts import get_perms, assign_perm
+from django.core.exceptions import ValidationError
+from guardian.shortcuts import assign_perm
 
-from team.models import TeamRelatedModel, TeamRelatedUUIDModel
+from team.models import TeamRelatedModel
 
 
 class Rating(TeamRelatedModel):

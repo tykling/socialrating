@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.shortcuts import redirect, reverse
 from guardian.mixins import PermissionListMixin
 
-from team.mixins import *
+from team.mixins import TeamMixin
 from utils.mixins import PermissionRequiredOr403Mixin
 from utils.mixins import BreadCrumbMixin as BCMixin
 

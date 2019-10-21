@@ -1,5 +1,4 @@
 import factory
-from django.test import TestCase
 from django.urls import reverse
 
 from review.tests import ReviewViewTestCase

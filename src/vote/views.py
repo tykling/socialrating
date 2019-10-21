@@ -1,14 +1,12 @@
 import logging
 
-from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse
-from django.http import HttpResponse
 from django.contrib import messages
-from guardian.mixins import PermissionListMixin, PermissionRequiredMixin
+from guardian.mixins import PermissionListMixin
 
 from review.mixins import ReviewMixin
 from utils.mixins import PermissionRequiredOr403Mixin
