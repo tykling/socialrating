@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404, reverse
+from guardian.core import ObjectPermissionChecker
 
 from review.mixins import ReviewMixin
 from .models import Vote
@@ -61,4 +62,7 @@ class VoteMixin(ReviewMixin):
         """
         context = super().get_context_data(**kwargs)
         context["vote"] = self.vote
+        context["vote_perms"] = ObjectPermissionChecker(self.request.user).get_perms(
+            self.vote
+        )
         return context

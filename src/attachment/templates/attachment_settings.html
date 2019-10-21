@@ -2,7 +2,6 @@
 {% load guardian_tags %}
 
 {% block team_content %}
-{% get_obj_perms request.user for attachment as "attachment_perms" %}
 <div class="card border-success">
   <div class="card-header">
       <h4>Settings for Attachment: {{ attachment.uuid }}</h4>

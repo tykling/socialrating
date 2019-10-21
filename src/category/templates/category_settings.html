@@ -2,7 +2,6 @@
 {% load guardian_tags %}
 
 {% block team_content %}
-{% get_obj_perms request.user for category as "category_perms" %}
 <div class="card">
   <div class="card-header">
       <h4>Settings for Category: {{ category.name }}</h4>
@@ -64,7 +63,7 @@
   <p class="lead">No ratings found for this category.</p>
   {% endif %}
   <a href="{% url 'team:category:rating:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> Rating List</a>
-  {% if perms.rating.add_rating %}
+  {% if 'add_rating' in category_perms %}
     <a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create new Rating</a>
   {% endif %}
   </div>

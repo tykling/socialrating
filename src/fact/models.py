@@ -55,7 +55,6 @@ class Fact(Attribute):
         assign_perm("fact.view_fact", self.team.group, self)
         assign_perm("fact.change_fact", self.team.admingroup, self)
         assign_perm("fact.delete_fact", self.team.admingroup, self)
-        print("done assigning permissions for fact %s" % self)
 
     def save(self, **kwargs):
         """

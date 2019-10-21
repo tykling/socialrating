@@ -15,7 +15,7 @@
 {% else %}
 <p class="lead">No reviews found. Go create one!</p>
 {% endif %}
-{% if perms.review.add_review %}
+{% if 'add_review' in item_perms %}
   <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-success">Create Review</a>
 {% endif %}
 {% endblock team_content %}

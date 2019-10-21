@@ -2,8 +2,6 @@
 {% load guardian_tags %}
 
 {% block team_content %}
-{% get_obj_perms request.user for rating as "rating_perms" %}
-
 <p class="lead">Settings for Rating {{ rating.name }}</p>
 
 <div class="button-group">

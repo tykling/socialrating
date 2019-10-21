@@ -2,11 +2,11 @@ from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 
 from utils.admin import PermissionsAdminMixin
-from .models import Context
+from .models import Fact
 
 
-class ContextAdmin(PermissionsAdminMixin, GuardedModelAdmin):
+class FactAdmin(PermissionsAdminMixin, GuardedModelAdmin):
     pass
 
 
-admin.site.register(Context, ContextAdmin)
+admin.site.register(Fact, FactAdmin)

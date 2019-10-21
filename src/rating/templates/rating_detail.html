@@ -2,8 +2,6 @@
 {% load guardian_tags %}
 
 {% block team_content %}
-{% get_obj_perms request.user for rating as "rating_perms" %}
-
 <p class="lead">Details for Rating {{ rating.name }}</p>
 
 <p>{{ rating.description }}</p>

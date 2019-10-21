@@ -10,7 +10,7 @@
 {% else %}
 <p class="lead">No items found. Go create one!</p>
 {% endif %}
-{% if perms.item.add_item %}
+{% if 'add_item' in category_perms %}
   <a href="{% url 'team:category:item:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create Item</a>
 {% endif %}
 {% endblock team_content %}

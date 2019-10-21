@@ -2,7 +2,6 @@
 {% load guardian_tags %}
 
 {% block team_content %}
-{% get_obj_perms request.user for item as "item_perms" %}
 <div class="card">
   <div class="card-header">
       <h4>Settings for Item: {{ item.name }}</h4>

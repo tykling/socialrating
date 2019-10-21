@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404, reverse
+from guardian.core import ObjectPermissionChecker
 
 from category.mixins import CategoryMixin
 from .models import Rating
@@ -56,4 +57,7 @@ class RatingMixin(CategoryMixin):
         """
         context = super().get_context_data(**kwargs)
         context["rating"] = self.rating
+        context["rating_perms"] = ObjectPermissionChecker(self.request.user).get_perms(
+            self.rating
+        )
         return context

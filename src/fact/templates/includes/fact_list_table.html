@@ -12,7 +12,6 @@
     </thead>
     <tbody>
     {% for fact in fact_list %}
-      {% get_obj_perms request.user for fact as "fact_perms" %}
       {% if "view_fact" in fact_perms %}
       <tr>
         <td>{{ fact.name }}</td>

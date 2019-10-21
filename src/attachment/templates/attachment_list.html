@@ -44,7 +44,6 @@
 {% else %}
 <p class="lead">No attachments found.</p>
 {% endif %}
-{% get_obj_perms request.user for review as "review_perms" %}
 {% if "change_review" in review_perms %}
 <a href="{% url 'team:category:item:review:attachment:create' team_slug=review.team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-success">Create Attachment</a>
 {% endif %}

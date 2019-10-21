@@ -12,7 +12,6 @@
 
     <p class="lead">Headline: {{ review.headline }}</p>
 
-    {% get_obj_perms request.user for review as "review_perms" %}
     <a href="{% url 'team:category:item:review:detail' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-search"></i> Show</a>
 
     {% if 'change_review' in review_perms %}

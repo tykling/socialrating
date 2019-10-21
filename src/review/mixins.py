@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404, reverse
+from guardian.core import ObjectPermissionChecker
 
 from item.mixins import ItemMixin
 from .models import Review
@@ -62,4 +63,7 @@ class ReviewMixin(ItemMixin):
         """
         context = super().get_context_data(**kwargs)
         context["review"] = self.review
+        context["review_perms"] = ObjectPermissionChecker(self.request.user).get_perms(
+            self.review
+        )
         return context

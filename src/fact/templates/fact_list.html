@@ -10,7 +10,7 @@
 {% else %}
 <p class="lead">No facts found. Go create one!</p>
 {% endif %}
-{% if perms.category.add_fact %}
+{% if 'add_fact' in category_perms %}
   <a href="{% url 'team:category:fact:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success">Create Fact</a>
 {% endif %}
 {% endblock team_content %}

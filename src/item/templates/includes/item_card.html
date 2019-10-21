@@ -4,7 +4,6 @@
 {% load leaflet_tags %}
 {% load guardian_tags %}
 {% load humanize %}
-{% get_obj_perms request.user for item as "item_perms" %}
 <div class="card">
   <div class="card-header">
     <h4>{{ item.name }} ({{ item.category }})

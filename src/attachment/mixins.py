@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404, reverse
+from guardian.core import ObjectPermissionChecker
 
 from review.mixins import ReviewMixin
 from .models import Attachment
@@ -65,4 +66,7 @@ class AttachmentMixin(ReviewMixin):
         """
         context = super().get_context_data(**kwargs)
         context["attachment"] = self.attachment
+        context["attachment_perms"] = ObjectPermissionChecker(
+            self.request.user
+        ).get_perms(self.attachment)
         return context

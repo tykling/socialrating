@@ -48,7 +48,7 @@
             <br>
             <div class="btn-group-vertical">
               <a href="{% url 'team:category:rating:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> List</a>
-              {% if perms.rating.add_rating %}
+              {% if 'add_rating' in category_perms %}
                 <a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Create New</a>
               {% endif %}
             </div>
@@ -81,7 +81,7 @@
 {% else %}
 <p class="lead">No categories found. Go create one!</p>
 {% endif %}
-{% if perms.category.add_category %}
+{% if 'add_category' in team_perms %}
   <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create Category</a>
 {% endif %}
 {% endblock team_content %}

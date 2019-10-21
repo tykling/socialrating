@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect, reverse
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
+from guardian.core import ObjectPermissionChecker
 
 from team.models import Team
 
@@ -49,6 +50,9 @@ class TeamMixin:
         """
         context = super().get_context_data(**kwargs)
         context["team"] = self.team
+        context["team_perms"] = ObjectPermissionChecker(self.request.user).get_perms(
+            self.team
+        )
         return context
 
 

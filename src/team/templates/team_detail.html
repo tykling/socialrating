@@ -3,7 +3,6 @@
 {% load guardian_tags %}
 
 {% block team_content %}
-{% get_obj_perms request.user for team as "team_perms" %}
 <div class="card">
   <div class="card-header">
     <h2>{{ team.name }}

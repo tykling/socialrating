@@ -43,7 +43,6 @@
 <p class="lead">No votes found.</p>
 {% endif %}
 <a href="{% url 'team:category:item:review:detail' team_slug=review.team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-success"><i class="fas fa-search"></i> Show Review</a>
-{% get_obj_perms request.user for review as "review_perms" %}
 {% if review.ratings_missing_votes.exists and "change_review" in review_perms %}
 <a href="{% url 'team:category:item:review:vote:create' team_slug=review.team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-success"><i class="fas fa-plus"></i> Create Vote</a>
 {% endif %}

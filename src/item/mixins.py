@@ -2,6 +2,7 @@ import logging
 
 from django.shortcuts import get_object_or_404, reverse
 from django.contrib.contenttypes.models import ContentType
+from guardian.core import ObjectPermissionChecker
 
 from category.mixins import CategoryMixin
 from fact.models import Fact
@@ -58,6 +59,9 @@ class ItemMixin(CategoryMixin):
         """
         context = super().get_context_data(**kwargs)
         context["item"] = self.item
+        context["item_perms"] = ObjectPermissionChecker(self.request.user).get_perms(
+            self.item
+        )
         return context
 
 

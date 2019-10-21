@@ -77,11 +77,15 @@ class Category(TeamRelatedModel):
         - Admins may update a Category
         - Admins may delete a Category
         - All team members may create new Items in the Category
+        - Admins may create Facts for the Category
+        - Admins may create Ratings for the Category
         """
         assign_perm("category.view_category", self.team.group, self)
         assign_perm("category.change_category", self.team.admingroup, self)
         assign_perm("category.delete_category", self.team.admingroup, self)
         assign_perm("category.add_item", self.team.group, self)
+        assign_perm("category.add_fact", self.team.admingroup, self)
+        assign_perm("category.add_rating", self.team.admingroup, self)
 
     def save(self, **kwargs):
         """

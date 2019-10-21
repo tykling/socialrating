@@ -39,7 +39,7 @@
 {% else %}
 <p class="lead">No ratings found!</p>
 {% endif %}
-{% if "category.add_rating" in perms %}
+{% if "add_rating" in category_perms %}
 <a href="{% url 'team:category:rating:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create Rating</a>
 {% endif %}
 

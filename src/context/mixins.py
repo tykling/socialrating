@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404, reverse
+from guardian.core import ObjectPermissionChecker
 
 from team.mixins import TeamMixin
 from .models import Context
@@ -50,4 +51,7 @@ class ContextMixin(TeamMixin):
         """
         context = super().get_context_data(**kwargs)
         context["context"] = self.context
+        context["context_perms"] = ObjectPermissionChecker(self.request.user).get_perms(
+            self.context
+        )
         return context

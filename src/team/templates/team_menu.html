@@ -16,7 +16,7 @@
     </nav>
     {% else %}
     <p class="lead">No categories found.</p>
-        {% if perms.category.add_category %}
+        {% if 'add_category' in team_perms %}
           <a href="{% url 'team:category:create' team_slug=team.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create Category</a>
         {% endif %}
     {% endif %}

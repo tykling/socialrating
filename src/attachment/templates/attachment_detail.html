@@ -3,7 +3,6 @@
 {% load humanize %}
 
 {% block team_content %}
-{% get_obj_perms request.user for attachment as "attachment_perms" %}
 <div class="card border-success">
   <div class="card-header">
       Details for Attachment: {{ attachment.uuid }}
