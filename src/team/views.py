@@ -57,7 +57,6 @@ class TeamCreateView(LoginRequiredMixin, BCMixin, CreateView):
         team = form.save(commit=False)
         team.founder = self.request.user.actor
         team.save()
-
         messages.success(self.request, "New team created!")
         return redirect(reverse("team:detail", kwargs={"team_slug": team.slug}))
 

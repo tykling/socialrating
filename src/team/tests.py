@@ -30,10 +30,10 @@ class TeamViewTestCase(TestCase):
 
         # create team 1
         self.team1_data = {"name": "TestTeam 1", "description": "A test team 1"}
-        _ = self.client.post(path=self.create_url, data=self.team1_data)
+        self.client.post(path=self.create_url, data=self.team1_data)
         self.team1 = Team.objects.get(name=self.team1_data["name"])
         for actor in [self.team1_member.actor, self.common_member.actor]:
-            _ = Membership.objects.create(actor=actor, team=self.team1)
+            Membership.objects.create(actor=actor, team=self.team1)
 
         # define the dynamic urls
         self.detail_url = reverse("team:detail", kwargs={"team_slug": self.team1.slug})
@@ -47,10 +47,10 @@ class TeamViewTestCase(TestCase):
 
         # create team 2
         self.team2_data = {"name": "TestTeam 2", "description": "A test team 2"}
-        _ = self.client.post(path=self.create_url, data=self.team2_data)
+        self.client.post(path=self.create_url, data=self.team2_data)
         self.team2 = Team.objects.get(name=self.team2_data["name"])
         for actor in [self.team2_member.actor, self.common_member.actor]:
-            _ = Membership.objects.create(actor=actor, team=self.team2)
+            Membership.objects.create(actor=actor, team=self.team2)
 
         self.team3_data = {"name": "TestTeam 3", "description": "A test team 3"}
 

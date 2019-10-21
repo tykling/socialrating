@@ -1,5 +1,4 @@
 from django.db import models
-from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
 from guardian.shortcuts import assign_perm
@@ -83,7 +82,6 @@ class Rating(TeamRelatedModel):
         assign_perm("rating.delete_rating", self.team.admingroup, self)
 
     def save(self, **kwargs):
-        self.slug = slugify(self.name)
         super().save(**kwargs)
         self.grant_permissions()
 

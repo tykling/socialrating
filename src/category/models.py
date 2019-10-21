@@ -2,7 +2,6 @@ import eav
 import logging
 
 from django.db import models
-from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm
 
@@ -91,7 +90,6 @@ class Category(TeamRelatedModel):
         """
         Create/update slug and save the Fact and finally grant permissions.
         """
-        self.slug = slugify(self.name)
         super().save(**kwargs)
         self.grant_permissions()
 

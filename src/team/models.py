@@ -1,7 +1,6 @@
 import logging
 
 from django.db import models
-from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm
@@ -123,15 +122,13 @@ class Team(BaseModel):
 
     def add_founder_membership(self):
         # add founder as an admin team member
-        _ = Membership.objects.create(actor=self.founder, team=self, admin=True)
+        Membership.objects.create(actor=self.founder, team=self, admin=True)
 
     def save(self, **kwargs):
         # save pk for later
         pk = self.pk
         # is this a new team?
         if not pk:
-            # create or update slug
-            self.slug = slugify(self.name)
             # create django groups as needed before saving
             self.create_django_groups()
         # save team

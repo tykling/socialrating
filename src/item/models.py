@@ -2,7 +2,6 @@ import eav
 import logging
 
 from django.db import models
-from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm
 
@@ -78,8 +77,6 @@ class Item(TeamRelatedModel):
         assign_perm("item.add_review", self.team.group, self)
 
     def save(self, **kwargs):
-        # create/update slug
-        self.slug = slugify(self.name)
         # save the Item
         super().save(**kwargs)
         # grant permissions for the Item
