@@ -67,24 +67,22 @@ class ItemListViewTest(ItemViewTestCase):
 
     def test_item_list_member(self):
         """ Assert that all the right items are listed for the team admin and regular members"""
-        for member in [self.team2_admin, self.team2_member, self.common_member]:
+        for member in [self.team2_admin, self.team2_member]:
             self.client.force_login(member)
             response = self.client.get(self.list_url)
             self.assertContains(
-                response,
-                "Items in Category %s" % self.item.category.name,
-                status_code=200,
+                response, "List of %s" % self.item.category.name, status_code=200
             )
             # make sure we list all items for the category
             for item in self.item.category.items.all():
                 self.assertContains(response, item.name)
             # and none of the items from some other category
             for item in (
-                self.team2.categories.exclude(pk=self.item.category.pk)
+                self.item.category.team.categories.exclude(pk=self.item.category.pk)
                 .first()
                 .items.all()
             ):
-                self.assertNotContains(response, item.name)
+                self.assertNotContains(response, "<td>%s</td>" % item.name)
 
     def test_item_list_nonmember(self):
         """ Assert that non-members can not list items """
@@ -235,7 +233,7 @@ class ItemDeleteViewTest(ItemViewTestCase):
         response = self.client.post(path=self.delete_url, follow=True)
         # did we get redirected to the item list view?
         self.assertContains(
-            response, "Items in Category %s" % self.item.category.name, status_code=200
+            response, "List of %s" % self.item.category.name, status_code=200
         )
         # did the item disappear from the list?
         self.assertNotContains(response, self.item.name)

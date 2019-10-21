@@ -98,7 +98,7 @@ class ContextDetailViewTest(ContextViewTestCase):
         self.client.force_login(self.team2_admin)
         response = self.client.get(self.detail_url)
         self.assertContains(
-            response, "Details for Context %s" % self.team2_context3, status_code=200
+            response, "Details for Context: %s" % self.team2_context3, status_code=200
         )
         self.assertContains(response, self.team2_context3.description)
 
@@ -107,7 +107,7 @@ class ContextDetailViewTest(ContextViewTestCase):
         self.client.force_login(self.team2_member)
         response = self.client.get(self.detail_url)
         self.assertContains(
-            response, "Details for Context %s" % self.team2_context3, status_code=200
+            response, "Details for Context: %s" % self.team2_context3, status_code=200
         )
         self.assertContains(response, self.team2_context3.description)
 

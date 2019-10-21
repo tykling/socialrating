@@ -84,18 +84,14 @@ class CategoryDetailViewTest(CategoryViewTestCase):
         """ Assert that category details are shown to an admin """
         self.client.force_login(self.team2_admin)
         response = self.client.get(self.detail_url)
-        self.assertContains(
-            response, "Details for Category %s" % self.team2_category3, status_code=200
-        )
+        self.assertContains(response, self.team2_category3, status_code=200)
         self.assertContains(response, self.team2_category3.description)
 
     def test_category_detail_member(self):
         """ Assert that category details are shown to a regular member """
         self.client.force_login(self.team2_member)
         response = self.client.get(self.detail_url)
-        self.assertContains(
-            response, "Details for Category %s" % self.team2_category3, status_code=200
-        )
+        self.assertContains(response, self.team2_category3, status_code=200)
         self.assertContains(response, self.team2_category3.description)
 
     def test_category_detail_nonmember(self):
