@@ -1,7 +1,8 @@
-import logging, random, factory
+import logging
+import random
+import factory
 
 from django.core.management.base import BaseCommand
-from eav.models import EnumValue, EnumGroup
 
 from actor.models import Actor, User
 from actor.factories import UserFactory
@@ -44,7 +45,7 @@ class Command(BaseCommand):
             description="Hungry people with opinions on food and places that serve food",
             founder=Actor.objects.all().order_by("?").first(),
         )
-        musicteam = Team.objects.create(
+        Team.objects.create(
             name="Music Lovers",
             description="Concert-going music lovers. Reviews of venues and concerts.",
             founder=Actor.objects.all().order_by("?").first(),

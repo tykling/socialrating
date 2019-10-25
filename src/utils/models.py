@@ -1,4 +1,5 @@
-import uuid, logging
+import uuid
+import logging
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -39,7 +40,7 @@ class BaseModel(models.Model):
         Always validate before saving, even if the save doesn't
         happen inside a form:
         Call the models full_clean() method before saving,
-        which in turn calls .clean_fields(), .clean() and 
+        which in turn calls .clean_fields(), .clean() and
         .validate_unique()
         """
         # create a slug if we don't already have one. Max 50 chars.

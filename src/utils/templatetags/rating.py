@@ -3,12 +3,11 @@ import logging
 from django import template
 from django.utils.safestring import mark_safe
 
-register = template.Library()
-
 from vote.models import Vote
 from item.models import Item
 
 logger = logging.getLogger("socialrating.%s" % __name__)
+register = template.Library()
 
 
 @register.simple_tag(takes_context=True)

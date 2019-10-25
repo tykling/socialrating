@@ -86,7 +86,7 @@ class Item(TeamRelatedModel):
     def get_average_vote(self, rating, only_latest=True):
         """
         Get the average Vote for a given Rating for this Item.
-        By default only the latest Vote from each Actor is considered. 
+        By default only the latest Vote from each Actor is considered.
         Set only_latest=False to include multiple Votes from each actor.
         """
         votes = Vote.objects.filter(review__item=self, rating=rating).order_by(

@@ -1,4 +1,5 @@
-import factory, random
+import factory
+import random
 
 from django.urls import reverse
 

@@ -14,7 +14,7 @@ logger = logging.getLogger("socialrating.%s" % __name__)
 class TeamRelatedModel(BaseModel):
     """
     An abstract model on which all Team related models are based
-    If a Team related model has no direct FK to Team, then the 
+    If a Team related model has no direct FK to Team, then the
     property 'team_filter' must be set on the model class.
     """
 
