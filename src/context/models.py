@@ -42,6 +42,8 @@ class Context(TeamRelatedModel):
         help_text="The description of this context. Markdown is supported."
     )
 
+    filterfield = "team"
+    filtervalue = "team"
     breadcrumb_list_name = "Contexts"
 
     def __str__(self):

@@ -26,7 +26,8 @@ class Fact(Attribute):
         help_text="Related Category for Facts of type 'object'",
     )
 
-    # team_filter = "category__team"
+    filterfield = "category"
+    filtervalue = "category"
     breadcrumb_list_name = "Facts"
 
     @property

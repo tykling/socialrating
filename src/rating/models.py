@@ -51,7 +51,8 @@ class Rating(TeamRelatedModel):
         help_text="The icon to use when visually displaying the votes for this rating.",
     )
 
-    team_filter = "category__team"
+    filterfield = "category"
+    filtervalue = "category"
     breadcrumb_list_name = "Ratings"
 
     @property

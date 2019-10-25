@@ -28,9 +28,6 @@ class AttachmentListView(ReviewMixin, PermissionListMixin, BCMixin, ListView):
     template_name = "attachment_list.html"
     permission_required = "attachment.view_attachment"
 
-    def get_queryset(self):
-        return super().get_queryset().filter(review=self.review)
-
 
 class AttachmentCreateView(
     ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView

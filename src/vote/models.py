@@ -42,7 +42,8 @@ class Vote(TeamRelatedUUIDModel):
         null=True,
     )
 
-    team_filter = "review__item__category__team"
+    filterfield = "review"
+    filtervalue = "review"
     breadcrumb_list_name = "Votes"
 
     @property

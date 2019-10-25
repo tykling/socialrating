@@ -49,7 +49,8 @@ class Review(TeamRelatedUUIDModel):
         blank=True,
     )
 
-    team_filter = "item__category__team"
+    filterfield = "item"
+    filtervalue = "item"
     breadcrumb_list_name = "Reviews"
 
     @property

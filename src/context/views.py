@@ -19,9 +19,6 @@ class ContextListView(TeamMixin, PermissionListMixin, BCMixin, ListView):
     template_name = "context_list.html"
     permission_required = "context.view_context"
 
-    def get_queryset(self):
-        return super().get_queryset().filter(team=self.team)
-
 
 class ContextCreateView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
     model = Context

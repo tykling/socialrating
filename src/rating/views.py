@@ -19,12 +19,6 @@ class RatingListView(CategoryMixin, PermissionListMixin, BCMixin, ListView):
     template_name = "rating_list.html"
     permission_required = "rating.view_rating"
 
-    def get_queryset(self):
-        """
-        Only return Ratings which belong to the current Category
-        """
-        return super().get_queryset().filter(category=self.category)
-
 
 class RatingCreateView(
     CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView

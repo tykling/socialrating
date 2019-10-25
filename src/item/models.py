@@ -44,7 +44,8 @@ class Item(TeamRelatedModel):
         help_text="The slug for this Item. Must be unique within the Category.",
     )
 
-    team_filter = "category__team"
+    filterfield = "category"
+    filtervalue = "category"
     breadcrumb_list_name = "Items"
 
     @property

@@ -28,12 +28,6 @@ class ReviewListView(ItemMixin, PermissionListMixin, BCMixin, ListView):
     template_name = "review_list.html"
     permission_required = "review.view_review"
 
-    def get_queryset(self):
-        """
-        Only return Reviews for the Item in question
-        """
-        return super().get_queryset().filter(item=self.item)
-
 
 class ReviewCreateView(ItemMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
     model = Review

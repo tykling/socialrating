@@ -22,9 +22,6 @@ class CategoryListView(TeamMixin, PermissionListMixin, BCMixin, ListView):
     template_name = "category_list.html"
     permission_required = "category.view_category"
 
-    def get_queryset(self):
-        return super().get_queryset().filter(team=self.team)
-
 
 class CategoryCreateView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
     model = Category

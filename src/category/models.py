@@ -59,6 +59,8 @@ class Category(TeamRelatedModel):
         blank=True,
     )
 
+    filterfield = "team"
+    filtervalue = "team"
     breadcrumb_list_name = "Categories"
 
     def __str__(self):

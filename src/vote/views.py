@@ -28,9 +28,6 @@ class VoteListView(ReviewMixin, PermissionListMixin, BCMixin, ListView):
     template_name = "vote_list.html"
     permission_required = "vote.view_vote"
 
-    def get_queryset(self):
-        return super().get_queryset().filter(review=self.review)
-
 
 class VoteCreateView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
     """

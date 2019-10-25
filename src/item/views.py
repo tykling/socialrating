@@ -20,12 +20,6 @@ class ItemListView(CategoryMixin, PermissionListMixin, BCMixin, ListView):
     template_name = "item_list.html"
     permission_required = "item.view_item"
 
-    def get_queryset(self):
-        """
-        Only return items related to the current Category
-        """
-        return Item.objects.filter(category=self.category)
-
     def get_context_data(self, **kwargs):
         """
         Add breadcrumb

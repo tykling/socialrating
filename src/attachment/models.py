@@ -35,7 +35,8 @@ class Attachment(TeamRelatedUUIDModel):
         max_length=255, help_text="The description for this attachment.", blank=True
     )
 
-    team_filter = "review__item__category__team"
+    filterfield = "review"
+    filtervalue = "review"
     breadcrumb_list_name = "Attachments"
 
     def get_absolute_url(self):
