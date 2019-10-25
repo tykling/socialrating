@@ -31,12 +31,12 @@ The following views are missing functionality or templates
         |          |  |      |             |
         |          |  |      |             |
         +----------+  |      +-------------+
-             |        |
-             v        |
+             |        |            ^
+             v        |            |
         +--------------+     +-------------+
         |              |     |             |
         |              |     |             |
-        |   Category   +<----+   Context   |
+        |   Category   |     |   Context   |
         |              |     |             |
         |              |     |             |
         +--------------+     +-------------+
