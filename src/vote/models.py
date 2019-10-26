@@ -36,8 +36,8 @@ class Vote(TeamRelatedUUIDModel):
     )
 
     comment = models.CharField(
-        max_length=255,
-        help_text="An optional short comment related to this specific vote. 255 character limit.",
+        max_length=1000,
+        help_text="An optional short comment related to this specific vote. 1000 character limit.",
         blank=True,
         null=True,
     )

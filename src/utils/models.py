@@ -25,12 +25,11 @@ class BaseModel(models.Model):
         default_permissions = ()
 
     created = models.DateTimeField(
-        auto_now_add=True, help_text="The date and time when this object was created."
+        help_text="The date and time when this object was created."
     )
 
     updated = models.DateTimeField(
-        auto_now_add=True,
-        help_text="The date and time when this object was last updated.",
+        help_text="The date and time when this object was last updated."
     )
 
     events = GenericRelation(Event)
@@ -49,19 +48,25 @@ class BaseModel(models.Model):
             if not self.slug:
                 raise Exception("Unable to slugify, cannot save")
 
+        # update the timestamps before saving
+        if not self.created:
+            self.created = timezone.now()
+        self.updated = timezone.now()
+
         # do the validation
         try:
             self.full_clean()
         except ValidationError as e:
-            message = "Got ValidationError while saving: %s" % e
+            message = "Got ValidationError while saving %s %s: %s" % (
+                self.__class__,
+                self,
+                e,
+            )
             if hasattr(self, "request"):
                 messages.error(self.request, message)
             logger.error(message)
             # dont save, re-raise the exception
             raise
-
-        # update the timstamp before saving
-        self.updated = timezone.now()
 
         super().save(**kwargs)
 
