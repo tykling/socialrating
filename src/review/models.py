@@ -89,6 +89,9 @@ class Review(UUIDBaseModel):
         assign_perm("review.add_vote", self.actor.user, self)
 
     def save(self, **kwargs):
+        """
+        Save Review and grant permissions
+        """
         super().save(**kwargs)
         self.grant_permissions()
 

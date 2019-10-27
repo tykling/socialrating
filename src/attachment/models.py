@@ -1,5 +1,5 @@
 from django.db import models
-from guardian.shortcuts import get_perms, assign_perm
+from guardian.shortcuts import assign_perm
 from django.shortcuts import reverse
 
 from utils.models import UUIDBaseModel
@@ -67,21 +67,19 @@ class Attachment(UUIDBaseModel):
     def actor(self):
         return self.review.actor
 
+    def grant_permissions(self):
+        """
+        - All team members may view an Attachment
+        - The Review author may change the Attachment
+        - The Review author may delete the Attachment
+        """
+        assign_perm("attachment.view_attachment", self.team.group, self)
+        assign_perm("attachment.change_attachment", self.review.actor.user, self)
+        assign_perm("attachment.delete_attachment", self.review.actor.user, self)
+
     def save(self, **kwargs):
+        """
+        Save Attachment and grant permissions
+        """
         super().save(**kwargs)
-
-        # fix attachment.view_attachment permission if needed
-        if "attachment.view_attachment" not in get_perms(self.team.group, self):
-            assign_perm("attachment.view_attachment", self.team.group, self)
-
-        # fix attachment.add_attachment permission if needed
-        if "attachment.add_attachment" not in get_perms(self.team.group, self):
-            assign_perm("attachment.add_attachment", self.team.group)
-
-        # fix attachment.change_attachment permission if needed
-        if "attachment.change_attachment" not in get_perms(self.actor.user, self):
-            assign_perm("attachment.change_attachment", self.actor.user, self)
-
-        # fix attachment.delete_attachment permission if needed
-        if "attachment.delete_attachment" not in get_perms(self.actor.user, self):
-            assign_perm("attachment.delete_attachment", self.actor.user, self)
+        self.grant_permissions()

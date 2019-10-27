@@ -66,7 +66,8 @@ class Context(UUIDBaseModel):
         assign_perm("context.delete_context", self.team.admingroup, self)
 
     def save(self, **kwargs):
-        # save the Context
+        """
+        Save Context and grant permissions
+        """
         super().save(**kwargs)
-        # grant permissions for the context
         self.grant_permissions()

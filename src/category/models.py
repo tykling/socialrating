@@ -90,7 +90,7 @@ class Category(UUIDBaseModel):
 
     def save(self, **kwargs):
         """
-        Create/update slug and save the Fact and finally grant permissions.
+        Save the Fact and grant permissions.
         """
         super().save(**kwargs)
         self.grant_permissions()

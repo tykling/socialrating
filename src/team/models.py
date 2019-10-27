@@ -92,11 +92,16 @@ class Team(UUIDBaseModel):
         Membership.objects.create(actor=self.founder, team=self, admin=True)
 
     def save(self, **kwargs):
+        """
+        If this is a new Team we have some stuff to do before and after saving
+        """
         if self._state.adding:
+            # we are creating a new team
             adding = True
             # create django groups as needed before saving
             self.create_django_groups()
         else:
+            # we are editing an existing team
             adding = False
         # save team
         super().save(**kwargs)

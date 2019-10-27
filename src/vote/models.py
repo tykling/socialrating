@@ -70,6 +70,9 @@ class Vote(UUIDBaseModel):
         assign_perm("vote.delete_vote", self.team.admingroup, self)
 
     def save(self, **kwargs):
+        """
+        Save Vote and grant permissions
+        """
         super().save(**kwargs)
         self.grant_permissions()
 

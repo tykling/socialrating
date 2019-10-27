@@ -78,9 +78,10 @@ class Item(UUIDBaseModel):
         assign_perm("item.add_review", self.team.group, self)
 
     def save(self, **kwargs):
-        # save the Item
+        """
+        Save the Item and grant permissions
+        """
         super().save(**kwargs)
-        # grant permissions for the Item
         self.grant_permissions()
 
     def get_average_vote(self, rating, only_latest=True):
