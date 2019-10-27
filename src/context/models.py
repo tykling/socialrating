@@ -4,12 +4,12 @@ from django.db import models
 from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm
 
-from team.models import TeamRelatedModel
+from utils.models import UUIDBaseModel
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class Context(TeamRelatedModel):
+class Context(UUIDBaseModel):
     """
     A context defines some sort of grouping of reviews.
     It might be an event, like a music festival grouping concert reviews,

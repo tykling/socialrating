@@ -2,11 +2,11 @@ from django.db import models
 from guardian.shortcuts import get_perms, assign_perm
 from django.shortcuts import reverse
 
-from team.models import TeamRelatedUUIDModel
+from utils.models import UUIDBaseModel
 from utils.uploads import get_attachment_path
 
 
-class Attachment(TeamRelatedUUIDModel):
+class Attachment(UUIDBaseModel):
     """
     An Attachment is any file uploaded in the system.
     All attachments belong to a Review.

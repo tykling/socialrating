@@ -5,13 +5,13 @@ from django.db import models
 from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm
 
-from team.models import TeamRelatedModel
+from utils.models import UUIDBaseModel
 from .eavconfig import CategoryEavConfig
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class Category(TeamRelatedModel):
+class Category(UUIDBaseModel):
     """
     A category defines a type of thing/place/event. A Category belongs to a Team.
     """

@@ -3,10 +3,10 @@ from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
 from guardian.shortcuts import assign_perm
 
-from team.models import TeamRelatedModel
+from utils.models import UUIDBaseModel
 
 
-class Rating(TeamRelatedModel):
+class Rating(UUIDBaseModel):
     """
     A Rating is some voteable aspect of a Category - peoples opinions
     rather than facts. Every Rating describes something which can be

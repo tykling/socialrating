@@ -5,14 +5,14 @@ from django.db import models
 from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm
 
-from team.models import TeamRelatedModel
+from utils.models import UUIDBaseModel
 from vote.models import Vote
 from .eavconfig import ItemEavConfig
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class Item(TeamRelatedModel):
+class Item(UUIDBaseModel):
     """
     An Item is a thing/place/event based on a Category.
     The Category defines which Facts and Ratings any given item has.

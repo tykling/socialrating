@@ -3,10 +3,10 @@ from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
 from guardian.shortcuts import assign_perm
 
-from team.models import TeamRelatedUUIDModel
+from utils.models import UUIDBaseModel
 
 
-class Vote(TeamRelatedUUIDModel):
+class Vote(UUIDBaseModel):
     """
     A Vote contains a reference to a Rating and a Review,
     as well as the actual Vote (a PositiveIntegerField).

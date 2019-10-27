@@ -5,46 +5,13 @@ from django.urls import reverse_lazy
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm
 
-from utils.models import BaseModel, UUIDBaseModel
+from utils.models import UUIDBaseModel
 from actor.models import Actor
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class TeamRelatedModel(BaseModel):
-    """
-    An abstract model on which all Team related models are based
-    If a Team related model has no direct FK to Team, then the
-    property 'team_filter' must be set on the model class.
-    """
-
-    team_filter = "team"
-
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def get_team_filter(cls):
-        return cls.team_filter
-
-
-class TeamRelatedUUIDModel(UUIDBaseModel):
-    """
-    This is identical to TeamRelatedModel but inherits
-    from UUIDBaseModel instead of BaseModel
-    """
-
-    team_filter = "team"
-
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def get_team_filter(cls):
-        return cls.team_filter
-
-
-class Team(BaseModel):
+class Team(UUIDBaseModel):
     """
     Everything belongs to a Team
     """
@@ -125,16 +92,16 @@ class Team(BaseModel):
         Membership.objects.create(actor=self.founder, team=self, admin=True)
 
     def save(self, **kwargs):
-        # save pk for later
-        pk = self.pk
-        # is this a new team?
-        if not pk:
+        if self._state.adding:
+            adding = True
             # create django groups as needed before saving
             self.create_django_groups()
+        else:
+            adding = False
         # save team
         super().save(**kwargs)
         # is this a new team?
-        if not pk:
+        if adding:
             # this is a new team, add founder as member
             self.add_founder_membership()
             # and grant Team permissions
@@ -199,7 +166,7 @@ class Team(BaseModel):
         return Vote.objects.filter(rating__category__team=self)
 
 
-class Membership(BaseModel):
+class Membership(UUIDBaseModel):
     """
     The m2m through model which links Actor and Team together
     """

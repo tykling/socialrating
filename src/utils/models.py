@@ -25,11 +25,13 @@ class BaseModel(models.Model):
         default_permissions = ()
 
     created = models.DateTimeField(
-        help_text="The date and time when this object was created."
+        default=timezone.now,
+        help_text="The date and time when this object was created.",
     )
 
     updated = models.DateTimeField(
-        help_text="The date and time when this object was last updated."
+        default=timezone.now,
+        help_text="The date and time when this object was last updated.",
     )
 
     events = GenericRelation(Event)

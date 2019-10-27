@@ -2,10 +2,10 @@ from django.db import models
 from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm
 
-from team.models import TeamRelatedUUIDModel
+from utils.models import UUIDBaseModel
 
 
-class Review(TeamRelatedUUIDModel):
+class Review(UUIDBaseModel):
     """
     A Review is linked to an Actor and an Item.
     All Ratings are linked to a Review.
