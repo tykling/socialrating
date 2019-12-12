@@ -7,29 +7,25 @@ from django import forms
 from django.shortcuts import redirect, reverse
 from django.db import transaction
 from django.contrib import messages
-from guardian.mixins import PermissionListMixin
 
-from item.mixins import ItemMixin
 from context.models import Context
 from attachment.utils import save_form_attachments
-from utils.mixins import PermissionRequiredOr403Mixin
-from utils.mixins import BreadCrumbMixin as BCMixin
 from vote.models import Vote
+from utils.mixins import SRViewMixin, SRListViewMixin
 
 from .models import Review
-from .mixins import ReviewMixin
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class ReviewListView(ItemMixin, PermissionListMixin, BCMixin, ListView):
+class ReviewListView(SRListViewMixin, ListView):
     model = Review
     paginate_by = 100
     template_name = "review_list.html"
     permission_required = "review.view_review"
 
 
-class ReviewCreateView(ItemMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
+class ReviewCreateView(SRViewMixin, CreateView):
     model = Review
     template_name = "review_form.html"
     fields = ["headline", "body", "context"]
@@ -128,7 +124,9 @@ class ReviewCreateView(ItemMixin, PermissionRequiredOr403Mixin, BCMixin, CreateV
 
             # save any attachments
             if form.is_multipart():
-                save_form_attachments(form=form, fieldname="attachments", review=review)
+                save_form_attachments(
+                    form=form, fieldname="attachments", gfk_object=review
+                )
 
         # all done
         messages.success(
@@ -151,23 +149,21 @@ class ReviewCreateView(ItemMixin, PermissionRequiredOr403Mixin, BCMixin, CreateV
         )
 
 
-class ReviewDetailView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class ReviewDetailView(SRViewMixin, DetailView):
     model = Review
     template_name = "review_detail.html"
     pk_url_kwarg = "review_uuid"
     permission_required = "review.view_review"
 
 
-class ReviewSettingsView(
-    ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class ReviewSettingsView(SRViewMixin, DetailView):
     model = Review
     template_name = "review_settings.html"
     pk_url_kwarg = "review_uuid"
     permission_required = "review.change_review"
 
 
-class ReviewUpdateView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
+class ReviewUpdateView(SRViewMixin, UpdateView):
     model = Review
     template_name = "review_form.html"
     pk_url_kwarg = "review_uuid"
@@ -282,7 +278,7 @@ class ReviewUpdateView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, Updat
         )
 
 
-class ReviewDeleteView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
+class ReviewDeleteView(SRViewMixin, DeleteView):
     model = Review
     template_name = "review_delete.html"
     pk_url_kwarg = "review_uuid"

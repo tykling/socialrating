@@ -1,5 +1,7 @@
 from django.urls import path, include
 
+from socialrating.generic_fk_urls import generic_fk_urls
+
 from .views import (
     ItemListView,
     ItemCreateView,
@@ -32,6 +34,7 @@ urlpatterns = [
                 ),
                 path("reviews/", include("review.urls", namespace="review")),
             ]
+            + generic_fk_urls
         ),
     ),
 ]

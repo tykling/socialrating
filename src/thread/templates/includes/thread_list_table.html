@@ -1,0 +1,48 @@
+{% load guardian_tags %}
+{% load tags %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Author</th>
+          <th>Created</th>
+          <th>Latest Comment</th>
+          <th>Comments</th>
+          <th>Attachments</th>
+          <th>Tags</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+       {% for thread in thread_list %}
+       {% get_obj_perms request.user for thread as "thread_perms" %}
+       {% if "view_thread" in thread_perms %}
+       <tr>
+         <td>{{ thread.subject }}</td>
+         <td>{{ thread.actor.user }}</td>
+         <td>{{ thread.created }} ({{ thread.created | timesince }} ago)</td>
+         <td>{{ thread.comments.latest.created }} ({{ thread.comments.latest.created | timesince }} ago)</td>
+         <td>{{ thread.get_comment_count }}</th>
+         <td>{{ thread.get_attachment_count }}</th>
+         <td>{{ thread | tags }}</th>
+        <td>
+          <div style="white-space: nowrap;" class="btn-group-vertical">
+          {% if "view_thread" in thread_perms %}
+            <a href="{% url 'team:forum:thread:detail' team_slug=team.slug forum_slug=forum.slug thread_slug=thread.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+          {% endif %}
+          {% if "change_thread" in thread_perms %}
+            <a href="{% url 'team:forum:thread:settings' team_slug=team.slug forum_slug=forum.slug thread_slug=thread.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
+          {% endif %}
+          {% if "change_thread" in thread_perms %}
+            <a href="{% url 'team:forum:thread:update' team_slug=team.slug forum_slug=forum.slug thread_slug=thread.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i> Update</a>
+          {% endif %}
+          {% if "delete_thread" in thread_perms %}
+            <a href="{% url 'team:forum:thread:delete' team_slug=team.slug forum_slug=forum.slug thread_slug=thread.slug %}" class="btn btn-danger btn-xs"><i class="fas fa-times"></i> Delete</a>
+          {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </table>
+

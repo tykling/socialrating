@@ -8,9 +8,16 @@
         {% for fact in item_list.0.facts.all %}
         <th>{{ fact.name }} (fact)</th>
         {% endfor %}
+        {% if compact %}
+        <th>Ratings</th>
+        {% else %}
         {% for rating in item_list.0.ratings.all %}
         <th>{{ rating.name }} (rating)</th>
         {% endfor %}
+        {% endif %}
+        <th>Reviews</th>
+        <th>Comments</th>
+        <th>Attachments</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -25,8 +32,16 @@
             {{ item|get_eav_value:fact.slug }}
           </td>
         {% endfor %}
-        {% for rating in item.category.ratings.all %}
+        {% if compact %}
         <td style="white-space: nowrap" class="text-right">
+        {% endif %}
+        {% for rating in item.category.ratings.all %}
+        {% if not compact %}
+        <td style="white-space: nowrap" class="text-right">
+        {% endif %}
+          {% if compact %}
+          <b>{{ rating.name }}</b><br>
+          {% endif %}
           {% get_actor_vote item rating as actor_vote %}
           {% get_average_vote item rating as avg_vote %}
           Average Vote: {{ avg_vote.0 }} ({{ avg_vote.1 }})<br>
@@ -36,19 +51,27 @@
           Your Latest Vote: {{ actor_vote|default:"N/A" }}<br>
           {{ actor_vote | stars:rating }}
           {% endif %}
+        {% if not compact %}
         </td>
+        {% endif %}
         {% endfor %}
+        {% if compact %}
+        </td>
+        {% endif %}
+        <td>{{ item.reviews.count }}</td>
+        <td>{{ item.comments.count }}</td>
+        <td>{{ item.attachments.count }}</td>
         <td>
           <div style="white-space: nowrap;" class="btn-group-vertical">
-          <a href="{% url 'team:category:item:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+          <a href="{% url 'team:category:item:detail' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
           {% if "change_item" in item_perms %}
-            <a href="{% url 'team:category:item:settings' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
+            <a href="{% url 'team:category:item:settings' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
           {% endif %}
           {% if "change_item" in item_perms %}
-            <a href="{% url 'team:category:item:update' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+            <a href="{% url 'team:category:item:update' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
           {% endif %}
           {% if "delete_item" in item_perms %}
-            <a href="{% url 'team:category:item:delete' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+            <a href="{% url 'team:category:item:delete' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
           {% endif %}
           </div>
         </td>

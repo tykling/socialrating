@@ -3,6 +3,7 @@ import random
 import factory
 
 from django.core.management.base import BaseCommand
+from crum import impersonate
 
 from actor.models import Actor, User
 from actor.factories import UserFactory
@@ -33,164 +34,172 @@ class Command(BaseCommand):
         admin.set_password("admin")
         admin.save()
 
-        ####################
-        # add teams
-        carteam = Team.objects.create(
-            name="Car Nerds",
-            description="A group of people who drive and review cars",
-            founder=Actor.objects.all().order_by("?").first(),
-        )
-        foodteam = Team.objects.create(
-            name="Foodies",
-            description="Hungry people with opinions on food and places that serve food",
-            founder=Actor.objects.all().order_by("?").first(),
-        )
-        Team.objects.create(
-            name="Music Lovers",
-            description="Concert-going music lovers. Reviews of venues and concerts.",
-            founder=Actor.objects.all().order_by("?").first(),
-        )
-
-        ###################
-        # add team members for all teams
-        for team in Team.objects.all():
-            # add site admin as admin team member of all teams
-            Membership.objects.create(team=team, actor=admin.actor, admin=True)
-
-        # add all remaining Actors with no team to a random team
-        for actor in Actor.objects.filter(memberships__isnull=True):
-            Membership.objects.create(
-                team=Team.objects.all().order_by("?").first(), actor=actor
+        # create all the scaffolding as the admin user
+        with impersonate(admin):
+            ####################
+            # add teams
+            carteam = Team.objects.create(
+                name="Car Nerds",
+                description="A group of people who drive and review cars",
+                founder=Actor.objects.all().order_by("?").first(),
+            )
+            foodteam = Team.objects.create(
+                name="Foodies",
+                description="Hungry people with opinions on food and places that serve food",
+                founder=Actor.objects.all().order_by("?").first(),
+            )
+            Team.objects.create(
+                name="Music Lovers",
+                description="Concert-going music lovers. Reviews of venues and concerts.",
+                founder=Actor.objects.all().order_by("?").first(),
             )
 
-        # add categories for carteam
-        makecat = Category.objects.create(
-            team=carteam, name="Car Makers", description="A car maker."
-        )
-        carcat = Category.objects.create(
-            team=carteam, name="Cars", description="A car."
-        )
+            ###################
+            # add team members for all teams
+            for team in Team.objects.all():
+                # add site admin as admin team member of all teams
+                Membership.objects.create(team=team, actor=admin.actor, admin=True)
 
-        # add Contexts for carteam
-        classic_car_context = Context.objects.create(
-            team=carteam,
-            name="Classic Car Meetup, Carville, 2018",
-            description="Use this context for all reviews from the 2018 meetup in Carville.",
-        )
-        japanese_car_context = Context.objects.create(
-            team=carteam,
-            name="Jap Car Fest 2018",
-            description='Use this context for all reviews from the 2018 "Jap Car Fest"',
-        )
+            # add all remaining Actors with no team to a random team
+            for actor in Actor.objects.filter(memberships__isnull=True):
+                Membership.objects.create(
+                    team=Team.objects.all().order_by("?").first(), actor=actor
+                )
 
-        # add attributes for Maker category
-        Fact.objects.create(
-            name="Country",
-            datatype=Fact.TYPE_TEXT,
-            category=makecat,
-            required=True,
-            slug=makecat.create_fact_slug("Country"),
-            description="The country this car maker is from",
-        )
+            # add categories for carteam
+            makecat = Category.objects.create(
+                team=carteam, name="Car Makers", description="A car maker."
+            )
+            carcat = Category.objects.create(
+                team=carteam, name="Cars", description="A car."
+            )
 
-        # add django-eav2 Facts for the "Car" Category
-        Fact.objects.create(
-            name="Make",
-            datatype=Fact.TYPE_OBJECT,
-            category=carcat,
-            required=True,
-            slug=carcat.create_fact_slug("Make"),
-            description="The make of this car",
-            object_category=makecat,
-        )
-        Fact.objects.create(
-            name="Colour",
-            datatype=Fact.TYPE_TEXT,
-            category=carcat,
-            required=True,
-            slug=carcat.create_fact_slug("Colour"),
-            description="The colour of this car",
-        )
-        Fact.objects.create(
-            name="BHP",
-            datatype=Fact.TYPE_INT,
-            category=carcat,
-            required=True,
-            slug=carcat.create_fact_slug("BHP"),
-            description="The BHP of this car",
-        )
-        # add Ratings for "Car" category
-        Rating.objects.create(
-            name="Looks",
-            category=carcat,
-            max_rating=10,
-            description="Rate the looks of this car, 10 is best.",
-        )
-        Rating.objects.create(
-            name="Handling",
-            category=carcat,
-            max_rating=10,
-            description="How well the car handles. 10 is best.",
-        )
+            # add Contexts for carteam
+            classic_car_context = Context.objects.create(
+                team=carteam,
+                name="Classic Car Meetup, Carville, 2018",
+                description="Use this context for all reviews from the 2018 meetup in Carville.",
+            )
+            japanese_car_context = Context.objects.create(
+                team=carteam,
+                name="Jap Car Fest 2018",
+                description='Use this context for all reviews from the 2018 "Jap Car Fest"',
+            )
 
-        # add car makers
-        ford = makecat.items.create(name="Ford", eav__country="US")
-        bmw = makecat.items.create(name="BMW", eav__country="DE")
-        peugeot = makecat.items.create(name="Peugeot", eav__country="FR")
+            # add attributes for Maker category
+            Fact.objects.create(
+                name="Country",
+                datatype=Fact.TYPE_TEXT,
+                category=makecat,
+                required=True,
+                slug=makecat.create_fact_slug("Country"),
+                description="The country this car maker is from",
+            )
 
-        # add cars
-        carcat.items.create(
-            name="Escort RS Cosworth",
-            eav__make=ford,
-            eav__colour="black",
-            eav__bhp="170",
-        )
-        carcat.items.create(
-            name="Focus", eav__make=ford, eav__colour="blue", eav__bhp="95"
-        )
-        carcat.items.create(
-            name="520i E34", eav__make=bmw, eav__colour="purple", eav__bhp="200"
-        )
-        carcat.items.create(
-            name="M3", eav__make=bmw, eav__colour="white", eav__bhp="280"
-        )
-        carcat.items.create(
-            name="406 Estate", eav__make=peugeot, eav__colour="white", eav__bhp="130"
-        )
+            # add django-eav2 Facts for the "Car" Category
+            Fact.objects.create(
+                name="Make",
+                datatype=Fact.TYPE_OBJECT,
+                category=carcat,
+                required=True,
+                slug=carcat.create_fact_slug("Make"),
+                description="The make of this car",
+                object_category=makecat,
+            )
+            Fact.objects.create(
+                name="Colour",
+                datatype=Fact.TYPE_TEXT,
+                category=carcat,
+                required=True,
+                slug=carcat.create_fact_slug("Colour"),
+                description="The colour of this car",
+            )
+            Fact.objects.create(
+                name="BHP",
+                datatype=Fact.TYPE_INT,
+                category=carcat,
+                required=True,
+                slug=carcat.create_fact_slug("BHP"),
+                description="The BHP of this car",
+            )
+            # add Ratings for "Car" category
+            Rating.objects.create(
+                name="Looks",
+                category=carcat,
+                max_rating=10,
+                description="Rate the looks of this car, 10 is best.",
+            )
+            Rating.objects.create(
+                name="Handling",
+                category=carcat,
+                max_rating=10,
+                description="How well the car handles. 10 is best.",
+            )
+
+            # add car makers
+            ford = makecat.items.create(name="Ford", eav__country="US")
+            bmw = makecat.items.create(name="BMW", eav__country="DE")
+            peugeot = makecat.items.create(name="Peugeot", eav__country="FR")
+
+            # add cars
+            carcat.items.create(
+                name="Escort RS Cosworth",
+                eav__make=ford,
+                eav__colour="black",
+                eav__bhp="170",
+            )
+            carcat.items.create(
+                name="Focus", eav__make=ford, eav__colour="blue", eav__bhp="95"
+            )
+            carcat.items.create(
+                name="520i E34", eav__make=bmw, eav__colour="purple", eav__bhp="200"
+            )
+            carcat.items.create(
+                name="M3", eav__make=bmw, eav__colour="white", eav__bhp="280"
+            )
+            carcat.items.create(
+                name="406 Estate",
+                eav__make=peugeot,
+                eav__colour="white",
+                eav__bhp="130",
+            )
 
         # add reviews for cars
         for car in carcat.items.all():
             # not everyone votes :(
             votercount = random.randint(1, carcat.team.members.count())
             for actor in carcat.team.members.all()[0:votercount]:
-                review = Review.objects.create(
-                    actor=actor,
-                    item=car,
-                    headline=factory.Faker("sentence").generate(),
-                    body=factory.Faker("text").generate()
-                    if random.choice([True, False])
-                    else None,
-                    context=random.choice([classic_car_context, japanese_car_context]),
-                )
-                logger.debug("created review %s" % review)
-                # add votes to this review
-                for rating in carcat.ratings.all():
-                    # 50/50 chance if this actor voted for this Rating
-                    if random.choice([True, False]):
-                        # 50/50 chance if this actor left a comment for this Vote
+                with impersonate(actor.user):
+                    review = Review.objects.create(
+                        actor=actor,
+                        item=car,
+                        headline=factory.Faker("sentence").generate(),
+                        body=factory.Faker("text").generate()
+                        if random.choice([True, False])
+                        else None,
+                        context=random.choice(
+                            [classic_car_context, japanese_car_context]
+                        ),
+                    )
+                    logger.debug("created review %s" % review)
+                    # add votes to this review
+                    for rating in carcat.ratings.all():
+                        # 50/50 chance if this actor voted for this Rating
                         if random.choice([True, False]):
-                            comment = factory.Faker("sentence").generate()
-                        else:
-                            comment = None
+                            # 50/50 chance if this actor left a comment for this Vote
+                            if random.choice([True, False]):
+                                comment = factory.Faker("sentence").generate()
+                            else:
+                                comment = None
 
-                        # create the Vote
-                        vote = Vote.objects.create(
-                            review=review,
-                            rating=rating,
-                            vote=random.randint(1, rating.max_rating),
-                            comment=comment,
-                        )
-                        logger.debug("created vote %s" % vote)
+                            # create the Vote
+                            vote = Vote.objects.create(
+                                review=review,
+                                rating=rating,
+                                vote=random.randint(1, rating.max_rating),
+                                comment=comment,
+                            )
+                            logger.debug("created vote %s" % vote)
 
         # add categories for foodteam
         restaurant = Category.objects.create(

@@ -1,0 +1,42 @@
+{% load guardian_tags %}
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Threads</th>
+      <th>Allow New Threads?</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for forum in team.forums.all %}
+    {% get_obj_perms request.user for forum as "forum_perms" %}
+    {% if "view_forum" in forum_perms %}
+    <tr>
+      <td>{{ forum.name }}</td>
+      <td>{{ forum.description }}</td>
+      <td><a href="{% url 'team:forum:thread:list' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-primary"><i class="fas fa-list"></i> {{ forum.threads.count }} Threads</a></td>
+      <td>{{ forum.allow_new_threads }}</td>
+      <td>
+        <div style="white-space: nowrap;" class="btn-group-vertical">
+        {% if "view_forum" in forum_perms %}
+          <a href="{% url 'team:forum:detail' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+        {% endif %}
+        {% if "change_forum" in forum_perms %}
+          <a href="{% url 'team:forum:settings' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
+        {% endif %}
+        {% if "change_forum" in forum_perms %}
+          <a href="{% url 'team:forum:update' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i> Update</a>
+        {% endif %}
+        {% if "delete_forum" in forum_perms %}
+          <a href="{% url 'team:forum:delete' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-danger btn-xs"><i class="fas fa-times"></i> Delete</a>
+        {% endif %}
+        </div>
+      </td>
+    </tr>
+    {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
+

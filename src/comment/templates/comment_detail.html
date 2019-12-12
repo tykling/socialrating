@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block team_content %}
+<p class="lead">Showing comment on <b><a href="{{ comment.comment_object.get_absolute_url }}">{{ comment.comment_object }}</a></b></p>
+{% include "includes/comment_card.html" %}
+{% endblock team_content %}
+

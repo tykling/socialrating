@@ -1,0 +1,31 @@
+{% load humanize %}
+{% load guardian_tags %}
+
+<div class="card">
+  <div class="card-header">
+    <b>{{ comment.subject }}</b> by {{ comment.actor.user }} {{ comment.created | timesince }} ago on {{ comment.created }}
+    {% get_obj_perms request.user for comment as "comment_perms" checker %}
+    {% if 'change_comment' in comment_perms %}
+    <a href="{{ comment.get_settings_url }}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+    {% endif %}
+
+    {% get_obj_perms request.user for comment.comment_object as "comment_object_perms" checker %}
+    {% if 'add_comment' in comment_object_perms %}
+    <a href="{{ comment.get_reply_url }}" class="btn btn-primary float-right"><i class="fas fa-reply"></i></a>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <p>
+      {{ comment.body }}
+    </p>
+    {% if comment.attachments.exists %}
+      {% include "includes/attachments.html" with attachment_list=comment.attachments.all cardtype="full" %}
+    {% endif %}
+    {% if request.resolver_match.url_name != "reply" %}
+      {% for reply in comment.replies.all %}
+        {% include "includes/comment_card.html" with comment=reply %}
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+

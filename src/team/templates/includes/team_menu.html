@@ -1,0 +1,48 @@
+    {% load guardian_tags %}
+    {% load context_tags %}
+    <nav class="nav nav-pills nav-stacked">
+
+    {% if team.contexts.exists %}
+    <h3><a href="{% url 'team:context:list' team_slug=team.slug %}">Contexts</a></h3>
+      <h5><a class="nav-link" href="{{ request|clearcontext }}">{% if not filtercontexts %}<i class="fas fa-filter"></i> {% endif %}All</a></h5>
+      {% for menucontext in team.contexts.all %}
+      <h5><a class="nav-link" href="{{ request|togglecontext:menucontext }}">{% if menucontext.slug in filtercontexts %}<i class="fas fa-filter"></i> {% endif %}{{ menucontext.name }}</a></h5>
+
+      {% empty %}
+        <p class="lead">No contexts found.</p>
+      {% endfor %}
+    {% endif %}
+
+    <h3><a href="{% url 'team:category:list' team_slug=team.slug %}">Categories</a></h3>
+    {% for menucategory in team.categories.all %}
+      <h5><a class="nav-link" href="{% url 'team:category:detail' team_slug=team.slug category_slug=menucategory.slug %}"><i class="fas fa-list"></i> {{ menucategory.name }}</a></h5>
+      {% if menucategory == category %}
+        {% for menuitem in category.items.all %}
+          {% get_obj_perms request.user for menuitem as "item_perms" %}
+          {% if "view_item" in item_perms %}
+          <a class="nav-item nav-link{% if item == menuitem %} active{% endif %}" href="{% url 'team:category:item:detail' team_slug=team.slug category_slug=category.slug item_slug=menuitem.slug %}">{{ menuitem.name }}</a>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% empty %}
+      <p class="lead">No categories found.</p>
+    {% endfor %}
+
+
+    <h3><a href="{% url 'team:forum:list' team_slug=team.slug %}">Forums</a></h3>
+    {% for menuforum in team.forums.all %}
+      <h5><a class="nav-link" href="{% url 'team:forum:detail' team_slug=team.slug forum_slug=menuforum.slug %}"><i class="fas fa-list"></i> {{ menuforum.name }}</a></h5>
+      {% if forum == menuforum %}
+        {% for menuthread in forum.threads.all %}
+          {% get_obj_perms request.user for menuthread as "thread_perms" %}
+          {% if "view_thread" in thread_perms %}
+          <a class="nav-item nav-link{% if thread == menuthread %} active{% endif %}" href="{% url 'team:forum:thread:detail' team_slug=team.slug forum_slug=forum.slug thread_slug=menuthread.slug %}">{{ menuthread.subject }} ({{ menuthread.get_comment_count }}, {{ menuthread.get_attachment_count }})</a>
+          {% endif %}
+        {% empty %}
+          <p class="lead">No threads found.</p>
+        {% endfor %}
+    {% endif %}
+    {% empty %}
+      <p class="lead">No forums found.</p>
+    {% endfor %}
+    </nav>

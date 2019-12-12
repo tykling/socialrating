@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+<h2>Comments for {{ comment_list.0.comment_object }}</h2>
+{% if comment_list %}
+{% include "includes/comment_list_table.html" %}
+{% else %}
+<p class="lead">No comments found. Go create one!</p>
+{% endif %}
+{% endblock team_content %}
+

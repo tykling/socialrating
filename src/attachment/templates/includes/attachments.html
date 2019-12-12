@@ -1,0 +1,43 @@
+{% load humanize %}
+{% load guardian_tags %}
+{% if cardtype == "full" %}
+<div class="album py-5 bg-light">
+  <div class="container">
+    <div class="row">
+    {% for attachment in attachment_list %}
+      {% get_obj_perms request.user for attachment as "attachment_perms" %}
+      <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+          <a href="{{ attachment.get_file_url }}">
+          <img src="{{ attachment.get_file_url }}?thumbnail" width="100%" heigth="225">
+          </a>
+          <div class="card-body">
+            <p class="card-text">{{ attachment.description }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                {% if "change_attachment" in attachment_perms %} 
+                <a href="{{ attachment.get_update_url }}" class="btn btn-sm btn-outline-secondary">Update</a>
+                {% endif %}
+                {% if "delete_attachment" in attachment_perms %} 
+                <a href="{{ attachment.get_delete_url }}" class="btn btn-sm btn-outline-secondary btn-danger">Delete</a>
+                {% endif %}
+              </div>
+              <small class="text-muted">{{ attachment.attachment.size|intcomma }} bytes</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="container">
+  <ul>
+    {% for attachment in attachment_list %}
+      <li>{{ attachment.attachment.name }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+

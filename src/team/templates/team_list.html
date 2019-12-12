@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load guardian_tags %}
 
 {% block content %}
 {% if team_list %}
@@ -21,6 +22,7 @@
     </thead>
     <tbody>
     {% for team in team_list %}
+      {% get_obj_perms request.user for team as "team_perms" %}
       <tr>
         <td>{{ team.name }}</td>
         <td>{{ team.description }}</td>
@@ -35,13 +37,13 @@
         <td>
           <div style="white-space: nowrap;" class="btn-group-vertical">
           <a href="{% url 'team:detail' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
-          {% if 'team.change_team' in perms %}
+          {% if 'change_team' in team_perms %}
             <a href="{% url 'team:settings' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
           {% endif %}
-          {% if 'team.change_team' in perms %}
+          {% if 'change_team' in team_perms %}
             <a href="{% url 'team:update' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update Team</a>
           {% endif %}
-          {% if 'team.delete_team' in perms %}
+          {% if 'delete_team' in team_perms %}
             <a href="{% url 'team:delete' team_slug=team.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete Team</a>
           {% endif %}
           </div>

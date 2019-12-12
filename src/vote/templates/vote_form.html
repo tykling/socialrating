@@ -23,7 +23,7 @@ Create Vote
   {% buttons %}
     <a href="{% url 'team:category:item:review:vote:list' team_slug=category.team.slug category_slug=category.slug item_slug=item.slug review_uuid=review.uuid %}" class="btn btn-primary"><i class="fas fa-undo"></i> Cancel</button></a>
     <button type="submit" class="btn btn-success">
-        <i class="fas fa-check"></i> {% if form.instance.pk %}Update{% else %}Create{% endif %} Vote
+        <i class="fas fa-check"></i> {% if request.resolver_match.url_name == "update" %}Update{% else %}Create{% endif %} Vote
     </button>
   {% endbuttons %}
 </form>

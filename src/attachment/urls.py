@@ -20,7 +20,7 @@ urlpatterns = [
         include(
             [
                 path("", AttachmentDetailView.as_view(), name="detail"),
-                path("file/", AttachmentFileView.as_view(), name="attachment"),
+                path("file/", AttachmentFileView.as_view(), name="file"),
                 path(
                     "settings/",
                     include(

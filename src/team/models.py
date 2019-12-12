@@ -16,11 +16,12 @@ class Team(UUIDBaseModel):
     Everything belongs to a Team
     """
 
-    class Meta:
+    class Meta(UUIDBaseModel.Meta):
         ordering = ["name"]
         permissions = (
             ("add_category", "Add Category belonging to this Team"),
             ("add_context", "Add Context belonging to this Team"),
+            ("add_forum", "Add Forum belonging to this Team"),
         )
 
     group = models.OneToOneField(
@@ -64,8 +65,16 @@ class Team(UUIDBaseModel):
     def __str__(self):
         return self.name
 
+    @property
+    def detail_url_kwargs(self):
+        return {"team_slug": self.slug}
+
+    object_url_namespace = "team"
+
     def get_absolute_url(self):
-        return reverse_lazy("team:detail", kwargs={"team_slug": self.slug})
+        return reverse_lazy(
+            self.object_url_namespace + ":detail", kwargs=self.detail_url_kwargs
+        )
 
     def grant_permissions(self):
         """
@@ -176,7 +185,7 @@ class Membership(UUIDBaseModel):
     The m2m through model which links Actor and Team together
     """
 
-    class Meta:
+    class Meta(UUIDBaseModel.Meta):
         unique_together = [("actor", "team")]
 
     actor = models.ForeignKey(

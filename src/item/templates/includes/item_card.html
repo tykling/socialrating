@@ -4,11 +4,12 @@
 {% load leaflet_tags %}
 {% load guardian_tags %}
 {% load humanize %}
+{% load items %}
 <div class="card">
   <div class="card-header">
     <h4>{{ item.name }} ({{ item.category }})
         {% if 'change_item' in item_perms %}
-          <a href="{% url 'team:category:item:settings' team_slug=team.slug category_slug=category.slug item_slug=item.slug %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+          <a href="{% url 'team:category:item:settings' team_slug=item.team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
         {% endif %}
     </h4>
   </div>
@@ -19,6 +20,10 @@
       <tr>
         <td><b>Name</b><br>The name of this {{ item.category.name }}</td>
         <td>{{ item.name }}</td>
+      </tr>
+      <tr>
+        <td><b>Description</b><br>The description of this {{ item.category.name }}</td>
+        <td>{{ item.description|default:"N/A" }}</td>
       </tr>
       {% for fact in item.facts.all %}
       <tr>
@@ -102,16 +107,70 @@
       <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Review</a>
     {% endif %}
 
-    {% if not compact and item.reviews.all %}
-    <h5 class="card-title">
-        Latest 10 Reviews (of total {{ item.reviews.count }})
+    {% if not compact %}
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="true">Reviews ({{ item.reviews.count }})</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" id="comments-tab" data-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="false">Comments ({{ item.comments.count }})</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" id="attachments-tab" data-toggle="tab" href="#attachments" role="tab" aria-controls="attachments" aria-selected="false">Attachments ({{ item.attachments.count }})</a>
+      </li>
+      {% get_related_items as item_lists %}
+      {% for item_list in item_lists %}
+      {% if item_list %}
+      <li class="nav-item">
+          <a class="nav-link" id="{{ item_list.0.category.slug }}-tab" data-toggle="tab" href="#{{ item_list.0.category.slug }}" role="tab" aria-controls="{{ item_list.0.category.slug }}" aria-selected="false">{{ item_list.0.category.name }} ({{ item_list | length }})</a>
+      </li>
+      {% endif %}
+      {% endfor %}
+    </ul>
+
+    <!-- Tabs content -->
+    <div class="tab-content">
+      <!-- reviews -->
+      <div class="tab-pane show active" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+        <br><p>
         <a href="{% url 'team:category:item:review:list' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-primary"><i class="fas fa-list"></i> Show All Reviews</a>
         <a href="{% url 'team:category:item:review:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Review</a>
-    </h5>
-    {% for review in item.last10reviews.all %}
-      {% include 'includes/review_card.html' %}
-    {% endfor %}
+        </p>
+        {% for review in item.last10reviews.all %}
+          {% get_obj_perms request.user for review as "review_perms" %}
+          {% include 'includes/review_card.html' %}
+        {% endfor %}
+      </div>
+      <!-- comments -->
+      <div class="tab-pane" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+        <br><p>
+        <a href="{% url 'team:category:item:comment:list' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-primary"><i class="fas fa-list"></i> Show All Comments</a>
+        {% if 'comment_add' in item_perms %}
+          <a href="{% url 'team:category:item:comment:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Comment</a>
+        {% endif %}
+        </p>
+        {% include "includes/comment_list_table.html" with comment_list=item.comments.all %}
+      </div>
+      <!-- attachments -->
+      <div class="tab-pane" id="attachments" role="tabpanel" aria-labelledby="attachments-tab">
+        <br><p>
+        <a href="{% url 'team:category:item:attachment:list' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-primary"><i class="fas fa-list"></i> Show All Attachments</a>
+        {% if 'attachment_create' in item_perms %}
+          <a href="{% url 'team:category:item:attachment:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Attachment</a>
+        {% endif %}
+        </p>
+        {% include "includes/attachments.html" with attachment_list=item.attachments.all cardtype="full" %}
+      </div>
+      <!-- related items -->
+      {% for item_list in item_lists %}
+      {% if item_list %}
+      <div class="tab-pane" id="{{ item_list.0.category.slug }}" role="tabpanel" aria-labelledby="{{ item_list.0.category.slug }}-tab">
+        {% include 'includes/item_list_table.html' with compact=True %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
     {% endif %}
   </div>
-</div>
 

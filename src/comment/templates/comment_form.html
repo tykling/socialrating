@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block team_content %}
+{% if request.resolver_match.url_name == "reply" %}
+{% include "includes/comment_card.html" %}
+{% endif %}
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title">{% if request.resolver_match.url_name == "update" %}Update{% else %}Create{% endif %} {% if request.resolver_match.url_name == "reply" %}Reply{% else %}Comment{% endif %}
+  </div>
+  <div class="card-body">
+    <form method="post" class="form">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      {% buttons %}
+        <button type="submit" class="btn btn-primary">
+          {% if request.resolver_match.url_name == "update" %}Update{% else %}Create{% endif %} {% if request.resolver_match.url_name == "reply" %}Reply{% else %}Comment{% endif %}
+        </button>
+      {% endbuttons %}
+    </form>
+  </div>
+</div>
+{% endblock team_content %}
+

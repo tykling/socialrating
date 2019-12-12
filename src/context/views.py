@@ -3,24 +3,20 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
-from guardian.mixins import PermissionListMixin
 
-from team.mixins import TeamMixin
-from utils.mixins import PermissionRequiredOr403Mixin
-from utils.mixins import BreadCrumbMixin as BCMixin
+from utils.mixins import SRViewMixin, SRListViewMixin
 
 from .models import Context
-from .mixins import ContextMixin
 
 
-class ContextListView(TeamMixin, PermissionListMixin, BCMixin, ListView):
+class ContextListView(SRListViewMixin, ListView):
     model = Context
     paginate_by = 100
     template_name = "context_list.html"
     permission_required = "context.view_context"
 
 
-class ContextCreateView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
+class ContextCreateView(SRViewMixin, CreateView):
     model = Context
     template_name = "context_form.html"
     fields = ["name", "description"]
@@ -44,27 +40,21 @@ class ContextCreateView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, Create
         return redirect(context.get_absolute_url())
 
 
-class ContextDetailView(
-    ContextMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class ContextDetailView(SRViewMixin, DetailView):
     model = Context
     template_name = "context_detail.html"
     slug_url_kwarg = "context_slug"
     permission_required = "context.view_context"
 
 
-class ContextSettingsView(
-    ContextMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class ContextSettingsView(SRViewMixin, DetailView):
     model = Context
     template_name = "context_settings.html"
     slug_url_kwarg = "context_slug"
     permission_required = "context.change_context"
 
 
-class ContextUpdateView(
-    ContextMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
-):
+class ContextUpdateView(SRViewMixin, UpdateView):
     model = Context
     template_name = "context_form.html"
     fields = ["name", "description"]
@@ -82,9 +72,7 @@ class ContextUpdateView(
         )
 
 
-class ContextDeleteView(
-    ContextMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
-):
+class ContextDeleteView(SRViewMixin, DeleteView):
     model = Context
     template_name = "context_delete.html"
     slug_url_kwarg = "context_slug"

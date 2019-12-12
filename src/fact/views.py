@@ -4,25 +4,20 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
 from django import forms
-from guardian.mixins import PermissionListMixin
 
 from fact.models import Fact
 
-from category.mixins import CategoryMixin
-from utils.mixins import BreadCrumbMixin as BCMixin
-from utils.mixins import PermissionRequiredOr403Mixin
-
-from .mixins import FactMixin
+from utils.mixins import SRViewMixin, SRListViewMixin
 
 
-class FactListView(CategoryMixin, PermissionListMixin, BCMixin, ListView):
+class FactListView(SRListViewMixin, ListView):
     model = Fact
     template_name = "fact_list.html"
     permission_required = "fact.view_fact"
     breadcrumb_title = "Facts"
 
 
-class FactCreateView(CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
+class FactCreateView(SRViewMixin, CreateView):
     model = Fact
     template_name = "fact_form.html"
     fields = ["name", "datatype", "description", "required"]
@@ -78,21 +73,21 @@ class FactCreateView(CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, Creat
         )
 
 
-class FactDetailView(FactMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class FactDetailView(SRViewMixin, DetailView):
     model = Fact
     template_name = "fact_detail.html"
     slug_url_kwarg = "fact_slug"
     permission_required = "fact.view_fact"
 
 
-class FactSettingsView(FactMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class FactSettingsView(SRViewMixin, DetailView):
     model = Fact
     template_name = "fact_settings.html"
     slug_url_kwarg = "fact_slug"
     permission_required = "fact.change_fact"
 
 
-class FactUpdateView(FactMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
+class FactUpdateView(SRViewMixin, UpdateView):
     model = Fact
     template_name = "fact_form.html"
     slug_url_kwarg = "fact_slug"
@@ -106,7 +101,7 @@ class FactUpdateView(FactMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateVie
         )
 
 
-class FactDeleteView(FactMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
+class FactDeleteView(SRViewMixin, DeleteView):
     model = Fact
     template_name = "fact_delete.html"
     slug_url_kwarg = "fact_slug"

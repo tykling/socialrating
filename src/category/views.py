@@ -5,25 +5,22 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
-from guardian.mixins import PermissionListMixin
 
-from team.mixins import TeamMixin
-from utils.mixins import PermissionRequiredOr403Mixin
-from utils.mixins import BreadCrumbMixin as BCMixin
+from utils.mixins import SRViewMixin, SRListViewMixin
+
 from .models import Category
-from .mixins import CategoryMixin
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class CategoryListView(TeamMixin, PermissionListMixin, BCMixin, ListView):
+class CategoryListView(SRListViewMixin, ListView):
     model = Category
     paginate_by = 100
     template_name = "category_list.html"
     permission_required = "category.view_category"
 
 
-class CategoryCreateView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
+class CategoryCreateView(SRViewMixin, CreateView):
     model = Category
     template_name = "category_form.html"
     fields = ["name", "description"]
@@ -52,27 +49,21 @@ class CategoryCreateView(TeamMixin, PermissionRequiredOr403Mixin, BCMixin, Creat
         )
 
 
-class CategoryDetailView(
-    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class CategoryDetailView(SRViewMixin, DetailView):
     model = Category
     slug_url_kwarg = "category_slug"
     permission_required = "category.view_category"
     template_name = "category_detail.html"
 
 
-class CategorySettingsView(
-    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class CategorySettingsView(SRViewMixin, DetailView):
     model = Category
     slug_url_kwarg = "category_slug"
     permission_required = "category.change_category"
     template_name = "category_settings.html"
 
 
-class CategoryUpdateView(
-    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
-):
+class CategoryUpdateView(SRViewMixin, UpdateView):
     model = Category
     template_name = "category_form.html"
     fields = ["name", "description", "default_context"]
@@ -115,9 +106,7 @@ class CategoryUpdateView(
         )
 
 
-class CategoryDeleteView(
-    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
-):
+class CategoryDeleteView(SRViewMixin, DeleteView):
     model = Category
     template_name = "category_delete.html"
     slug_url_kwarg = "category_slug"

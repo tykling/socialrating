@@ -14,7 +14,7 @@ class Rating(UUIDBaseModel):
     "Concert Venue" might be "Sound Quality".
     """
 
-    class Meta:
+    class Meta(UUIDBaseModel.Meta):
         ordering = ["name"]
         unique_together = [["name", "category"], ["slug", "category"]]
 
@@ -62,14 +62,19 @@ class Rating(UUIDBaseModel):
     def __str__(self):
         return "Rating %s (Category: %s)" % (self.name, self.category)
 
+    @property
+    def detail_url_kwargs(self):
+        return {
+            "team_slug": self.category.team.slug,
+            "category_slug": self.category.slug,
+            "rating_slug": self.slug,
+        }
+
+    object_url_namespace = "team:category:rating"
+
     def get_absolute_url(self):
         return reverse_lazy(
-            "team:category:rating:detail",
-            kwargs={
-                "team_slug": self.category.team.slug,
-                "category_slug": self.category.slug,
-                "rating_slug": self.slug,
-            },
+            self.object_url_namespace + ":detail", kwargs=self.detail_url_kwargs
         )
 
     def grant_permissions(self):

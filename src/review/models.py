@@ -11,7 +11,7 @@ class Review(UUIDBaseModel):
     All Ratings are linked to a Review.
     """
 
-    class Meta:
+    class Meta(UUIDBaseModel.Meta):
         ordering = ["-created"]
         permissions = (
             ("add_attachment", "Add Attachment to this Review"),
@@ -54,6 +54,10 @@ class Review(UUIDBaseModel):
     breadcrumb_list_name = "Reviews"
 
     @property
+    def breadcrumb_detail_name(self):
+        return self.headline[0:50]
+
+    @property
     def team(self):
         return self.item.category.team
 
@@ -64,15 +68,20 @@ class Review(UUIDBaseModel):
     def __str__(self):
         return self.headline
 
+    @property
+    def detail_url_kwargs(self):
+        return {
+            "team_slug": self.item.category.team.slug,
+            "category_slug": self.item.category.slug,
+            "item_slug": self.item.slug,
+            "review_uuid": self.pk,
+        }
+
+    object_url_namespace = "team:category:item:review"
+
     def get_absolute_url(self):
         return reverse_lazy(
-            "team:category:item:review:detail",
-            kwargs={
-                "team_slug": self.item.category.team.slug,
-                "category_slug": self.item.category.slug,
-                "item_slug": self.item.slug,
-                "review_uuid": self.pk,
-            },
+            self.object_url_namespace + ":detail", kwargs=self.detail_url_kwargs
         )
 
     def grant_permissions(self):

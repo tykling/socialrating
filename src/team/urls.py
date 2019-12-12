@@ -34,6 +34,7 @@ urlpatterns = [
                 ),
                 path("categories/", include("category.urls", namespace="category")),
                 path("contexts/", include("context.urls", namespace="context")),
+                path("forums/", include("forum.urls", namespace="forum")),
             ]
         ),
     ),

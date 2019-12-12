@@ -13,8 +13,7 @@ class Vote(UUIDBaseModel):
     It may also optionally contain a short comment related to this specific vote.
     """
 
-    class Meta:
-        ordering = ["pk"]
+    class Meta(UUIDBaseModel.Meta):
         unique_together = [("review", "rating")]
 
     review = models.ForeignKey(
@@ -45,6 +44,10 @@ class Vote(UUIDBaseModel):
     filterfield = "review"
     filtervalue = "review"
     breadcrumb_list_name = "Votes"
+
+    @property
+    def breadcrumb_detail_name(self):
+        return self.rating.name
 
     @property
     def team(self):
@@ -104,14 +107,21 @@ class Vote(UUIDBaseModel):
             self.review.actor,
         )
 
-    def get_absolute_url(self):
-        return reverse_lazy(
-            "team:category:item:review:vote:detail",
-            kwargs={
+    @property
+    def detail_url_kwargs(self):
+        return (
+            {
                 "team_slug": self.item.category.team.slug,
                 "category_slug": self.item.category.slug,
                 "item_slug": self.item.slug,
                 "review_uuid": self.review.uuid,
                 "vote_uuid": self.uuid,
             },
+        )
+
+    object_url_namespace = "team:category:item:review:vote"
+
+    def get_absolute_url(self):
+        return reverse_lazy(
+            self.object_url_namespace + ":detail", kwargs=self.detail_url_kwargs
         )

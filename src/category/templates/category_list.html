@@ -11,14 +11,11 @@
         <th>Facts</th>
         <th>Ratings</th>
         <th>Items</th>
-        <th>Reviews</th>
-        <th>Votes</th>
-        <th>Attachments</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-    {% for category in team.categories.all %}
+    {% for category in category_list %}
       {% get_obj_perms request.user for category as "category_perms" %}
       {% if "view_category" in category_perms %}
       <tr>
@@ -53,10 +50,16 @@
               {% endif %}
             </div>
         </td>
-        <td>{{ category.items.count }}</td>
-        <td>{{ category.review_count }}</td>
-        <td>{{ category.vote_count }}</td>
-        <td>{{ category.attachment_count }}</td>
+        <td>
+          <p>
+          In this category {{ category.items.count }} items has {{ category.review_count }} reviews with {{ category.vote_count }} votes, and {{ category.attachment_count }} attachments.</p>
+          <div class="btn-group-vertical">
+            <a href="{% url 'team:category:item:list' team_slug=team.slug category_slug=category.slug %}" class="btn btn-primary btn-xs"><i class="fas fa-list"></i> List</a>
+            {% if 'add_item' in category_perms %}
+              <a href="{% url 'team:category:item:create' team_slug=team.slug category_slug=category.slug %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Create New</a>
+            {% endif %}
+          </div>
+        </td>
         <td>
           <div style="white-space: nowrap;" class="btn-group-vertical">
           {% if "view_category" in category_perms %}

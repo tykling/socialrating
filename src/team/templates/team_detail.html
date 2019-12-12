@@ -15,14 +15,20 @@
     <p class="lead">{{ team.description }}</p>
     <p class="lead">{{ team.name }} has {{ team.items.count }} Items across {{ team.categories.count }} Categories with a total of {{ team.reviews.count }} Reviews in {{ team.contexts.count }} Contexts. The {{ team.categories.count }} Categories has {{ team.facts.count }} Facts and {{ team.ratings.count }} Ratings with a total of {{ team.votes.count }} Votes.</p>
 
-    {% if review %}
+    {% if team.reviews.exists %}
+    {% get_obj_perms request.user for team.reviews.latest as "review_perms" checker %}
+    {% if 'view_review' in review_perms %}
     <h2>Latest Review</h2>
-    {% include 'includes/review_card.html' with category=review.item.category item=review.item %}
+    {% include 'includes/review_card.html' with review=team.reviews.latest %}
+    {% endif %}
     {% endif %}
 
-    {% if item %}
+    {% if team.items.exists %}
+    {% get_obj_perms request.user for team.items.latest as "item_perms" checker %}
+    {% if 'view_item' in item_perms %}
     <h2>Newest Item</h2>
-    {% include 'includes/item_card.html' with category=item.category compact=True %}
+    {% include 'includes/item_card.html' with item=team.items.latest compact=True %}
+    {% endif %}
     {% endif %}
   </div>
 </div>

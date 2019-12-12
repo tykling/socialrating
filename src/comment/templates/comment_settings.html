@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load rating %}
+{% load guardian_tags %}
+
+{% block team_content %}
+<div class="card">
+  <div class="card-header">
+    Comment Settings for {{ comment.uuid }}
+  </div>
+  <div class="card-body">
+      <p class="lead">This Comment on <b><a href="{{ comment.comment_object.get_absolute_url }}">{{ comment.comment_object }}</a></b> was created by <b>{{ comment.actor.user.username }}</b> {{ comment.created | timesince }} ago on {{ comment.created }}</p>
+
+    <p class="lead">Subject: {{ comment.subject }}</p>
+
+    <a href="{{ comment.get_absolute_url }}" class="card-link btn btn-primary"><i class="fas fa-search"></i> Show</a>
+
+    {% if 'change_comment' in comment_perms %}
+      <a href="{{ comment.get_update_url }}" class="card-link btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+    {% endif %}
+
+    {% if 'delete_comment' in comment_perms %}
+      <a href="{{ comment.get_delete_url }}" class="card-link btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock team_content %}
+

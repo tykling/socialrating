@@ -10,6 +10,7 @@
     <a href="{% url 'team:category:item:detail' team_slug=item.team.slug category_slug=item.category.slug item_slug=item.slug %}" class="card-link btn btn-primary"><i class="fas fa-undo"></i> Back to {{ item.name }}</a>
 </h4>
   {% for review in review_list %}
+    {% get_obj_perms request.user for review as "review_perms" checker %}
     {% include 'includes/review_card.html' %}
   {% endfor %}
 {% else %}

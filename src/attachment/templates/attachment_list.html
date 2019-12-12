@@ -3,6 +3,10 @@
 
 {% block team_content %}
 {% if attachment_list %}
+<h3>Showing all attachments for {{ attachment_list.0.attachment_object.object_name }} {{ attachment_list.0.attachment_object }}</h3>
+
+<p><a href="{{ attachment_list.0.attachment_object.get_absolute_url }}" class="btn btn-primary">Back to {{ attachment_list.0.attachment_object.object_name }} {{ attachment_list.0.attachment_object }}</a></p>
+
  <table class="table table-bordered">
     <thead>
       <tr>
@@ -26,14 +30,16 @@
         <td>{{ attachment.mimetype }}</td>
         <td>{{ attachment.size }} bytes</td>
         <td>
-          <img src="{% url 'team:category:item:review:attachment:attachment' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}?thumbnail" width="50%" heigth="225" class="img-thumbnail">
+          <a href="{{ attachment.get_file_url }}">
+            <img src="{{ attachment.get_file_url }}?thumbnail" width="50%" heigth="225" class="img-thumbnail">
+          </a>
         </td>
         <td>
           {% if "change_attachment" in attachment_perms %}
-            <a href="{% url 'team:category:item:review:attachment:update' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}" class="btn btn-primary">Update</a>
+            <a href="{{ attachment.get_update_url }}" class="btn btn-primary">Update</a>
           {% endif %}
           {% if "delete_attachment" in attachment_perms %}
-            <a href="{% url 'team:category:item:review:attachment:delete' team_slug=attachment.team.slug category_slug=attachment.category.slug item_slug=attachment.item.slug review_uuid=attachment.review.uuid attachment_uuid=attachment.uuid %}" class="btn btn-danger">Delete</a>
+            <a href="{{ attachment.get_delete_url }}" class="btn btn-danger">Delete</a>
           {% endif %}
         </td>
       </tr>
@@ -43,9 +49,6 @@
 </table>
 {% else %}
 <p class="lead">No attachments found.</p>
-{% endif %}
-{% if "change_review" in review_perms %}
-<a href="{% url 'team:category:item:review:attachment:create' team_slug=review.team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-success">Create Attachment</a>
 {% endif %}
 {% endblock team_content %}
 

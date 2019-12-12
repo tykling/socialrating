@@ -22,7 +22,7 @@ Create New {{ form.instance.category }}
   {% bootstrap_form form %}
   {% buttons %}
     <button type="submit" class="btn btn-success">
-        <i class="fas fa-check"></i> {% if form.instance.pk %}Update{% else %}Create{% endif %} Item
+        <i class="fas fa-check"></i> {% if request.resolver_match.url_name == "update" %}Update{% else %}Create{% endif %} Item
     </button>
   {% endbuttons %}
 </form>

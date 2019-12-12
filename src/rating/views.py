@@ -3,26 +3,20 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.shortcuts import redirect, reverse
 from django.contrib import messages
-from guardian.mixins import PermissionListMixin
 
-from category.mixins import CategoryMixin
-from utils.mixins import PermissionRequiredOr403Mixin
-from utils.mixins import BreadCrumbMixin as BCMixin
+from utils.mixins import SRViewMixin, SRListViewMixin
 
 from .models import Rating
-from .mixins import RatingMixin
 
 
-class RatingListView(CategoryMixin, PermissionListMixin, BCMixin, ListView):
+class RatingListView(SRListViewMixin, ListView):
     model = Rating
     paginate_by = 100
     template_name = "rating_list.html"
     permission_required = "rating.view_rating"
 
 
-class RatingCreateView(
-    CategoryMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
-):
+class RatingCreateView(SRViewMixin, CreateView):
     model = Rating
     template_name = "rating_form.html"
     fields = ["name", "description", "max_rating", "icon"]
@@ -54,23 +48,21 @@ class RatingCreateView(
         )
 
 
-class RatingDetailView(RatingMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class RatingDetailView(SRViewMixin, DetailView):
     model = Rating
     template_name = "rating_detail.html"
     slug_url_kwarg = "rating_slug"
     permission_required = "rating.view_rating"
 
 
-class RatingSettingsView(
-    RatingMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class RatingSettingsView(SRViewMixin, DetailView):
     model = Rating
     template_name = "rating_settings.html"
     slug_url_kwarg = "rating_slug"
     permission_required = "rating.change_rating"
 
 
-class RatingUpdateView(RatingMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
+class RatingUpdateView(SRViewMixin, UpdateView):
     model = Rating
     template_name = "rating_form.html"
     slug_url_kwarg = "rating_slug"
@@ -78,7 +70,7 @@ class RatingUpdateView(RatingMixin, PermissionRequiredOr403Mixin, BCMixin, Updat
     fields = ["name", "description", "icon"]
 
 
-class RatingDeleteView(RatingMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
+class RatingDeleteView(SRViewMixin, DeleteView):
     model = Rating
     template_name = "rating_delete.html"
     slug_url_kwarg = "rating_slug"

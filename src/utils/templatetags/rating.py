@@ -89,8 +89,8 @@ def stars(obj, rating=None):
 
 
 @register.filter
-def votes(item, rating):
+def votes(item, rating, only_latest=True):
     """
     Return the number of Votes for the Rating for that Item
     """
-    return Vote.objects.filter(review__item=item, rating=rating).count()
+    return item.get_average_vote(rating, only_latest=only_latest)[1]

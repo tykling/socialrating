@@ -33,14 +33,14 @@ class ReviewViewTestCase(ItemViewTestCase):
         # save data to create a new review
         self.review_data = {
             "item": self.item,
-            "context": self.item.team.contexts.all().order_by("?").first().id,
+            "context": self.item.team.contexts.all().order_by("?").first().uuid,
             "headline": factory.Faker("sentence").generate(),
             "body": factory.Faker("text").generate(),
         }
 
         # save data to update Review
         self.update_data = {
-            "context": self.item.team.contexts.all().order_by("?").first().id,
+            "context": self.item.team.contexts.all().order_by("?").first().uuid,
             "headline": factory.Faker("sentence").generate(),
             "body": factory.Faker("text").generate(),
         }
@@ -93,11 +93,11 @@ class ReviewListViewTest(ReviewViewTestCase):
             self.assertContains(
                 response, "Reviews for %s" % self.item.name, status_code=200
             )
-            # make sure we list all items for the item
+            # make sure we list all reviews for the item
             for review in self.item.reviews.all():
                 self.assertContains(response, review.pk)
 
-            # and none of the items for some other item
+            # and none of the reviews for some other item
             item = self.item.category.items.exclude(pk=self.item.pk).first()
             for review in item.reviews.all():
                 self.assertNotContains(response, review.pk)

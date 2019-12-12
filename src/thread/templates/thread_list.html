@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+<h2>Threads in Forum {{ forum.name }}</h2>
+{% if 'add_thread' in forum_perms %}
+<p>
+  <a href="{% url 'team:forum:thread:create' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-success">
+  <i class="fas fa-plus"></i> Create New Thread</a>
+</p>
+{% endif %}
+{% if thread_list %}
+{% include "includes/thread_list_table.html" %}
+{% else %}
+<p class="lead">No threads found. Go create one!</p>
+{% endif %}
+{% if 'add_thread' in forum_perms %}
+  <a href="{% url 'team:forum:thread:create' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create New Thread</a>
+{% endif %}
+{% endblock team_content %}
+

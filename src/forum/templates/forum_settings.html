@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+<div class="card">
+  <div class="card-header">
+      <h4>Settings for Forum: {{ forum.name }}</h4>
+  </div>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <tr>
+        <th>Name</th>
+        <td>{{ forum.name }}</td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td>{{ forum.description }}</td>
+      </tr>
+      <tr>
+        <th>Parent</th>
+        <td>{{ forum.parent }}</td>
+      </tr>
+      <tr>
+        <th>Allow New Threads?</th>
+        <td>{{ forum.allow_new_threads }}</td>
+      </tr>
+    </table>
+
+    <a href="{% url 'team:forum:detail' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
+    {% if 'change_forum' in forum_perms %}
+    <a href="{% url 'team:forum:update' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
+    {% endif %}
+    {% if 'delete_forum' in forum_perms %}
+    <a href="{% url 'team:forum:delete' team_slug=team.slug forum_slug=forum.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock team_content %}
+

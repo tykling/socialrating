@@ -34,14 +34,19 @@ class Fact(Attribute):
     def team(self):
         return self.category.team
 
+    @property
+    def detail_url_kwargs(self):
+        return {
+            "team_slug": self.team.slug,
+            "category_slug": self.category.slug,
+            "fact_slug": self.slug,
+        }
+
+    object_url_namespace = "team:category:fact"
+
     def get_absolute_url(self):
         return reverse_lazy(
-            "team:category:fact:detail",
-            kwargs={
-                "team_slug": self.team.slug,
-                "category_slug": self.category.slug,
-                "fact_slug": self.slug,
-            },
+            self.object_url_namespace + ":detail", kwargs=self.detail_url_kwargs
         )
 
     def grant_permissions(self):

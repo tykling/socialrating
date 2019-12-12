@@ -82,7 +82,9 @@ class RatingListViewTest(RatingViewTestCase):
                 self.assertContains(response, rating.name)
             # and none of the others
             for rating in Rating.objects.exclude(
-                id__in=[self.team2_category3.ratings.all().values_list("id", flat=True)]
+                uuid__in=self.team2_category3.ratings.all().values_list(
+                    "uuid", flat=True
+                )
             ):
                 self.assertNotContains(response, rating.name)
 

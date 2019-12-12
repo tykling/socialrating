@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block team_content %}
+<div class="card">
+  <div class="card-header">
+    <h4>
+      {% if request.resolver_match.url_name == "update" %}
+      Update Forum {{ form.instance.name }}
+      {% else %}
+      Create Forum
+      {% endif %}
+    </h4>
+  </div>
+  <div class="card-body">
+    <form method="post" class="form">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      {% buttons %}
+        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i>
+          {% if request.resolver_match.url_name == "update" %}Update{% else %}Create{% endif %} Forum
+        </button>
+        <a class="btn btn-danger" href="{% url "team:forum:settings" team_slug=team.slug forum_slug=forum.slug %}"><i class="fas fa-times"></i> Cancel</a>
+      {% endbuttons %}
+    </form>
+  </div>
+</div>
+{% endblock team_content %}
+

@@ -18,7 +18,7 @@ class Context(UUIDBaseModel):
     A review must be associated with a context.
     """
 
-    class Meta:
+    class Meta(UUIDBaseModel.Meta):
         ordering = ["name"]
         unique_together = [["name", "team"], ["slug", "team"]]
 
@@ -49,10 +49,15 @@ class Context(UUIDBaseModel):
     def __str__(self):
         return self.name
 
+    @property
+    def detail_url_kwargs(self):
+        return {"team_slug": self.team.slug, "context_slug": self.slug}
+
+    object_url_namespace = "team:context"
+
     def get_absolute_url(self):
         return reverse_lazy(
-            "team:context:detail",
-            kwargs={"team_slug": self.team.slug, "context_slug": self.slug},
+            self.object_url_namespace + ":detail", kwargs=self.detail_url_kwargs
         )
 
     def grant_permissions(self):

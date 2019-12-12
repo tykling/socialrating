@@ -1,0 +1,8 @@
+{% load guardian_tags %}
+{% for comment in comment_list %}
+  {% get_obj_perms request.user for comment as "comment_perms" %}
+  {% if "view_comment" in comment_perms %}
+    {% include "includes/comment_card.html" %}
+  {% endif %}
+  <br>
+{% endfor %}

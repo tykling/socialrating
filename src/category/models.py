@@ -3,6 +3,7 @@ import logging
 
 from django.db import models
 from django.urls import reverse_lazy
+from django.contrib.contenttypes.models import ContentType
 from guardian.shortcuts import assign_perm
 
 from utils.models import UUIDBaseModel
@@ -16,7 +17,7 @@ class Category(UUIDBaseModel):
     A category defines a type of thing/place/event. A Category belongs to a Team.
     """
 
-    class Meta:
+    class Meta(UUIDBaseModel.Meta):
         ordering = ["weight", "name"]
         unique_together = [["name", "team"], ["slug", "team"]]
         permissions = (
@@ -66,10 +67,15 @@ class Category(UUIDBaseModel):
     def __str__(self):
         return self.name
 
+    @property
+    def detail_url_kwargs(self):
+        return {"team_slug": self.team.slug, "category_slug": self.slug}
+
+    object_url_namespace = "team:category"
+
     def get_absolute_url(self):
         return reverse_lazy(
-            "team:category:detail",
-            kwargs={"team_slug": self.team.slug, "category_slug": self.slug},
+            self.object_url_namespace + ":detail", kwargs=self.detail_url_kwargs
         )
 
     def grant_permissions(self):
@@ -116,9 +122,17 @@ class Category(UUIDBaseModel):
 
     @property
     def attachment_count(self):
+        """
+        Return the number of attachments for all Items belonging to this Category
+        """
         from attachment.models import Attachment
 
-        return Attachment.objects.filter(review__item__category=self).count()
+        return Attachment.objects.filter(
+            content_type=ContentType.objects.get(app_label="item", model="item"),
+            object_id__in=[
+                str(x) for x in self.items.all().values_list("uuid", flat=True)
+            ],
+        ).count()
 
 
 # register Category model with django-eav2

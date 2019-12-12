@@ -3,8 +3,10 @@
 
 <div class="card border-success">
   <div class="card-header">
-      Review of <b>{{ review.item.name }}</b> by <b>{{ review.actor.user.username }}</b> created {{ review.created | timesince }} ago
-      <a href="{% url 'team:category:item:review:settings' team_slug=team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+    Review of <b>{{ review.item.name }}</b> by <b>{{ review.actor.user.username }}</b> created {{ review.created | timesince }} ago
+    {% if 'change_review' in review_perms %}
+    <a href="{% url 'team:category:item:review:settings' team_slug=team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.uuid %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+    {% endif %}
   </div>
   <div class="card-body">
     <h5 class="card-title">{{ review.headline }}</h5>
@@ -40,7 +42,7 @@
   {% endif %}
 
   {% if review.attachments.all %}
-    {% include "includes/attachments.html" %}
+    {% include "includes/attachments.html" with attachment_list=review.attachments.all %}
   {% endif %}
 
   <div class="card-body text-right">

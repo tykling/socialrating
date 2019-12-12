@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load guardian_tags %}
 
 {% block team_content %}
 {% if context_list %}
@@ -14,6 +15,7 @@
     </thead>
     <tbody>
     {% for context in context_list %}
+      {% get_obj_perms request.user for context as "context_perms" %}
       <tr>
         <td>{{ context.name }}</td>
         <td>{{ context.description }}</td>
@@ -21,13 +23,13 @@
         <td>
           <div style="white-space: nowrap;" class="btn-group-vertical">
             <a href="{% url 'team:context:detail' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
-            {% if 'context.change_context' in perms %}
+            {% if 'change_context' in context_perms %}
             <a href="{% url 'team:context:settings' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-cog"></i> Settings</a>
             {% endif %}
-            {% if 'context.change_context' in perms %}
+            {% if 'change_context' in context_perms %}
             <a href="{% url 'team:context:update' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
             {% endif %}
-            {% if 'context.delete_context' in perms %}
+            {% if 'delete_context' in context_perms %}
             <a href="{% url 'team:context:delete' team_slug=team.slug context_slug=context.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
             {% endif %}
           </div>
@@ -39,6 +41,8 @@
 {% else %}
 <p class="lead">No contexts found. Go create one!</p>
 {% endif %}
+{% if 'add_context' in team_perms %}
 <a href="{% url 'team:context:create' team_slug=team.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create New Context</a>
+{% endif %}
 {% endblock team_content %}
 

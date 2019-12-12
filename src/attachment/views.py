@@ -7,18 +7,14 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.http import HttpResponse
 from django.contrib import messages
-from guardian.mixins import PermissionListMixin
 
-from review.mixins import ReviewMixin
 from utils.svgthumbnail import svgthumbnail
-from utils.mixins import PermissionRequiredOr403Mixin
-from utils.mixins import BreadCrumbMixin as BCMixin
+from utils.mixins import SRViewMixin, SRListViewMixin
 
 from .models import Attachment
-from .mixins import AttachmentMixin
 
 
-class AttachmentListView(ReviewMixin, PermissionListMixin, BCMixin, ListView):
+class AttachmentListView(SRListViewMixin, ListView):
     """
     List all attachments belonging to a specific review
     """
@@ -28,10 +24,17 @@ class AttachmentListView(ReviewMixin, PermissionListMixin, BCMixin, ListView):
     template_name = "attachment_list.html"
     permission_required = "attachment.view_attachment"
 
+    def get_queryset(self, **kwargs):
+        """
+        We have a GenericRelation called "attachments"
+        """
+        print("inside attachmentlistview for object %s" % self.gfk_object)
+        attachments = self.gfk_object.attachments.all()
+        self.checker.prefetch_perms(attachments)
+        return attachments
 
-class AttachmentCreateView(
-    ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView
-):
+
+class AttachmentCreateView(SRViewMixin, CreateView):
     """
     This view allows the user to add new attachments to an existing
     review.
@@ -72,27 +75,21 @@ class AttachmentCreateView(
         )
 
 
-class AttachmentDetailView(
-    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class AttachmentDetailView(SRViewMixin, DetailView):
     model = Attachment
     template_name = "attachment_detail.html"
     pk_url_kwarg = "attachment_uuid"
     permission_required = "attachment.view_attachment"
 
 
-class AttachmentSettingsView(
-    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class AttachmentSettingsView(SRViewMixin, DetailView):
     model = Attachment
     template_name = "attachment_settings.html"
     pk_url_kwarg = "attachment_uuid"
     permission_required = "attachment.change_attachment"
 
 
-class AttachmentFileView(
-    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView
-):
+class AttachmentFileView(SRViewMixin, DetailView):
     """
     This view returns a http response with the contents of the file
     and the proper mimetype.
@@ -118,9 +115,7 @@ class AttachmentFileView(
         return response
 
 
-class AttachmentUpdateView(
-    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView
-):
+class AttachmentUpdateView(SRViewMixin, UpdateView):
     """
     View to update the description of an existing Attachment
     """
@@ -132,21 +127,10 @@ class AttachmentUpdateView(
     permission_required = "attachment.change_attachment"
 
     def get_success_url(self):
-        return reverse(
-            "team:category:item:review:attachment:detail",
-            kwargs={
-                "team_slug": self.team.slug,
-                "category_slug": self.category.slug,
-                "item_slug": self.item.slug,
-                "review_uuid": self.review.pk,
-                "attachment_uuid": self.get_object().pk,
-            },
-        )
+        return self.attachment.get_detail_url
 
 
-class AttachmentDeleteView(
-    AttachmentMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView
-):
+class AttachmentDeleteView(SRViewMixin, DeleteView):
     model = Attachment
     template_name = "attachment_delete.html"
     pk_url_kwarg = "attachment_uuid"

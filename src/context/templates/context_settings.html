@@ -17,17 +17,14 @@
         <td>{{ context.description }}</td>
       </tr>
     </table>
-
     <a href="{% url 'team:context:detail' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-search"></i> Show</a>
-    {% if 'context.change_context' in perms %}
+    {% if 'change_context' in context_perms %}
     <a href="{% url 'team:context:update' team_slug=team.slug context_slug=context.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update</a>
     {% endif %}
-    {% if 'context.delete_context' in perms %}
+    {% if 'delete_context' in context_perms %}
     <a href="{% url 'team:context:delete' team_slug=team.slug context_slug=context.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete</a>
     {% endif %}
-
   </div>
 </div>
-
 {% endblock team_content %}
 

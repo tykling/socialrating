@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load guardian_tags %}
+
+{% block team_content %}
+{% if team.forums.all %}
+<h2>Forums for {{ team.name }}</h2>
+{% include "includes/forum_list_table.html" %}
+{% else %}
+<p class="lead">No forums found. Go create one!</p>
+{% endif %}
+{% if 'add_forum' in team_perms %}
+  <a href="{% url 'team:forum:create' team_slug=team.slug %}" class="btn btn-success"><i class="fas fa-plus"></i> Create New Forum</a>
+{% endif %}
+{% endblock team_content %}
+

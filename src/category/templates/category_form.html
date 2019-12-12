@@ -7,7 +7,7 @@
   {% bootstrap_form form %}
   {% buttons %}
     <button type="submit" class="btn btn-primary">
-      {% if form.instance.pk %}Update{% else %}Create{% endif %} Category
+      {% if request.resolver_match.url_name == "update" %}Update{% else %}Create{% endif %} Category
     </button>
   {% endbuttons %}
 </form>

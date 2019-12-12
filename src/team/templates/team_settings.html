@@ -2,10 +2,10 @@
 
 {% block team_content %}
 <p class="lead">Settings for Team: {{ team.name }}</p>
-{% if 'team.change_team' in perms %}
+{% if 'change_team' in team_perms %}
     <a href="{% url 'team:update' team_slug=team.slug %}" class="btn btn-primary"><i class="fas fa-edit"></i> Update Team</a>
 {% endif %}
-{% if 'team.delete_team' in perms %}
+{% if 'delete_team' in team_perms %}
     <a href="{% url 'team:delete' team_slug=team.slug %}" class="btn btn-danger"><i class="fas fa-times"></i> Delete Team</a>
 {% endif %}
 <hr>

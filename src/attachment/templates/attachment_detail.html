@@ -6,7 +6,7 @@
 <div class="card border-success">
   <div class="card-header">
       Details for Attachment: {{ attachment.uuid }}
-      <a href="{% url 'team:category:item:review:attachment:settings' team_slug=team.slug category_slug=review.category.slug item_slug=review.item.slug review_uuid=review.uuid attachment_uuid=attachment.uuid %}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
+      <a href="{{ attachment.get_settings_url }}" class="btn btn-secondary float-right"><i class="fas fa-cog"></i></a>
   </div>
   <div class="card-body">
     <table class="table table-bordered">
@@ -16,7 +16,7 @@
       </tr>
       <tr>
         <th>Review</th>
-        <td><a href="{% url 'team:category:item:review:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug review_uuid=review.uuid %}">{{ attachment.review }}</a> by {{ attachment.review.actor.user }} on {{ attachment.review.created }}</td>
+        <td><a href="{{ attachment.get_absolute_url }}">{{ attachment.review }}</a> by {{ attachment.review.actor.user }} on {{ attachment.review.created }}</td>
       </tr>
       <tr>
         <th>Mimetype</th>
@@ -33,14 +33,14 @@
       <tr>
         <th>Thumbnail</th>
         <td>
-          <a href="{% url 'team:category:item:review:attachment:attachment' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.uuid attachment_uuid=attachment.uuid %}">
-            <img src="{% url 'team:category:item:review:attachment:attachment' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.uuid attachment_uuid=attachment.uuid %}?thumbnail" width="100%" heigth="225">
+          <a href="{{ attachment.get_file_url }}">
+            <img src="{{ attachment.get_file_url }}?thumbnail" width="100%" heigth="225">
           </a>
         </td>
       </tr>
     </table>
-    <a href="{% url 'team:category:item:review:attachment:list' team_slug=review.team.slug category_slug=review.item.category.slug item_slug=review.item.slug review_uuid=review.pk %}" class="card-link btn btn-primary"><i class="fas fa-list"></i> Attachments</a>
-    <a href="{% url 'team:category:item:review:detail' team_slug=team.slug category_slug=category.slug item_slug=item.slug review_uuid=review.uuid %}" class="btn btn-primary"><i class="fas fa-search"></i> Review</a>
+    <a href="{{ attachment.get_list_url }}" class="card-link btn btn-primary"><i class="fas fa-list"></i> Attachments</a>
+    <a href="{{ attachment.attachment_object.get_absolute_url }}" class="btn btn-primary"><i class="fas fa-search"></i> {{ attachment.attachment_object }}</a>
   </div>
 </div>
 {% endblock team_content %}

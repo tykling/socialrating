@@ -1,7 +1,10 @@
+import uuid
+import logging
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-from utils.models import UUIDBaseModel
+logger = logging.getLogger("socialrating.%s" % __name__)
 
 
 def get_sentinel_user():
@@ -24,17 +27,29 @@ class User(AbstractUser):
     @property
     def actor(self):
         """
-        Returns the Actor object for this user
+        Create or return the Actor object for this user
         """
-        return self.actor_set.first()
+        return Actor.objects.get_or_create(user=self)[0]
+
+    def save(self, **kwargs):
+        if self._state.adding:
+            create_actor = True
+        else:
+            create_actor = False
+        super().save(**kwargs)
+        if create_actor:
+            # just accessing the actor property creates the Actor..
+            _ = self.actor
 
 
-class Actor(UUIDBaseModel):
+class Actor(models.Model):
     """
     Everything in socialrating relates to an Actor rather than directly
-    to a User object. An actor has a nullable OneToOneField to User.
-    Actors are never deleted, but User objects can be deleted.
+    to a User object. An actor has FK to User. Actors are never deleted,
+    but User objects can be deleted.
     """
+
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     user = models.ForeignKey(
         "actor.User",

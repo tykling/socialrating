@@ -1,5 +1,7 @@
 from django.urls import path, include
 
+from socialrating.generic_fk_urls import generic_fk_urls
+
 from .views import (
     ReviewListView,
     ReviewCreateView,
@@ -30,10 +32,8 @@ urlpatterns = [
                     ),
                     kwargs={"settings_view": True},
                 ),
-                path(
-                    "attachments/", include("attachment.urls", namespace="attachment")
-                ),
                 path("votes/", include("vote.urls", namespace="vote")),
+                path("", include(generic_fk_urls)),
             ]
         ),
     ),

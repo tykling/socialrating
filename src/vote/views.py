@@ -6,19 +6,15 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
-from guardian.mixins import PermissionListMixin
 
-from review.mixins import ReviewMixin
-from utils.mixins import PermissionRequiredOr403Mixin
-from utils.mixins import BreadCrumbMixin as BCMixin
+from utils.mixins import SRViewMixin, SRListViewMixin
 
 from .models import Vote
-from .mixins import VoteMixin
 
 logger = logging.getLogger("socialrating.%s" % __name__)
 
 
-class VoteListView(ReviewMixin, PermissionListMixin, BCMixin, ListView):
+class VoteListView(SRListViewMixin, ListView):
     """
     List all votes belonging to a specific review
     """
@@ -29,7 +25,7 @@ class VoteListView(ReviewMixin, PermissionListMixin, BCMixin, ListView):
     permission_required = "vote.view_vote"
 
 
-class VoteCreateView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, CreateView):
+class VoteCreateView(SRViewMixin, CreateView):
     """
     This view allows the user to add new votes to an existing review.
     """
@@ -77,21 +73,21 @@ class VoteCreateView(ReviewMixin, PermissionRequiredOr403Mixin, BCMixin, CreateV
         )
 
 
-class VoteDetailView(VoteMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class VoteDetailView(SRViewMixin, DetailView):
     model = Vote
     template_name = "vote_detail.html"
     pk_url_kwarg = "vote_uuid"
     permission_required = "vote.view_vote"
 
 
-class VoteSettingsView(VoteMixin, PermissionRequiredOr403Mixin, BCMixin, DetailView):
+class VoteSettingsView(SRViewMixin, DetailView):
     model = Vote
     template_name = "vote_settings.html"
     pk_url_kwarg = "vote_uuid"
     permission_required = "vote.change_vote"
 
 
-class VoteUpdateView(VoteMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateView):
+class VoteUpdateView(SRViewMixin, UpdateView):
     model = Vote
     template_name = "vote_form.html"
     fields = ["vote", "comment"]
@@ -111,7 +107,7 @@ class VoteUpdateView(VoteMixin, PermissionRequiredOr403Mixin, BCMixin, UpdateVie
         )
 
 
-class VoteDeleteView(VoteMixin, PermissionRequiredOr403Mixin, BCMixin, DeleteView):
+class VoteDeleteView(SRViewMixin, DeleteView):
     model = Vote
     template_name = "vote_delete.html"
     pk_url_kwarg = "vote_uuid"
