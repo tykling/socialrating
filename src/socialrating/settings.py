@@ -111,7 +111,6 @@ USE_TZ = True
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static_src")]  # find static files here
 STATIC_ROOT = os.path.join(BASE_DIR, "static")  # collect static files here
 STATIC_URL = "/static/"  # serve static files here
-MEDIA_ROOT = "media/"  # keep uploads here
 
 LOGGING = {
     "version": 1,
