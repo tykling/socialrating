@@ -1,8 +1,8 @@
-Django>=2.2.6
+Django==2.2.7 # waiting for leaflet to support 3.0
 django-allauth>=0.39.1
 django-bootstrap4>=0.0.8
 django-crum>=0.7.4
--e git+https://github.com/tykling/django-eav2@50dcc66d42e42357d5ba63605a1eec2edec9c823#egg=django_eav2
+-e git+https://github.com/tykling/django-eav2@984d1ad727ab37eae394be31203e1a50b0ac9cf6#egg=django_eav2
 django-guardian>=1.5.1
 django-leaflet>=0.24.0
 django-taggit>=1.1.0
