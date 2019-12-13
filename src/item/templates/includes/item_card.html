@@ -146,7 +146,7 @@
       <div class="tab-pane" id="comments" role="tabpanel" aria-labelledby="comments-tab">
         <br><p>
         <a href="{% url 'team:category:item:comment:list' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-primary"><i class="fas fa-list"></i> Show All Comments</a>
-        {% if 'comment_add' in item_perms %}
+        {% if 'add_comment' in item_perms %}
           <a href="{% url 'team:category:item:comment:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Comment</a>
         {% endif %}
         </p>
@@ -156,7 +156,7 @@
       <div class="tab-pane" id="attachments" role="tabpanel" aria-labelledby="attachments-tab">
         <br><p>
         <a href="{% url 'team:category:item:attachment:list' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-primary"><i class="fas fa-list"></i> Show All Attachments</a>
-        {% if 'attachment_create' in item_perms %}
+        {% if 'add_attachment' in item_perms %}
           <a href="{% url 'team:category:item:attachment:create' team_slug=team.slug category_slug=item.category.slug item_slug=item.slug %}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add New Attachment</a>
         {% endif %}
         </p>

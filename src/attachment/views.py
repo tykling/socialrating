@@ -4,7 +4,6 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.shortcuts import redirect
-from django.urls import reverse
 from django.http import HttpResponse
 from django.contrib import messages
 
@@ -36,43 +35,33 @@ class AttachmentListView(SRListViewMixin, ListView):
 
 class AttachmentCreateView(SRViewMixin, CreateView):
     """
-    This view allows the user to add new attachments to an existing
-    review.
+    This view allows the user to add new attachments to an existing item
     """
 
     model = Attachment
     template_name = "attachment_form.html"
     fields = ["attachment", "description"]
-    permission_required = "review.add_attachment"
+    permission_required = "add_attachment"
 
     def get_permission_object(self):
         """
         Only users with review.add_attachment permission for
         self.review are allowed to create new Attachments
         """
-        return self.review
+        return self.gfk_object
 
     def form_valid(self, form):
         attachment = form.save(commit=False)
-        attachment.review = self.review
+        attachment.actor = self.request.user.actor
         attachment.mimetype = magic.from_buffer(attachment.attachment.read(), mime=True)
         attachment.size = attachment.attachment.size
+        attachment.attachment_object = self.gfk_object
         attachment.save()
 
         messages.success(self.request, "Saved new attachment")
 
-        # redirect to the attachment list for the review
-        return redirect(
-            reverse(
-                "team:category:item:review:attachment:list",
-                kwargs={
-                    "team_slug": self.team.slug,
-                    "category_slug": self.category.slug,
-                    "item_slug": self.item.slug,
-                    "review_uuid": self.review.pk,
-                },
-            )
-        )
+        # redirect to the attachment list for the item
+        return redirect(self.gfk_object.get_absolute_url())
 
 
 class AttachmentDetailView(SRViewMixin, DetailView):
@@ -141,12 +130,4 @@ class AttachmentDeleteView(SRViewMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse(
-            "team:category:item:review:detail",
-            kwargs={
-                "team_slug": self.team.slug,
-                "category_slug": self.category.slug,
-                "item_slug": self.item.slug,
-                "review_uuid": self.review.pk,
-            },
-        )
+        return self.attachment.attachment_object.get_absolute_url()
