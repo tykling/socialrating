@@ -31,6 +31,10 @@ class Fact(Attribute):
     breadcrumb_list_name = "Facts"
 
     @property
+    def breadcrumb_detail_name(self):
+        return self.name
+
+    @property
     def team(self):
         return self.category.team
 
