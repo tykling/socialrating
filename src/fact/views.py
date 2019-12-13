@@ -58,7 +58,7 @@ class FactCreateView(SRViewMixin, CreateView):
         fact.slug = self.category.create_fact_slug(fact_name=fact.name)
         fact.category = self.category
         if fact.datatype == "object":
-            fact.object_category = form.cleaned_data["category"].pk
+            fact.object_category = form.cleaned_data["category"]
         fact.save()
         messages.success(self.request, "New Fact created!")
 
