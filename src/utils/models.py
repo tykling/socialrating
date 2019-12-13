@@ -235,7 +235,7 @@ class TaggedModel(EventModel):
     class Meta(GFKModel.Meta):
         abstract = True
 
-    tags = TaggableManager(through=UUIDTaggedItem)
+    tags = TaggableManager(through=UUIDTaggedItem, blank=True)
 
 
 class UUIDBaseModel(TaggedModel):
