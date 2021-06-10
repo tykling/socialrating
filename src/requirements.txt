@@ -1,4 +1,4 @@
-Django==2.2.8 # waiting for leaflet to support 3.0
+Django==2.2.24 # waiting for leaflet to support 3.0
 django-allauth>=0.39.1
 django-bootstrap4>=0.0.8
 django-crum>=0.7.4
